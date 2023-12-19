@@ -8,7 +8,8 @@ class Program
 	
 	{
 		Fish bob = new("Bobby", 1, "Red", "Koi");
-		Console.WriteLine(bob.SayHi());
 		bob.Swim();
+		Console.WriteLine(bob.SayHi());
+		Console.WriteLine(bob.SayType());
 	}
 }
