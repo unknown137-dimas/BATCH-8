@@ -1,2 +1,14 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿
+using Animal;
+
+class Program
+
+{
+	public static void Main()
+	
+	{
+		Fish bob = new Fish("Bobby", 1, "Red", "Koi");
+		Console.WriteLine(bob.SayHi());
+		bob.Swim();
+	}
+}
