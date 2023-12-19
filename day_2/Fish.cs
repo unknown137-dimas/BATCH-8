@@ -1,11 +1,11 @@
 class Fish : Animal
 
 {
-	public Fish(string name, int age, string color, string type)
+	public string color = "";
+	public string type = "";
+	public Fish(string name, int age, string color, string type): base(name, age)
 
 	{
-		this.name = name;
-		this.age = age;
 		this.color = color;
 		this.type = type;
 	}
