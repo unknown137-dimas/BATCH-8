@@ -11,5 +11,6 @@ class Program
 		bob.Swim();
 		Console.WriteLine(bob.SayHi());
 		Console.WriteLine(bob.SayType());
+		Console.WriteLine(bob.RepeatTheWords("I", "Love", "U"));
 	}
 }

@@ -19,4 +19,16 @@ class Fish
 	public void Swim() => Console.WriteLine($"{this.name} is Swimming... ><  (°>");
 	public string SayHi() => $"Hi, my name is {name} and i'm {age} years old.";
 	public string SayType() => $"I am a {type} fish with body color of {color}.";
+	
+	public string RepeatTheWords(params string[] words)
+	
+	{
+		string repeatedWords = "";
+		foreach(string word in words)
+		
+		{
+			repeatedWords += word + " ";
+		}
+		return repeatedWords;
+	}
 }
