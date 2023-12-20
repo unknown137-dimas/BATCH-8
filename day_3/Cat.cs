@@ -1,8 +1,8 @@
 public class Cat : Animal
 
 {
-	string color = "";
-	string type = "";
+	public readonly string color = "";
+	public readonly string type = "";
 	public Cat(string name, int age, string color, string type): base(name, age)
 
 	{
