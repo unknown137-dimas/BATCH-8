@@ -13,4 +13,6 @@ public class Animal
 
 	public string SayHi() => $"Hi, my name is {_name} and i'm {_age} years old.";
 	public string Eat(string food) => $"Eating {food}, nyam nyam nyam";
+	
+	public virtual string Speak() => "Animal Speak";
 }

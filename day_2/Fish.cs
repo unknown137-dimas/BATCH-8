@@ -25,4 +25,6 @@ public class Fish : Animal
 		}
 		return repeatedWords;
 	}
+
+    public override string Speak() => "Blub... Blub...";
 }
