@@ -2,7 +2,7 @@
 class Program
 
 {
-	public static void Main()
+	static void Main()
 
 	{
 		Fish bob = new("Bobby", 1, "Red", "Koi");

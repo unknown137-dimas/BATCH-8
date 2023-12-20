@@ -1,8 +1,8 @@
-class Fish : Animal
+public class Fish : Animal
 
 {
-	public string color = "";
-	public string type = "";
+	string color = "";
+	string type = "";
 	public Fish(string name, int age, string color, string type): base(name, age)
 
 	{
@@ -10,14 +10,14 @@ class Fish : Animal
 		this.type = type;
 	}
 
-	public void Swim() => Console.WriteLine($"{this.name} is Swimming... ><  (°>");
+	public void Swim() => Console.WriteLine($"{_name} is Swimming... ><  (°>");
 
 	public string SayType() => $"I am a {this.type} fish with body color of {this.color}.";
 
 	public string RepeatTheWords(params string[] words)
 
 	{
-		string repeatedWords = $"{this.name} says: ";
+		string repeatedWords = $"{_name} says: ";
 		foreach (string word in words)
 
 		{

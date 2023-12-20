@@ -1,15 +1,16 @@
-class Animal
+public class Animal
 
 {
-	public string name = "";
-	public int age = 0;
+	protected string _name = "";
+	protected int _age = 0;
 
 	public Animal(string name, int age) 
 	{
-		this.name = name;
-		this.age = age;
+		_name = name;
+		_age = age;
 	}
+	public Animal(){}
 
-	public string SayHi() => $"Hi, my name is {this.name} and i'm {this.age} years old.";
+	public string SayHi() => $"Hi, my name is {_name} and i'm {_age} years old.";
 	public string Eat(string food) => $"Eating {food}, nyam nyam nyam";
 }
