@@ -2,17 +2,17 @@ namespace CarComponent;
 class Engine
 
 {
-	private int _cylinderCount;
-	private bool _turbo;
+	private int CylinderCount { get; set; }
+	private bool Turbo { get; set; }
 	public Engine(int cylinderNumber, bool turbo = false)
 	
 	{
-		_cylinderCount = cylinderNumber;
-		_turbo = turbo;
+		CylinderCount = cylinderNumber;
+		Turbo = turbo;
 	}
 	public virtual void Run()
 	
 	{
-		Console.WriteLine(_turbo ? $"{_cylinderCount} cylinder engine with turbo is running..." : $"{_cylinderCount} cylinder engine is running...");
+		Console.WriteLine(Turbo ? $"{CylinderCount} cylinder engine with turbo is running..." : $"{CylinderCount} cylinder engine is running...");
 	}
 }

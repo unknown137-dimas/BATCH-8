@@ -3,14 +3,7 @@ namespace CarComponent;
 class ElectricMotor : Engine
 
 {
-	private int _motorCount;
-	public ElectricMotor(int motorNumber): base(0, false)
-	
-	{
-		_motorCount = motorNumber;
-	}
-    public override void Run()
-    {
-        Console.WriteLine($"Car is running and powered by {_motorCount} electric motors.");
-    }
+	private int MotorCount {get; set; }
+	public ElectricMotor(int motorNumber): base(0, false) => MotorCount = motorNumber;
+    public override void Run() => Console.WriteLine($"Car is running and powered by {MotorCount} electric motors.");
 }
