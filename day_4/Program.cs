@@ -68,5 +68,20 @@ class Program
 		electricCar.SwapEngine(new ElectricMotor(3));
 		newCar.Start();
 		
+		// #5 ref, in, out
+		static void Multiplier(int n) => n *= n;
+		static void RefMultiplier(ref int n) => n *= n;
+		static void InOutMultiplier(in int n, out int result) => result = n*n;
+		
+		int n = 5;
+		
+		Multiplier(n);
+		Console.WriteLine($"Normal n: {n}");
+		
+		RefMultiplier(ref n);
+		Console.WriteLine($"Ref n: {n}");
+		
+		InOutMultiplier(n, out int result);
+		Console.WriteLine($"InOut n: {result}");
 	}
 }
