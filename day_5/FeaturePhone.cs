@@ -2,11 +2,14 @@ class FeaturePhone : Phone
 {
 	private string brand;
 	private string model;
+	private static int count;
+	
 	public FeaturePhone(string brand, string model)
 	
 	{
 		this.brand = brand;
 		this.model = model;
+		count++;
 	}
 	public void GetPhoneModel() => Console.WriteLine($"{brand} {model}");
 	public override void Call(string contactNumber)
@@ -18,4 +21,5 @@ class FeaturePhone : Phone
 	{
 		Console.WriteLine($"Say {message} to {contactNumber}");
 	}
+	public static int GetTotal() => count;
 }
