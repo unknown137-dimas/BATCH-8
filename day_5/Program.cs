@@ -21,5 +21,14 @@
 		gamingPhone.PlayGames("Ganshin Impact");
 		gamingPhone.Call("Nobody");
 		gamingPhone.Message("Pinjem dulu seratus", "Bro Mobile");
+		Console.WriteLine();
+		
+		SmartPhone flagshipPhone = new("Samsung", "S23 Ultra");
+		flagshipPhone.GetPhoneModel();
+		Console.WriteLine();
+		
+		// Static
+		Console.WriteLine($"Total feature phone exist is {FeaturePhone.GetTotal()}");
+		Console.WriteLine($"Total gaming phone exist is {SmartPhone.GetTotal()}");
 	}
 }

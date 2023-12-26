@@ -3,11 +3,14 @@ class SmartPhone : Phone, IPlayGames, IPlayMusic
 {
 	private string brand;
 	private string model;
+	private static int count;
+	
 	public SmartPhone(string brand, string model)
 	
 	{
 		this.brand = brand;
 		this.model = model;
+		count++;
 	}
 	public void GetPhoneModel() => Console.WriteLine($"{brand} {model}");
 	public override void Call(string contactNumber)
@@ -29,4 +32,5 @@ class SmartPhone : Phone, IPlayGames, IPlayMusic
 	{
 		Console.WriteLine($"Playing {musicFile} in the background...");
 	}
+	public static int GetTotal() => count;
 }
