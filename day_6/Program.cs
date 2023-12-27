@@ -1,4 +1,6 @@
-﻿class Program
+﻿using System.Collections.Immutable;
+
+class Program
 
 {
 	static void Main()
@@ -28,6 +30,12 @@
 		yearList.AddRange(new[]{2000, 2001, 2002});
 		yearList.AddRange(new[]{2003, 2004, 2020});
 		yearList.ForEach(Console.WriteLine);
+		
+		// Method Extensions
+		Console.WriteLine();
+		human1.GetName().Dump();
+		int result = 2999.Tambah(1);
+		result.Dump();
 	}
 }
 
