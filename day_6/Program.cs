@@ -42,6 +42,32 @@
 		Motor motor2 = new(4000);
 		(motor1 + motor2).price.Dump();
 		
+		// Delegate
+		// More suitable for non return method "void"
+		Console.WriteLine("\nDelegate");
+		VoidDelegate voidDelegate = Hi;
+		voidDelegate("Dimas from year 3000");
+		MyDelegate myDelegate = Sub;
+		myDelegate += Div;
+		
+		int[] delegateResult = new int[2];
+		int i = 0;
+		foreach(MyDelegate myDel in myDelegate.GetInvocationList())
+		
+		{
+			delegateResult[i] = myDel(24, 12);
+			i++;
+		}
+		foreach(int res in delegateResult)
+		
+		{
+			Console.WriteLine(res);
+		}
 	}
+	public delegate void VoidDelegate(string message);
+	public delegate int MyDelegate(int a, int b);
+	public static void Hi(string x) => Console.WriteLine($"Hi: {x}");
+	public static int Sub(int a, int b) => a - b;
+	public static int Div(int a, int b) => a / b;
 }
 
