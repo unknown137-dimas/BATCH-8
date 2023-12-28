@@ -20,5 +20,11 @@
 		youtuber2.myEventHandler += sub2.GetNotification;
 		youtuber2.UploadVideo("Review Iphone 16 Pro Max");
 		
+		// Action
+		Console.WriteLine("\nAction");
+		Youtuber youtuber3 = new("Jagat Review");
+		youtuber3.myAction += sub1.GetNotification;
+		youtuber3.UploadVideo("Review Macbook Pro Gaming");
+		
 	}
 }
