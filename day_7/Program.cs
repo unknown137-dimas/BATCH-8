@@ -17,6 +17,8 @@
 		Console.WriteLine("\nEventHandler");
 		Youtuber youtuber2 = new("GadgetIn");
 		youtuber2.mySub += sub1.GetNotification;
+		youtuber2.myEventHandler += sub2.GetNotification;
 		youtuber2.UploadVideo("Review Iphone 16 Pro Max");
+		
 	}
 }

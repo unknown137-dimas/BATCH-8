@@ -2,6 +2,7 @@ class Subscriber
 {
 	string name;
 	public Subscriber(string name) => this.name = name;
-	public void GetNotification(string sender, string message) => Console.WriteLine($"Hi {name}, {sender} send notification : {message}");
-	public void GetNotification(object sender, EventArgs e) => Console.WriteLine($"Hi {name}, {sender.ToString()} send notification");
+	public void GetNotification(string sender, string message) => Console.WriteLine($"Delegate : Hi {name}, {sender} send notification : {message}");
+	public void GetNotification(object sender, EventArgs e) => Console.WriteLine($"EventHandler : Hi {name}, {sender.ToString()} send notification");
+	public void GetNotification(object sender, YoutuberEventArgs e) => Console.WriteLine($"EventHandler<T> : Hi {name}, {sender.ToString()} send notification : {e.message}");
 }
