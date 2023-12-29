@@ -30,10 +30,19 @@
 		
 		// Operator Overloading
 		Console.WriteLine("\nOperator Overloading");
-		Car oldCar = new("oldCar", 90);
-		Car newCar = new("newCar", 200);
+		Car oldCar = new("Old Car", 90);
+		Car newCar = new("New Car", 200);
 		Car resultCar = oldCar + newCar;
 		resultCar.Name = "Swapped Car";
 		Console.WriteLine($"{resultCar.Name} : {resultCar.HP} HP");
+		
+		// Lambda Expression
+		Console.WriteLine("\nLambda Expression");
+		var MulFunc = (int a, int b) => a * b; // Lambda expression for Func
+		var Hello = () => Console.WriteLine("Parameterless : Hello"); // Lambda expression for parameterless and void
+		var AddAction = (int a, int b) => Console.WriteLine($"Action : {a + b}"); // Lambda expression for parameterless and void
+		Console.WriteLine($"Func : {MulFunc(2,5)}");
+		Hello();
+		AddAction(25, 12);
 	}
 }
