@@ -10,7 +10,7 @@
 		int result = 0;
 		// Bad code (not validate input)
 		// Try Catch is bad, try to avoid it as much as possible, because try catch doesn't prevent exception.
-		// it's only prevent the program from crashing.
+		// it's only prevent the program from crashing, Exception already happen
 		try
 		{
 			result = int.Parse(input);
