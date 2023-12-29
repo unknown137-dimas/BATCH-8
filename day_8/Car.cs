@@ -1,6 +1,3 @@
-using System.Numerics;
-using System.Runtime.CompilerServices;
-
 public class Car
 {
 	public int HP { get; private set; }

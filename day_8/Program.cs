@@ -1,8 +1,6 @@
 ﻿class Program
-
 {
 	static void Main()
-	
 	{
 		// Exception Handling
 		Console.WriteLine("Exception Handling");
@@ -44,5 +42,15 @@
 		Console.WriteLine($"Func : {MulFunc(2,5)}");
 		Hello();
 		AddAction(25, 12);
+		
+		// Enumerator
+		// Behind the scene of foreach code block, maybe? :)
+		Console.WriteLine("\nEnumerator");
+		List<int> list = new List<int>() {1,2,3,4};
+		IEnumerator<int> enumerator = list.GetEnumerator();
+		while(enumerator.MoveNext())
+		{
+			Console.WriteLine(enumerator.Current);
+		}
 	}
 }
