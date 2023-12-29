@@ -24,9 +24,16 @@
 			Console.WriteLine($"Try Catch : {result}");
 		}
 		
-		
 		// OK Code
 		if(int.TryParse(input, out result)) Console.WriteLine($"Validation : {result}"); // Using builtin validation method
 		else Console.WriteLine("Validation input failed");
+		
+		// Operator Overloading
+		Console.WriteLine("\nOperator Overloading");
+		Car oldCar = new("oldCar", 90);
+		Car newCar = new("newCar", 200);
+		Car resultCar = oldCar + newCar;
+		resultCar.Name = "Swapped Car";
+		Console.WriteLine($"{resultCar.Name} : {resultCar.HP} HP");
 	}
 }
