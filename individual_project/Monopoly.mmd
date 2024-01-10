@@ -1,0 +1,218 @@
+classDiagram
+    GameController *-- IBanker
+    GameController "1" *-- "2" IDice
+    GameController *-- ICard
+    GameController *-- PlayerData
+    GameController *-- IBoard
+    GameController .. GameStatus
+    
+    Board ..|> IBoard
+
+    IPlayer "2..6" --* "1" GameController
+    IPlayer --* Banker
+    
+    Banker ..|> IBanker
+    Banker *-- IProperty
+    
+    PlayerData .. TokenTypes
+    PlayerData *-- IProperty
+    PlayerData *-- ILocationTiles
+    PlayerData *-- ICard
+    
+    IBoard *-- ILocationTiles
+    
+    IProperty <|.. City
+    IProperty <|.. RailRoad
+    IProperty <|.. Utility
+
+    ILocationTiles <|.. Corner
+    ILocationTiles <|.. CardTile
+    ILocationTiles <|.. City
+    ILocationTiles <|.. RailRoad
+    ILocationTiles <|.. Utility
+
+    LocationTypes .. ILocationTiles
+
+    ICard .. CardTypes
+
+    Card ..|> ICard
+
+    IDice <|.. Dice
+    
+    class GameController {
+        +Queue~ICard~ ChanceCards
+        +Queue~ICard~ CommunityChestCards
+        +Dictionary~IPlayer, PlayerData~ Players
+        +List~IDice~ Dice : readOnly
+        +IBanker Banker
+        +IBoard Board
+        +IPlayer CurrentPlayer
+        +GameStatus CurrentGameState
+        %% Game State
+        +GameController(Queue~ICard~ chanceCards, Queue~ICard~ communityChestCards, List~IDice~ dice, List~IPlayer~ players, IBoard board, IBanker banker)
+        +StartGame() bool
+        +EndGame() bool
+        +NextTurn() IPlayer
+        +NextTurn(IPlayer nextPlayer) bool
+        +Roll() List~int~
+        +Winner() IPlayer
+        %% Card
+        +DrawCard(CardTypes cardType) ICard
+        %% Player
+        +Move(int step)
+        +GetPlayerToken(IPlayer player) TokenTypes
+        +GetPlayerLocation(IPlayer player) ILocationTiles
+        +GetPlayerProperty(IPlayer player) IEnumerable~IProperty~
+        %% Transaction
+        +HandleRentPayment(IPlayer payer, IProperty property) bool
+        +HandleBankruptcy(IPlayer player) bool
+        +BuyProperty(IPlayer buyer, IProperty property) bool
+        +BuyHouse(IPlayer buyer, IProperty property, int count) bool
+        +BuyHotel(IPlayer buyer, IProperty property, int count) bool
+        +BuyCard(IPlayer buyer, int priceOffer, IPlayer seller, ICard card) bool
+        +SellProperty(IPlayer seller, IProperty property) bool
+        +SellProperty(IPlayer seller, List~.IProperty~ properties) bool
+        +SellHouse(IPlayer seller, IProperty property, int count) bool
+        +SellHotel(IPlayer seller, IProperty property, int count) bool
+        +SellCard(IPlayer seller, ICard card, int priceOffer, IPlayer Buyer) bool
+        +Trade(IPlayer trader, IProperty property, IPlayer buyer, IProperty property) bool
+        +Trade(IPlayer trader, ICard card, IPlayer buyer, IProperty property) bool
+        +Trade(IPlayer trader, IProperty property, IPlayer buyer, ICard card) bool
+        +PayRent(IProperty location) bool
+        +PayMortgage(IPlayer player, IProperty location) bool
+        %% Board & Property
+        +GetLocationById(Guid locationId) ILocationTiles
+        +GetAvailableProperty() IEnumerable~ILocationTiles~
+        +GetAvailableHouses() int
+        +GetAvailableHotels() int
+        +UpdateHouseStock(int amount) bool
+        +UpdateHotelStock(int amount) bool
+    }
+    class IBanker {
+        <<Interface>>
+        +int TotalMoney
+        +SendMoney(IPlayer player, int amount)
+        +ReceiveMoney(IPlayer player, int amount)
+        +HandleAuction(IProperty property) IPlayer
+        +HandleMortgage(IPlayer player, IProperty property) bool
+        +HandlePropertyRedemption(IPlayer player, IProperty property) bool
+    }
+    class Banker {
+        +int HouseAmounts
+        +int HotelAmounts
+        +Dictionary~IPlayer.List~IProperty~~ MortgagedProperties
+        +Banker(int houseAmounts, int hotelAmounts, int totalMoney)
+        +IsEnoughHouses() bool
+        +IsEnoughHotels() bool
+        +UpdateHouseAmount(int amount) bool
+        +UpdateHotelAmount(int amount) bool
+    }
+    class IBoard {
+        <<Interface>>
+        +List~ILocationTiles~ Board : readOnly
+    }
+    class Board {
+        +Board(List~ILocationTiles~ board)
+    }
+    class ILocationTiles {
+        <<Interface>>
+        +Guid Id : readOnly
+        +int Position : readOnly
+        +LocationTypes LocationType : readOnly
+        +string Name : readOnly
+        +string Description : readOnly
+    }
+    class Corner {
+        +Corner(int position, LocationTypes type, string name, string desc)
+    }
+    class CardTile {
+        +CardTile(int position, LocationTypes type, string name, string desc)
+    }
+    class IProperty {
+        <<Interface>>
+        +int Cost : readOnly
+        +int Rent : readOnly
+        +IPlayer Owner
+        +boolean IsMortgaged
+        +CalculateRent() int
+    }
+    class RailRoad {
+        +RailRoad(int cost, int rent, int position, LocationTypes type, string name, string desc)
+    }
+    class City {
+        +int HouseCost
+        +int HotelCost
+        +int NumberOfHouses
+        +int NumberOfHotels
+        +City(int cost, int rent, int position, LocationTypes type, string name, string desc)
+        +Upgrade() bool
+        +BuildHouse(int count) bool
+        +BuildHotel(int count) bool
+    }
+    class Utility {
+        +Utility(int cost, int rent, int position, LocationTypes type, string name, string desc)
+    }
+    class IPlayer {
+        <<Interface>>
+        +Guid Id : readOnly
+        +string Name : readOnly
+    }
+    class PlayerData {
+        +TokenTypes Token : readOnly
+        +int Money
+        +List~IProperty~ PropertiesOwned
+        +ILocationTiles CurrentPosition
+        +List~ICard~ Card
+        +PlayerData(TokenTypes token, int money)
+    }
+    class ICard {
+        <<Interface>>
+        +Guid Id : readOnly
+        +CardTypes CardType : readOnly
+        +string Description : readOnly
+    }
+    class Card {
+        +Card(CardTypes type, string desc)
+        +ExecuteCardEffect(IPlayer cardTaker)
+        +ExecuteCardEffect(IPlayer cardTaker, IPlayer otherPlayer)
+        +ExecuteCardEffect(IPlayer cardTaker, IBanker banker)
+    }
+    class IDice {
+        <<Interface>>
+        +int Side : readOnly
+        +Roll() int
+    }
+    class Dice {
+        +Dice(int side)
+    }
+    class TokenTypes {
+        <<Enumeration>>
+        Battleship,
+        RaceCar,
+        TopHat,
+        Cat,
+        Penguin,
+        RubberDucky,
+        Thimble
+    }
+    class LocationTypes {
+        <<Enumeration>>
+        City,
+        RailRoad,
+        Utility,
+        ChanceCard,
+        CommunityChestCard,
+        Corner
+    }
+    class CardTypes {
+        <<Enumeration>>
+        Chance,
+        CommunityChest
+    }
+    class GameStatus {
+        <<Enumeration>>
+        NotInitialized,
+        Initialized,
+        OnGoing,
+        End
+    }
