@@ -35,8 +35,6 @@ classDiagram
 
     ICard .. CardTypes
 
-    Card ..|> ICard
-
     IDice <|.. Dice
     
     class GameController {
@@ -74,6 +72,7 @@ classDiagram
         +GetCommunityChestCards() IEnumerable~ICard~
         %% Player
         +Move(IPlayer player, int step)
+        +KeepCard(IPlayer player, ICard jailFreeCard)
         +GetPlayers() IEnumerable~IPlayer~
         +GetPlayerToken(IPlayer player) TokenTypes
         +GetPlayerLocation(IPlayer player) ILocationTiles
@@ -125,58 +124,52 @@ classDiagram
     }
     class IBoard {
         <<Interface>>
-        +List~ILocationTiles~ Board : readOnly
+        +List~ILocationTiles~ Board
     }
     class Board {
         +Board(List~ILocationTiles~ board)
     }
     class ILocationTiles {
         <<Interface>>
-        +Guid Id ~get;~
-        +int Position ~get;~
-        +LocationTypes LocationType ~get;~
-        +string Name ~get;~
-        +string Description ~get;~
+        +Guid Id
+        +int Position
+        +LocationTypes LocationType
+        +string Name
+        +string Description
     }
     class Special {
-        <<Abstract>>
         +Special(int position, LocationTypes type, string name, string description)
     }
     class CardTile {
-        <<Abstract>>
         +CardTile(int position, LocationTypes type, string name, string description)
     }
     class IProperty {
         <<Interface>>
-        +int Cost ~get;~
-        +int Rent ~get;~
-        +IPlayer Owner ~get;~
-        +boolean IsMortgaged ~get;~
+        +int Cost
+        +int Rent
+        +IPlayer Owner
+        +boolean IsMortgaged
         +CalculateRent() int
     }
     class RailRoad {
-        <<Abstract>>
         +RailRoad(int cost, int rent, int position, LocationTypes type, string name, string description)
     }
     class City {
-        <<Abstract>>
         +int HouseCost ~get;~
         +int HotelCost ~get;~
         +int NumberOfHouses ~get; private set;~ 
         +int NumberOfHotels ~get; private set;~ 
         +City(int cost, int rent, int position, LocationTypes type, string name, string description)
-        ~Upgrade() bool
+        ~UpgradeToHotel() bool
         ~BuildHouse(int count) bool
-        ~BuildHotel(int count) bool
     }
     class Utility {
-        <<Abstract>>
         +Utility(int cost, int rent, int position, LocationTypes type, string name, string description)
     }
     class IPlayer {
         <<Interface>>
-        +Guid Id ~get;~
-        +string Name ~get;~
+        +Guid Id
+        +string Name
     }
     class PlayerData {
         +TokenTypes Token ~get;~
@@ -189,18 +182,14 @@ classDiagram
     }
     class ICard {
         <<Interface>>
-        +Guid Id ~get;~
-        +CardTypes CardType ~get;~
-        +string Description ~get;~
+        +Guid Id
+        +CardTypes CardType
+        +string Description
         +ExecuteCardEffect(GameController gameController, IPlayer cardTaker)
-    }
-    class Card {
-        <<Abstract>>
-        +Card(CardTypes type, string description)
     }
     class IDice {
         <<Interface>>
-        +int Side ~get;~
+        +int Side
         +Roll() int
     }
     class Dice {
@@ -223,7 +212,8 @@ classDiagram
         Utility,
         ChanceCard,
         CommunityChestCard,
-        Special
+        Corner,
+        IncomeTax
     }
     class CardTypes {
         <<Enumeration>>
@@ -237,4 +227,3 @@ classDiagram
         OnGoing,
         End
     }
-    
