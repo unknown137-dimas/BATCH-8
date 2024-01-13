@@ -1,7 +1,7 @@
 class GameController
 {
     private readonly IBoard _board;
-    private readonly Dictionary<PieceTypes, int> _heroSlot = new() {{PieceTypes.Warrior, 3}, {PieceTypes.Archer, 3}, {PieceTypes.Tanker, 3}};
+    private readonly Dictionary<PieceTypes, int> _heroSlot = new() {{PieceTypes.Warrior, 3}, {PieceTypes.Hunter, 3}, {PieceTypes.Knight, 3}};
     private readonly Dictionary<IPlayer, PlayerData>? _players;
     private GameStatus _gameStatus = GameStatus.NotInitialized;
     private PhaseStatus _gamePhase = PhaseStatus.NotInitialized;
@@ -37,21 +37,6 @@ class GameController
     }
 
     public IEnumerable<IPlayer> GetPlayers() => _players.Keys;
-
-    public bool RandomizePlayerSide(IPlayer player)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Dictionary<IPlayer, Sides> GetPlayersSide()
-    {
-        Dictionary<IPlayer, Sides> result = new();
-        foreach(var data in _players)
-        {
-            result[data.Key] = result.Value.PlayerSide;
-        }
-        return result;
-    }
 
     public int[] GetBoardSize() => [_board.Width, _board.Height];
 

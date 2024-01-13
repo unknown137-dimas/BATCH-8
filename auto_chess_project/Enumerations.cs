@@ -5,6 +5,7 @@ enum GameStatus
     OnGoing,
     End
 }
+
 enum PhaseStatus
 {
     NotInitialized,
@@ -14,12 +15,6 @@ enum PhaseStatus
     BattleBegin,
     BattleEnd,
     TheChampion
-}
-
-enum Sides
-{
-    White,
-    Black
 }
 
 enum PieceTypes
