@@ -1,5 +1,13 @@
+enum GameStatus
+{
+    NotInitialized,
+    Initialized,
+    OnGoing,
+    End
+}
 enum PhaseStatus
 {
+    NotInitialized,
     SitePlacement,
     ChoosingPieace,
     PlaceThePiece,
@@ -17,6 +25,6 @@ enum Sides
 enum PieceTypes
 {
     Warrior,
-    Archer,
-    Tanker
+    Hunter,
+    Knight
 }

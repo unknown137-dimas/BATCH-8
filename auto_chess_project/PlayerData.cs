@@ -1,7 +1,7 @@
 
 class PlayerData
 {
-    public Sides side;
-    public List<IPiece> chosenPieces = new();
-    public bool winner;
+    public Sides PlayerSide;
+    public List<IPiece> PlayerPieces = new();
+    public bool Winner;
 }
