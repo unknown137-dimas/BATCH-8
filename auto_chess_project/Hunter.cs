@@ -1,5 +1,5 @@
 
-abstract class Tanker : IPiece, IPosition
+class Hunter : IPiece, IPosition
 {
     public Guid PieceId {get;}
     public string Name {get;}
@@ -10,28 +10,28 @@ abstract class Tanker : IPiece, IPosition
     public int X {get; internal set;}
     public int Y {get; internal set;}
 
-    public Tanker(string name, int hp, int damage, int attackRange)
+    public Hunter(string name, int hp, int damage, int attackRange)
     {
         PieceId = Guid.NewGuid();
         Name = name;
-        PieceType = PieceTypes.Tanker;
+        PieceType = PieceTypes.Hunter;
         Hp = hp;
         Damage = damage;
         AttackRange = attackRange;
     }
-    
+
     public Guid GetId() => PieceId;
 
     public PieceTypes GetPieceTypes() => PieceType;
 
     public int[] GetPosition() => [X, Y];
 
-    public IPiece GetTarget()
+    public virtual IPiece GetTarget()
     {
         throw new NotImplementedException();
     }
 
-    public void Move(int newX, int newY)
+    public virtual void Move(int newX, int newY)
     {
         X = newX;
         Y = newY;

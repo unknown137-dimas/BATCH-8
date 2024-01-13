@@ -1,5 +1,5 @@
 
-abstract class Warrior : IPiece, IPosition
+class Warrior : IPiece, IPosition
 {
    public Guid PieceId {get;}
     public string Name {get;}
@@ -26,12 +26,12 @@ abstract class Warrior : IPiece, IPosition
 
     public int[] GetPosition() => [X, Y];
 
-    public IPiece GetTarget()
+    public virtual IPiece GetTarget()
     {
         throw new NotImplementedException();
     }
 
-    public void Move(int newX, int newY)
+    public virtual void Move(int newX, int newY)
     {
         X = newX;
         Y = newY;
