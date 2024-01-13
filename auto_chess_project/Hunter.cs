@@ -5,18 +5,20 @@ class Hunter : IPiece, IPosition
     public string Name {get;}
     public PieceTypes PieceType {get;}
     public int Hp {get;}
-    public int Damage {get;}
+    public int Attack {get;}
+    public int Armor {get;}
     public int AttackRange {get;}
     public int X {get; internal set;}
     public int Y {get; internal set;}
 
-    public Hunter(string name, int hp, int damage, int attackRange)
+    public Hunter(string name, int hp, int attack, int armor, int attackRange)
     {
         PieceId = Guid.NewGuid();
         Name = name;
         PieceType = PieceTypes.Hunter;
         Hp = hp;
-        Damage = damage;
+        Attack = attack;
+        Armor = armor;
         AttackRange = attackRange;
     }
 

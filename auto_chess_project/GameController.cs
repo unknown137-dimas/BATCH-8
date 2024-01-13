@@ -27,9 +27,9 @@ class GameController
         }
     }
 
-    public bool AddPiece(IPlayer player, IPiece piece) => _players[player].chosenPieces.Add(piece);
+    public void AddPiece(IPlayer player, IPiece piece) => _players[player].PlayerPieces.Add(piece);
 
-    public bool RemovePiece(IPlayer player, IPiece piece) => _players[player].chosenPieces.Remove(piece);
+    public bool RemovePiece(IPlayer player, IPiece piece) => _players[player].PlayerPieces.Remove(piece);
 
     public void NextPhase()
     {
