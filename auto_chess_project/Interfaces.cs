@@ -29,5 +29,6 @@ interface IPiece
     PieceTypes PieceType {get;}
     public Guid GetId();
     public PieceTypes GetPieceTypes();
-    public IPiece GetTarget();
+    public IEnumerable<IPiece> GetTarget();
+    public void Skill();
 }

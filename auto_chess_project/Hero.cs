@@ -1,7 +1,7 @@
 
-class Warrior : IPiece, IPosition
+class Hero : IPiece, IPosition
 {
-   public Guid PieceId {get;}
+    public Guid PieceId {get;}
     public string Name {get;}
     public PieceTypes PieceType {get;}
     public int Hp {get;}
@@ -11,11 +11,11 @@ class Warrior : IPiece, IPosition
     public int X {get; internal set;}
     public int Y {get; internal set;}
 
-    public Warrior(string name, int hp, int attack, int armor, int attackRange)
+    public Hero(string name, PieceTypes pieceType, int hp, int attack, int armor, int attackRange)
     {
         PieceId = Guid.NewGuid();
         Name = name;
-        PieceType = PieceTypes.Hunter;
+        PieceType = pieceType;
         Hp = hp;
         Attack = attack;
         Armor = armor;
@@ -28,14 +28,19 @@ class Warrior : IPiece, IPosition
 
     public int[] GetPosition() => [X, Y];
 
-    public virtual IPiece GetTarget()
-    {
-        throw new NotImplementedException();
-    }
-
     public virtual void Move(int newX, int newY)
     {
         X = newX;
         Y = newY;
+    }
+
+    public virtual IEnumerable<IPiece> GetTarget()
+    {
+        throw new NotImplementedException();
+    }
+
+    public virtual void Skill()
+    {
+        throw new NotImplementedException();
     }
 }
