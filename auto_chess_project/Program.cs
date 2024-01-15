@@ -1,11 +1,7 @@
 ﻿using Spectre.Console;
+using Spectre.Console.Rendering;
 class Program
 {
-    internal static readonly string[] mainMenuChoises = new[] {
-        "Start",
-        "Exit"
-        };
-
     static void FigletTitle(FigletFont font, string text)
     {
         AnsiConsole.Clear();
@@ -41,19 +37,29 @@ class Program
             new SelectionPrompt<string>()
             .PageSize(5)
             .AddChoices(
-                mainMenuChoises
+                [
+                    "Start",
+                    "Exit"
+                ]
             )
         );
 
-        // PICK MENU
-        // TODO
-        // 1. How to edit/remove item from user (if user want to change item that already picked)
-        // 2. Pick menu layout (Live display?)
         if(mainMenu == "Start")
         {
-            FigletTitle(font, "Pick Your Heroes");
-            var board = new Board(boardSize);
-            var autoChess = new GameController(board);
+            // PLAYER NAME INPUT MENU
+            var playerName = AnsiConsole.Ask<string>("What's your [green]name[/]?");
+
+            // GAME CONTROLLER INIT
+            var autoChess = new GameController(new Board(boardSize));
+            var player = new Player(playerName);
+            var bot = new Player("BOT");
+            autoChess.AddPlayer(player);
+            autoChess.AddPlayer(bot);
+            
+            // PICK HERO MENU
+            // TODO
+            // 1. How to edit/remove item from user (if user want to change item that already playerPicked)
+            // 2. Pick menu layout (Live display?)
             List<Hero> heroesList = new() {
                 new Hero("Hell Knight", PieceTypes.Knight, 700, 75, 5, 1),
                 new Hero("Poisonous Worm", PieceTypes.Warlock, 600, 55, 0, 3),
@@ -68,33 +74,71 @@ class Program
                 new Hero("Goddess of Light", PieceTypes.Priest, 400, 52.5, 0, 4),
                 new Hero("Grand Herald", PieceTypes.Wizard, 600, 55, 0, 4),
             };
-            List<Hero> optionsList = new();
-            var picked = new List<Hero>();
-            while(picked.Count < 5 && roll > 0)
+            var playerPicked = new List<Hero>();
+
+            while(playerPicked.Count < 5 && roll > 0)
             {
-                autoChess.GenerateRandomPick(in heroesList, ref optionsList);
+                FigletTitle(font, "Pick Your Heroes");
+                var optionsList = autoChess.GenerateRandomHeroList(in heroesList);
+                var pickHeroList = new List<IRenderable>();
+                int barWidth = 25;
+                // var pickHeroLayout = new Layout("Root")
+                //     .SplitColumns(
+                //         new Layout("1"),
+                //         new Layout("2"),
+                //         new Layout("3"),
+                //         new Layout("4"),
+                //         new Layout("5")
+                //     );
+                foreach(var hero in optionsList)
+                {
+                    var heroPanel = new Panel(
+                        new BarChart()
+                        .Width(barWidth)
+                        .AddItem("HP", hero.Hp, Color.Green)
+                        .AddItem("ATK", hero.Attack, Color.Red3)
+                        .AddItem("Armor", hero.Armor, Color.Blue)
+                        .AddItem("ATK Range", hero.AttackRange, Color.Red1)
+                    ).Header(new PanelHeader(hero.ToString()));
+                    heroPanel.Padding = new Padding(0, 0, 0, 0);
+                    pickHeroList.Add(heroPanel);
+                }
+                AnsiConsole.Write(new Columns(pickHeroList));
                 var options = AnsiConsole.Prompt(
                     new MultiSelectionPrompt<Hero>()
                     .NotRequired()
                     .PageSize(5)
                     .AddChoices(optionsList)
                     .InstructionsText(
-                        $"[grey](Press [blue]<space>[/] to select hero, [green]<enter>[/] to accept)[/]"
+                        $"[grey](Press [blue]<space>[/] to select hero, [green]<enter>[/] to accept and re-roll)[/]"
                         )
                 );
                 foreach(var pick in options)
                 {
-                    picked.Add(pick);
+                    playerPicked.Add(pick);
                 }
                 roll--;
             }
-            // Keep first 5 item picked by user
-            if(picked.Count > 5)
+            // Keep first 5 item playerPicked by user
+            if(playerPicked.Count > 5)
             {
-                picked = picked[0..5];
+                playerPicked = playerPicked[0..5];
             }
+
+            // Set player piece
+            autoChess.AddPlayerPiece(player, playerPicked);
+            autoChess.AddPlayerPiece(bot, autoChess.GenerateRandomHeroList(in heroesList));
+            
+
+            // SET HERO POSITION MENU
+            FigletTitle(font, "Place Your Heroes");
+
+
+
             // Display the result
-            foreach(var pick in picked)
+            var rule = new Rule("[red]Hero Picked[/]");
+            AnsiConsole.Write(rule);
+            foreach(var pick in playerPicked)
             {
                 AnsiConsole.WriteLine(pick.ToString());
             }
