@@ -2,9 +2,15 @@ class GameController
 {
     private readonly IBoard _board;
     private readonly Dictionary<PieceTypes, int> _heroSlot = new() {{PieceTypes.Warrior, 3}, {PieceTypes.Hunter, 3}, {PieceTypes.Knight, 3}};
-    private readonly Dictionary<IPlayer, PlayerData>? _players;
+    private Dictionary<IPlayer, PlayerData>? _players;
     private GameStatus _gameStatus = GameStatus.NotInitialized;
     private PhaseStatus _gamePhase = PhaseStatus.NotInitialized;
+
+    public GameController(IBoard board)
+    {
+        _gameStatus = GameStatus.Initialized;
+        _board = board;
+    }
 
     public GameController(IBoard board, List<IPlayer> players)
     {
@@ -14,6 +20,13 @@ class GameController
         {
             _players[player] = new PlayerData();
         }
+    }
+
+    public GameController(IBoard board, Dictionary<PieceTypes, int> heroSlot)
+    {
+        _gameStatus = GameStatus.Initialized;
+        _board = board;
+        _heroSlot = heroSlot;
     }
 
     public GameController(IBoard board, List<IPlayer> players, Dictionary<PieceTypes, int> heroSlot)
@@ -27,6 +40,19 @@ class GameController
         }
     }
 
+    // Get current game information
+    public IEnumerable<IPlayer> GetPlayers() => _players.Keys;
+
+    public int[] GetBoardSize() => [_board.Width, _board.Height];
+
+    public IEnumerable<IPiece> GetPlayerPieces(IPlayer player) => _players[player].PlayerPieces;
+
+    // Manage player
+    public bool AddPlayer(IPlayer newPlayer) => _players.TryAdd(newPlayer, new PlayerData());
+
+    public bool RemovePlayer(IPlayer player) => _players.Remove(player);
+
+    // Manage player's piece
     public void AddPiece(IPlayer player, IPiece piece) => _players[player].PlayerPieces.Add(piece);
 
     public bool RemovePiece(IPlayer player, IPiece piece) => _players[player].PlayerPieces.Remove(piece);
@@ -35,12 +61,6 @@ class GameController
     {
         throw new NotImplementedException();
     }
-
-    public IEnumerable<IPlayer> GetPlayers() => _players.Keys;
-
-    public int[] GetBoardSize() => [_board.Width, _board.Height];
-
-    public IEnumerable<IPiece> GetPlayerPieces(IPlayer player) => _players[player].PlayerPieces;
 
     public bool PutPiece(IPlayer player, IPiece piece, IPosition position)
     {
@@ -62,5 +82,6 @@ class GameController
         throw new NotImplementedException();
     }
     
+    // Set current round winner
     public bool SetWinner(IPlayer player) => _players[player].Winner = true;
 }
