@@ -84,4 +84,17 @@ class GameController
     
     // Set current round winner
     public bool SetWinner(IPlayer player) => _players[player].Winner = true;
+
+    // Generate random options
+    public void GenerateRandomPick(in List<Hero> source, ref List<Hero> options)
+    {
+        var random = new Random();
+        options.Clear();
+        int n = 5;
+        while(n > 0)
+        {
+            options.Add(source[random.Next(0,source.Count)]);
+            n--;
+        }
+    }
 }
