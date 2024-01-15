@@ -1,17 +1,16 @@
-
 class Hero : IPiece, IPosition
 {
     public Guid PieceId {get;}
     public string Name {get;}
     public PieceTypes PieceType {get;}
-    public int Hp {get;}
-    public int Attack {get;}
-    public int Armor {get;}
-    public int AttackRange {get;}
+    public double Hp {get;}
+    public double Attack {get;}
+    public double Armor {get;}
+    public double AttackRange {get;}
     public int X {get; internal set;}
     public int Y {get; internal set;}
 
-    public Hero(string name, PieceTypes pieceType, int hp, int attack, int armor, int attackRange)
+    public Hero(string name, PieceTypes pieceType, double hp, double attack, double armor, double attackRange)
     {
         PieceId = Guid.NewGuid();
         Name = name;
@@ -43,4 +42,6 @@ class Hero : IPiece, IPosition
     {
         throw new NotImplementedException();
     }
+
+    public override string ToString() => Name;
 }

@@ -22,10 +22,10 @@ interface IPiece
 {
     Guid PieceId {get;}
     string Name {get;}
-    int Hp {get;}
-    int Attack {get;}
-    int Armor {get;}
-    int AttackRange {get;}
+    double Hp {get;}
+    double Attack {get;}
+    double Armor {get;}
+    double AttackRange {get;}
     PieceTypes PieceType {get;}
     public Guid GetId();
     public PieceTypes GetPieceTypes();
