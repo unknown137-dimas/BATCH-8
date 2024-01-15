@@ -43,5 +43,5 @@ class Hero : IPiece, IPosition
         throw new NotImplementedException();
     }
 
-    public override string ToString() => $"{Name} | HP: {Hp} | ATK: {Attack} | Armor: {Armor} | ATK Range: {AttackRange} |";
+    public override string ToString() => Name;
 }
