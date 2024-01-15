@@ -58,9 +58,11 @@ class GameController
     public PlayerData GetPlayerData(IPlayer player) => _players[player];
 
     // Manage player's piece
-    public void AddPiece(IPlayer player, IPiece piece) => _players[player].PlayerPieces.Add(piece);
+    public void AddPlayerPiece(IPlayer player, IPiece piece) => _players[player].PlayerPieces.Add(piece);
 
-    public bool RemovePiece(IPlayer player, IPiece piece) => _players[player].PlayerPieces.Remove(piece);
+    public void AddPlayerPiece(IPlayer player, IEnumerable<IPiece> pieces) => _players[player].PlayerPieces.AddRange(pieces);
+
+    public bool RemovePlayerPiece(IPlayer player, IPiece piece) => _players[player].PlayerPieces.Remove(piece);
 
     public void NextPhase()
     {
@@ -91,15 +93,17 @@ class GameController
     public bool SetWinner(IPlayer player) => _players[player].Winner = true;
 
     // Generate random options
-    public void GenerateRandomPick(in List<Hero> source, ref List<Hero> options)
+    public IEnumerable<Hero> GenerateRandomHeroList(in List<Hero> source)
     {
         var random = new Random();
+        List<Hero> options = new();
         options.Clear();
         int n = 5;
         while(n > 0)
         {
-            options.Add(source[random.Next(0,source.Count)]);
+            options.Add(source[random.Next(0, source.Count)]);
             n--;
         }
+        return options;
     }
 }
