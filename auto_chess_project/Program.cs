@@ -1,6 +1,21 @@
 ﻿using Spectre.Console;
 class Program
 {
+    internal static readonly string[] mainMenuChoises = new[] {
+        "Start",
+        "Exit"
+        };
+
+    static void FigletTitle(FigletFont font, string text)
+    {
+        AnsiConsole.Clear();
+        AnsiConsole.Write(
+            new FigletText(font, text)
+            .LeftJustified()
+            .Color(Color.Red)
+        );
+    }
+
     static void Main()
     {
         // var panel = new Panel("");
@@ -15,18 +30,18 @@ class Program
 
         // GAME CONFIGURATION
         int boardSize = 8;
+        int roll = 3;
+        var font = FigletFont.Load("../../../defaultFont.flf");
         
         // MAIN MENU
         // TODO
         // 1. Layout
+        FigletTitle(font, "AutoChess");
         var mainMenu = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-            .Title("Welcome to AutoChess")
             .PageSize(5)
             .AddChoices(
-                new[] {
-                "Start", "Exit"
-                }
+                mainMenuChoises
             )
         );
 
@@ -36,6 +51,7 @@ class Program
         // 2. Pick menu layout (Live display?)
         if(mainMenu == "Start")
         {
+            FigletTitle(font, "Pick Your Heroes");
             var board = new Board(boardSize);
             var autoChess = new GameController(board);
             List<Hero> heroesList = new() {
@@ -54,20 +70,23 @@ class Program
             };
             List<Hero> optionsList = new();
             var picked = new List<Hero>();
-            while(picked.Count < 5)
+            while(picked.Count < 5 && roll > 0)
             {
                 autoChess.GenerateRandomPick(in heroesList, ref optionsList);
                 var options = AnsiConsole.Prompt(
                     new MultiSelectionPrompt<Hero>()
-                    .Title("Pick Number")
                     .NotRequired()
                     .PageSize(5)
                     .AddChoices(optionsList)
+                    .InstructionsText(
+                        $"[grey](Press [blue]<space>[/] to select hero, [green]<enter>[/] to accept)[/]"
+                        )
                 );
                 foreach(var pick in options)
                 {
                     picked.Add(pick);
                 }
+                roll--;
             }
             // Keep first 5 item picked by user
             if(picked.Count > 5)
