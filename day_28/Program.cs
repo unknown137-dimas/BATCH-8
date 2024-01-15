@@ -10,6 +10,7 @@
 		// obj.Dispose();
 		
 		// using
+		// PREFERRED WAY
 		using(obj)
 		{
 			Console.WriteLine("Do something inside 'using' keyword");
