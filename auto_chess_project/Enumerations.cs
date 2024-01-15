@@ -19,7 +19,16 @@ enum PhaseStatus
 
 enum PieceTypes
 {
+    Knight,
+    Warlock,
+    Mage,
     Warrior,
     Hunter,
-    Knight
+    Assassin,
+    Shaman,
+    Druid,
+    Witcher,
+    Mech,
+    Priest,
+    Wizard,
 }
