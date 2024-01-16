@@ -2,6 +2,8 @@ class Board : IBoard
 {
     public int Width {get;}
     public int Height {get;}
+    // TODO
+    // Seperate between players
     private Dictionary<Position, Hero> _piecePositions = new();
 
     public Board(int size)
