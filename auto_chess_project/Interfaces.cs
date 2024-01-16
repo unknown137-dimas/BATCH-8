@@ -15,10 +15,7 @@ interface IPosition
     int X {get;}
     int Y {get;}
     public void Move(int newX, int newY);
-    public void Move(IPosition newPosition);
     public int[] GetPosition();
-    public bool IsValidPosition(int otherX, int otherY);
-    public bool IsValidPosition(IPosition otherPosition);
 }
 
 interface IPiece

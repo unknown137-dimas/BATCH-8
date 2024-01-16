@@ -7,8 +7,8 @@ class Hero : IPiece, IPosition
     public double Attack {get;}
     public double Armor {get;}
     public double AttackRange {get;}
-    public int X {get; internal set;}
-    public int Y {get; internal set;}
+    public int X {get; internal set;} = -1;
+    public int Y {get; internal set;} = -1;
 
     public Hero(string name, PieceTypes pieceType, double hp, double attack, double armor, double attackRange)
     {
@@ -40,12 +40,6 @@ class Hero : IPiece, IPosition
         Y = newY;
     }
 
-    public virtual void Move(IPosition newPosition)
-    {
-        X = newPosition.X;
-        Y = newPosition.Y;
-    }
-
     public virtual IEnumerable<IPiece> GetTarget()
     {
         throw new NotImplementedException();
@@ -57,8 +51,4 @@ class Hero : IPiece, IPosition
     }
 
     public override string ToString() => Name;
-
-    public bool IsValidPosition(int otherX, int otherY) => X != otherX || Y != otherY;
-
-    public bool IsValidPosition(IPosition otherPosition) => X != otherPosition.X || Y != otherPosition.Y;
 }
