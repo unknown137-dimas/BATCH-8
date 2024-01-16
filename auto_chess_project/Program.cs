@@ -30,8 +30,6 @@ class Program
         var font = FigletFont.Load("../../../defaultFont.flf");
         
         // MAIN MENU
-        // TODO
-        // 1. Layout
         FigletTitle(font, "AutoChess");
         var mainMenu = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
@@ -58,54 +56,54 @@ class Program
             
             // PICK HERO MENU
             // TODO
-            // 1. How to edit/remove item from user (if user want to change item that already playerPicked)
+            // 1. How to edit/remove item from user (if user want to change item that already playerHeroes)
             // 2. Pick menu layout (Live display?)
-            List<Hero> heroesList = new() {
-                new Hero("Hell Knight", PieceTypes.Knight, 700, 75, 5, 1),
-                new Hero("Poisonous Worm", PieceTypes.Warlock, 600, 55, 0, 3),
-                new Hero("God of Thunder", PieceTypes.Mage, 950, 60, 0, 3),
-                new Hero("Swordman", PieceTypes.Warrior, 600, 67.5, 5, 2),
-                new Hero("Egersis Ranger", PieceTypes.Hunter, 450, 45, 5, 5),
-                new Hero("Shadowcrawler", PieceTypes.Assassin, 550, 85, 5, 2),
-                new Hero("Storm Shaman", PieceTypes.Shaman, 800, 47.5, 5, 4),
-                new Hero("Warpwood Sage", PieceTypes.Druid, 650, 75, 5, 2),
-                new Hero("Fallen Witcher", PieceTypes.Witcher, 750, 70, 5, 1),
-                new Hero("Heaven Bomber ", PieceTypes.Mech, 500, 45, 5, 4),
-                new Hero("Goddess of Light", PieceTypes.Priest, 400, 52.5, 0, 4),
-                new Hero("Grand Herald", PieceTypes.Wizard, 600, 55, 0, 4),
+            Dictionary<string, HeroDetails> heroesDatabase = new()
+            {
+                {"Hell Knight", new HeroDetails(PieceTypes.Knight, 700, 75, 5, 1)},
+                {"Poisonous Worm", new HeroDetails(PieceTypes.Warlock, 600, 55, 0, 3)},
+                {"God of Thunder", new HeroDetails(PieceTypes.Mage, 950, 60, 0, 3)},
+                {"Swordman", new HeroDetails(PieceTypes.Warrior, 600, 67.5, 5, 2)},
+                {"Egersis Ranger", new HeroDetails(PieceTypes.Hunter, 450, 45, 5, 5)},
+                {"Shadowcrawler", new HeroDetails(PieceTypes.Assassin, 550, 85, 5, 2)},
+                {"Storm Shaman", new HeroDetails(PieceTypes.Shaman, 800, 47.5, 5, 4)},
+                {"Warpwood Sage", new HeroDetails(PieceTypes.Druid, 650, 75, 5, 2)},
+                {"Fallen Witcher", new HeroDetails(PieceTypes.Witcher, 750, 70, 5, 1)},
+                {"Heaven Bomber ", new HeroDetails(PieceTypes.Mech, 500, 45, 5, 4)},
+                {"Goddess of Light", new HeroDetails(PieceTypes.Priest, 400, 52.5, 0, 4)},
+                {"Grand Herald", new HeroDetails(PieceTypes.Wizard, 600, 55, 0, 4)},
             };
-            var playerPicked = new List<Hero>();
+            var heroesOptions = new List<string>();
+            foreach(var key in heroesDatabase.Keys)
+            {
+                heroesOptions.Add(key.ToString());
+            }
+            List<Hero> playerHeroes = (List<Hero>)autoChess.GetPlayerPieces(player);
+            var heroOptionsStat = new List<IRenderable>();
 
-            while(playerPicked.Count < 5 && roll > 0)
+            while(playerHeroes.Count < 5 && roll > 0)
             {
                 FigletTitle(font, "Pick Your Heroes");
-                var optionsList = autoChess.GenerateRandomHeroList(in heroesList);
-                var pickHeroList = new List<IRenderable>();
+                autoChess.CurrentGamePhase = Phases.ChoosingPieace;
+                var optionsList = autoChess.GenerateRandomHeroList<string>(in heroesOptions);
+                heroOptionsStat.Clear();
                 int barWidth = 25;
-                // var pickHeroLayout = new Layout("Root")
-                //     .SplitColumns(
-                //         new Layout("1"),
-                //         new Layout("2"),
-                //         new Layout("3"),
-                //         new Layout("4"),
-                //         new Layout("5")
-                //     );
                 foreach(var hero in optionsList)
                 {
                     var heroPanel = new Panel(
                         new BarChart()
                         .Width(barWidth)
-                        .AddItem("HP", hero.Hp, Color.Green)
-                        .AddItem("ATK", hero.Attack, Color.Red3)
-                        .AddItem("Armor", hero.Armor, Color.Blue)
-                        .AddItem("ATK Range", hero.AttackRange, Color.Red1)
-                    ).Header(new PanelHeader(hero.ToString()));
+                        .AddItem("HP", heroesDatabase[hero].Hp, Color.Green)
+                        .AddItem("ATK", heroesDatabase[hero].Attack, Color.Red3)
+                        .AddItem("Armor", heroesDatabase[hero].Armor, Color.Blue)
+                        .AddItem("ATK Range", heroesDatabase[hero].AttackRange, Color.Red1)
+                    ).Header(new PanelHeader(hero));
                     heroPanel.Padding = new Padding(0, 0, 0, 0);
-                    pickHeroList.Add(heroPanel);
+                    heroOptionsStat.Add(heroPanel);
                 }
-                AnsiConsole.Write(new Columns(pickHeroList));
+                AnsiConsole.Write(new Columns(heroOptionsStat));
                 var options = AnsiConsole.Prompt(
-                    new MultiSelectionPrompt<Hero>()
+                    new MultiSelectionPrompt<string>()
                     .NotRequired()
                     .PageSize(5)
                     .AddChoices(optionsList)
@@ -115,30 +113,52 @@ class Program
                 );
                 foreach(var pick in options)
                 {
-                    playerPicked.Add(pick);
+                    // Set player piece
+                    autoChess.AddPlayerPiece(player, new Hero(pick, heroesDatabase[pick]));
                 }
                 roll--;
             }
-            // Keep first 5 item playerPicked by user
-            if(playerPicked.Count > 5)
+            // Keep first 5 item playerHeroes by user
+            if(playerHeroes.Count > 5)
             {
-                playerPicked = playerPicked[0..5];
+                playerHeroes = playerHeroes[0..5];
             }
 
-            // Set player piece
-            autoChess.AddPlayerPiece(player, playerPicked);
-            autoChess.AddPlayerPiece(bot, autoChess.GenerateRandomHeroList(in heroesList));
+            // BOT 
+            // Set bot piece
+            foreach(var botPick in autoChess.GenerateRandomHeroList(in heroesOptions))
+            {
+                autoChess.AddPlayerPiece(bot, new Hero(botPick, heroesDatabase[botPick]));
+            }
             
-
             // SET HERO POSITION MENU
             FigletTitle(font, "Place Your Heroes");
+            autoChess.CurrentGamePhase = Phases.PlaceThePiece;
+            var playerPieces = autoChess.GetPlayerData(player).PlayerPieces;
 
+            foreach(var piece in playerPieces)
+            {
+                piece.Move(new Random().Next(0, boardSize), new Random().Next(0, boardSize));
+            }
+
+            foreach(var piece in playerPieces)
+            {
+                AnsiConsole.WriteLine($"{piece} | X:{piece.X} Y:{piece.Y} | ID:{piece.PieceId}");
+            }
+
+            // var piece = AnsiConsole.Prompt(
+            //     new SelectionPrompt<string>()
+            //     .PageSize(5)
+            //     .AddChoices(
+            //         playerPieces
+            //     )
+            // );
 
 
             // Display the result
             var rule = new Rule("[red]Hero Picked[/]");
             AnsiConsole.Write(rule);
-            foreach(var pick in playerPicked)
+            foreach(var pick in playerHeroes)
             {
                 AnsiConsole.WriteLine(pick.ToString());
             }
