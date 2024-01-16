@@ -1,4 +1,4 @@
-enum GameStatus
+enum Status
 {
     NotInitialized,
     Initialized,
@@ -6,10 +6,9 @@ enum GameStatus
     End
 }
 
-enum PhaseStatus
+enum Phases
 {
     NotInitialized,
-    SitePlacement,
     ChoosingPieace,
     PlaceThePiece,
     BattleBegin,

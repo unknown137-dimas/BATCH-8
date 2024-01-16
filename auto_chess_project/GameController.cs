@@ -4,8 +4,8 @@ class GameController
     private readonly Dictionary<PieceTypes, int> _heroSlot = new() {{PieceTypes.Warrior, 3}, {PieceTypes.Hunter, 3}, {PieceTypes.Knight, 3}};
     private Dictionary<IPlayer, PlayerData> _players = new();
     public int PlayerHp {get; set;} = 10;
-    private GameStatus _gameStatus = GameStatus.NotInitialized;
-    private PhaseStatus _gamePhase = PhaseStatus.NotInitialized;
+    public Status CurrentGameStatus {get; set;} = Status.NotInitialized;
+    public Phases CurrentGamePhase {get; set;} = Phases.NotInitialized;
 
     public GameController(IBoard board)
     {
@@ -69,7 +69,7 @@ class GameController
         throw new NotImplementedException();
     }
 
-    public bool PutPiece(IPlayer player, IPiece piece, IPosition position)
+    public bool PutPlayerPiece(IPlayer player, IPiece piece, IPosition position)
     {
         throw new NotImplementedException();
     }
