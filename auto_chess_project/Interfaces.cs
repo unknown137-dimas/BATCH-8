@@ -2,6 +2,8 @@ interface IBoard
 {
     int Width {get;}
     int Height {get;}
+    public bool IsPositionEmpty(Position position);
+    public bool AddHeroPosition(Hero hero, Position position);
 }
 
 interface IPlayer
