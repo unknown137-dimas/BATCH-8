@@ -1,4 +1,4 @@
-enum Status
+public enum Status
 {
     NotInitialized,
     Initialized,
@@ -6,7 +6,7 @@ enum Status
     End
 }
 
-enum Phases
+public enum Phases
 {
     NotInitialized,
     ChoosingPieace,
@@ -16,7 +16,7 @@ enum Phases
     TheChampion
 }
 
-enum PieceTypes
+public enum PieceTypes
 {
     Knight,
     Warlock,
