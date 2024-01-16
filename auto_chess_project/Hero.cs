@@ -57,4 +57,8 @@ class Hero : IPiece, IPosition
     }
 
     public override string ToString() => Name;
+
+    public bool IsValidPosition(int otherX, int otherY) => X != otherX || Y != otherY;
+
+    public bool IsValidPosition(IPosition otherPosition) => X != otherPosition.X || Y != otherPosition.Y;
 }
