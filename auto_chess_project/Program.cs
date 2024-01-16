@@ -133,15 +133,19 @@ class Program
             
             // SET HERO POSITION MENU
             autoChess.CurrentGamePhase = Phases.PlaceThePiece;
+            // Loop until all player's piece on the board
             while(!autoChess.IsFinishedPutAllPieces(player))
             {
                 FigletTitle(font, "Place Your Heroes");
                 AnsiConsole.Write(new Rule("[red]Player Hero's Position[/]"));
                 var playerPieces = autoChess.GetPlayerData(player).PlayerPieces;
+                // TODO
+                // Change player's pieces position preview
                 foreach(var piece in playerPieces)
                 {
-                    AnsiConsole.WriteLine($"{piece} | X:{piece.HeroPosition.X} Y:{piece.HeroPosition.Y} | ID:{piece.PieceId}");
+                    AnsiConsole.WriteLine($"{piece} | X:{piece.HeroPosition.X} Y:{piece.HeroPosition.Y}");
                 }
+                AnsiConsole.Write(new Rule("[red]Set Hero's Position[/]"));
                 var playerPiece = AnsiConsole.Prompt(
                     new SelectionPrompt<Hero>()
                     .PageSize(5)
@@ -149,6 +153,7 @@ class Program
                         playerPieces
                     )
                 );
+                // Loop until piece placement success
                 bool success = false;
                 while(!success)
                 {
@@ -184,6 +189,10 @@ class Program
                         )
                     );
                     success = autoChess.PutPlayerPiece(playerPiece, new Position(pieceX, pieceY));
+                    if(!success)
+                    {
+                        AnsiConsole.Markup("[red]You can't put another hero in the same coordinate[/]\n");
+                    }
                 }
             }
 
@@ -200,20 +209,23 @@ class Program
                 }
             }
 
+            // PREVIEW MENU
+            // TODO
+            // 1. Change preview layout
+            FigletTitle(font, "Preview");
+            // Display player piece's position
+            AnsiConsole.Write(new Rule("[red]Player Hero's Position[/]"));
+            foreach(var piece in autoChess.GetPlayerData(player).PlayerPieces)
+            {
+                AnsiConsole.WriteLine($"{piece} | X:{piece.HeroPosition.X} Y:{piece.HeroPosition.Y}");
+            }
+            
             // Display BOT piece's position
             AnsiConsole.Write(new Rule("[red]Bot Hero's Position[/]"));
             foreach(var piece in autoChess.GetPlayerData(bot).PlayerPieces)
             {
-                AnsiConsole.WriteLine($"{piece} | X:{piece.HeroPosition.X} Y:{piece.HeroPosition.Y} | ID:{piece.PieceId}");
+                AnsiConsole.WriteLine($"{piece} | X:{piece.HeroPosition.X} Y:{piece.HeroPosition.Y}");
             }
-
-            // // Display the result
-            // var rule = new Rule("[red]Hero Picked[/]");
-            // AnsiConsole.Write(rule);
-            // foreach(var pick in playerHeroes)
-            // {
-            //     AnsiConsole.WriteLine(pick.ToString());
-            // }
         }
     }
 }
