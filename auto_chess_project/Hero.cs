@@ -21,12 +21,29 @@ class Hero : IPiece, IPosition
         AttackRange = attackRange;
     }
 
+    public Hero(string name, HeroDetails heroDetails)
+    {
+        PieceId = Guid.NewGuid().ToString();
+        Name = name;
+        PieceType = heroDetails.HeroType;
+        Hp = heroDetails.Hp;
+        Attack = heroDetails.Attack;
+        Armor = heroDetails.Armor;
+        AttackRange = heroDetails.AttackRange;
+    }
+
     public int[] GetPosition() => [X, Y];
 
     public virtual void Move(int newX, int newY)
     {
         X = newX;
         Y = newY;
+    }
+
+    public virtual void Move(IPosition newPosition)
+    {
+        X = newPosition.X;
+        Y = newPosition.Y;
     }
 
     public virtual IEnumerable<IPiece> GetTarget()
