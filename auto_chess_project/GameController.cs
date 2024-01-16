@@ -9,27 +9,27 @@ class GameController
 
     public GameController(IBoard board)
     {
-        _gameStatus = GameStatus.Initialized;
+        CurrentGameStatus = Status.Initialized;
         _board = board;
     }
 
     public GameController(IBoard board, Dictionary<PieceTypes, int> heroSlot)
     {
-        _gameStatus = GameStatus.Initialized;
+        CurrentGameStatus = Status.Initialized;
         _board = board;
         _heroSlot = heroSlot;
     }
 
     public GameController(IBoard board, List<IPlayer> players)
     {
-        _gameStatus = GameStatus.Initialized;
+        CurrentGameStatus = Status.Initialized;
         _board = board;
         AddPlayer(players);
     }
 
     public GameController(IBoard board, List<IPlayer> players, Dictionary<PieceTypes, int> heroSlot)
     {
-        _gameStatus = GameStatus.Initialized;
+        CurrentGameStatus = Status.Initialized;
         _board = board;
         _heroSlot = heroSlot;
         AddPlayer(players);
@@ -40,7 +40,7 @@ class GameController
 
     public int[] GetBoardSize() => [_board.Width, _board.Height];
 
-    public IEnumerable<IPiece> GetPlayerPieces(IPlayer player) => _players[player].PlayerPieces;
+    public IEnumerable<Hero> GetPlayerPieces(IPlayer player) => _players[player].PlayerPieces;
 
     // Manage player
     public bool AddPlayer(IPlayer newPlayer) => _players.TryAdd(newPlayer, new PlayerData(PlayerHp));
@@ -58,33 +58,33 @@ class GameController
     public PlayerData GetPlayerData(IPlayer player) => _players[player];
 
     // Manage player's piece
-    public void AddPlayerPiece(IPlayer player, IPiece piece) => _players[player].PlayerPieces.Add(piece);
+    public void AddPlayerPiece(IPlayer player, Hero piece) => _players[player].PlayerPieces.Add(piece);
 
-    public void AddPlayerPiece(IPlayer player, IEnumerable<IPiece> pieces) => _players[player].PlayerPieces.AddRange(pieces);
+    public void AddPlayerPiece(IPlayer player, IEnumerable<Hero> pieces) => _players[player].PlayerPieces.AddRange(pieces);
 
-    public bool RemovePlayerPiece(IPlayer player, IPiece piece) => _players[player].PlayerPieces.Remove(piece);
+    public bool RemovePlayerPiece(IPlayer player, Hero piece) => _players[player].PlayerPieces.Remove(piece);
 
     public void NextPhase()
     {
         throw new NotImplementedException();
     }
 
-    public bool PutPlayerPiece(IPlayer player, IPiece piece, IPosition position)
+    public void PutPlayerPiece(Hero piece, IPosition position)
+    {
+        piece.Move(position);
+    }
+
+    public bool CheckTargetAcquitition(IPlayer player, Hero piece, IPosition position)
     {
         throw new NotImplementedException();
     }
 
-    public bool CheckTargetAcquitition(IPlayer player, IPiece piece, IPosition position)
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEnumerable<IPosition> GetAllPossibleMove(IPlayer player, IPiece piece)
+    public IEnumerable<IPosition> GetAllPossibleMove(IPlayer player, Hero piece)
     {
         throw new NotImplementedException();
     }
     
-    public int Attack(IPlayer player, IPiece piece, IPlayer enemyPlayer, IPiece enemyPiece)
+    public int Attack(IPlayer player, Hero piece, IPlayer enemyPlayer, Hero enemyPiece)
     {
         throw new NotImplementedException();
     }
@@ -93,11 +93,10 @@ class GameController
     public bool SetWinner(IPlayer player) => _players[player].Winner = true;
 
     // Generate random options
-    public IEnumerable<Hero> GenerateRandomHeroList(in List<Hero> source)
+    public IEnumerable<T> GenerateRandomHeroList<T>(in List<T> source)
     {
-        var random = new Random();
-        List<Hero> options = new();
-        options.Clear();
+        Random random = new();
+        List<T> options = new();
         int n = 5;
         while(n > 0)
         {
