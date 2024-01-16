@@ -25,7 +25,7 @@ class Program
         // AnsiConsole.Write(row);
 
         // GAME CONFIGURATION
-        int boardSize = 8;
+        const int boardSize = 8;
         int roll = 3;
         var font = FigletFont.Load("../../../defaultFont.flf");
         
@@ -85,7 +85,7 @@ class Program
             {
                 FigletTitle(font, "Pick Your Heroes");
                 autoChess.CurrentGamePhase = Phases.ChoosingPieace;
-                var optionsList = autoChess.GenerateRandomHeroList<string>(in heroesOptions);
+                var optionsList = autoChess.GenerateRandomHeroList(in heroesOptions);
                 heroOptionsStat.Clear();
                 int barWidth = 25;
                 foreach(var hero in optionsList)
@@ -125,43 +125,95 @@ class Program
             }
 
             // BOT 
-            // Set bot piece
+            // Bot pick piece
             foreach(var botPick in autoChess.GenerateRandomHeroList(in heroesOptions))
             {
                 autoChess.AddPlayerPiece(bot, new Hero(botPick, heroesDatabase[botPick]));
             }
             
             // SET HERO POSITION MENU
-            FigletTitle(font, "Place Your Heroes");
             autoChess.CurrentGamePhase = Phases.PlaceThePiece;
-            var playerPieces = autoChess.GetPlayerData(player).PlayerPieces;
-
-            foreach(var piece in playerPieces)
+            while(!autoChess.IsFinishedPutAllPieces(player))
             {
-                piece.Move(new Random().Next(0, boardSize), new Random().Next(0, boardSize));
+                FigletTitle(font, "Place Your Heroes");
+                AnsiConsole.Write(new Rule("[red]Player Hero's Position[/]"));
+                var playerPieces = autoChess.GetPlayerData(player).PlayerPieces;
+                foreach(var piece in playerPieces)
+                {
+                    AnsiConsole.WriteLine($"{piece} | X:{piece.HeroPosition.X} Y:{piece.HeroPosition.Y} | ID:{piece.PieceId}");
+                }
+                var playerPiece = AnsiConsole.Prompt(
+                    new SelectionPrompt<Hero>()
+                    .PageSize(5)
+                    .AddChoices(
+                        playerPieces
+                    )
+                );
+                bool success = false;
+                while(!success)
+                {
+                    var pieceX = AnsiConsole.Prompt(
+                        new TextPrompt<int>($"{playerPiece}'s [green]X[/] position?")
+                        .PromptStyle("green")
+                        .ValidationErrorMessage("[red]That's not a valid coordinate[/]")
+                        .Validate(coordinate =>
+                            {
+                                return coordinate switch
+                                {
+                                    < 0 => ValidationResult.Error("[red]The coordinate must be positive[/]"),
+                                    >= boardSize => ValidationResult.Error($"[red]The coordinate can't exceed the player's area ({boardSize})[/]"),
+                                    _ => ValidationResult.Success(),
+                                };
+                            }
+                        )
+                    );
+
+                    var pieceY = AnsiConsole.Prompt(
+                        new TextPrompt<int>($"{playerPiece}'s [green]Y[/] position?")
+                        .PromptStyle("green")
+                        .ValidationErrorMessage("[red]That's not a valid coordinate[/]")
+                        .Validate(coordinate =>
+                            {
+                                return coordinate switch
+                                {
+                                    < 0 => ValidationResult.Error("[red]The coordinate must be positive[/]"),
+                                    >= boardSize / 2 => ValidationResult.Error($"[red]The coordinate can't exceed the player's area ({boardSize / 2})[/]"),
+                                    _ => ValidationResult.Success(),
+                                };
+                            }
+                        )
+                    );
+                    success = autoChess.PutPlayerPiece(playerPiece, new Position(pieceX, pieceY));
+                }
             }
 
-            foreach(var piece in playerPieces)
+            // BOT
+            // Bot put piece
+            foreach(var piece in autoChess.GetPlayerData(bot).PlayerPieces)
             {
-                AnsiConsole.WriteLine($"{piece} | X:{piece.X} Y:{piece.Y} | ID:{piece.PieceId}");
+                bool success = false;
+                while(!success)
+                {
+                    int x = new Random().Next(0, boardSize);
+                    int y = new Random().Next(4, boardSize);
+                    success = autoChess.PutPlayerPiece(piece, new Position(x, y));
+                }
             }
 
-            // var piece = AnsiConsole.Prompt(
-            //     new SelectionPrompt<string>()
-            //     .PageSize(5)
-            //     .AddChoices(
-            //         playerPieces
-            //     )
-            // );
-
-
-            // Display the result
-            var rule = new Rule("[red]Hero Picked[/]");
-            AnsiConsole.Write(rule);
-            foreach(var pick in playerHeroes)
+            // Display BOT piece's position
+            AnsiConsole.Write(new Rule("[red]Bot Hero's Position[/]"));
+            foreach(var piece in autoChess.GetPlayerData(bot).PlayerPieces)
             {
-                AnsiConsole.WriteLine(pick.ToString());
+                AnsiConsole.WriteLine($"{piece} | X:{piece.HeroPosition.X} Y:{piece.HeroPosition.Y} | ID:{piece.PieceId}");
             }
+
+            // // Display the result
+            // var rule = new Rule("[red]Hero Picked[/]");
+            // AnsiConsole.Write(rule);
+            // foreach(var pick in playerHeroes)
+            // {
+            //     AnsiConsole.WriteLine(pick.ToString());
+            // }
         }
     }
 }
