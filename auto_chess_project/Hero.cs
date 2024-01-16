@@ -1,4 +1,4 @@
-class Hero : IPiece, IPosition
+class Hero : IPiece
 {
     public string PieceId {get;}
     public string Name {get;}
@@ -7,8 +7,7 @@ class Hero : IPiece, IPosition
     public double Attack {get;}
     public double Armor {get;}
     public double AttackRange {get;}
-    public int X {get; internal set;} = -1;
-    public int Y {get; internal set;} = -1;
+    public Position HeroPosition = new();
 
     public Hero(string name, PieceTypes pieceType, double hp, double attack, double armor, double attackRange)
     {
@@ -32,13 +31,10 @@ class Hero : IPiece, IPosition
         AttackRange = heroDetails.AttackRange;
     }
 
-    public int[] GetPosition() => [X, Y];
+    public int[] GetPosition() => HeroPosition.GetPosition();
 
-    public virtual void Move(int newX, int newY)
-    {
-        X = newX;
-        Y = newY;
-    }
+    public void Move(int newX, int newY) => HeroPosition.Move(newX, newY);
+    public void Move(Position newPosition) => HeroPosition.Move(newPosition.X, newPosition.Y);
 
     public virtual IEnumerable<IPiece> GetTarget()
     {
