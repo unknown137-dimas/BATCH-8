@@ -40,8 +40,6 @@ class GameController
 
     public int[] GetBoardSize() => [_board.Width, _board.Height];
 
-    public IEnumerable<Hero> GetPlayerPieces(IPlayer player) => _players[player].PlayerPieces;
-
     // Manage player
     public bool AddPlayer(IPlayer newPlayer) => _players.TryAdd(newPlayer, new PlayerData(PlayerHp));
 
@@ -58,6 +56,7 @@ class GameController
     public PlayerData GetPlayerData(IPlayer player) => _players[player];
 
     // Manage player's piece
+    public IEnumerable<Hero> GetPlayerPieces(IPlayer player) => _players[player].PlayerPieces;
     public void AddPlayerPiece(IPlayer player, Hero piece) => _players[player].PlayerPieces.Add(piece);
 
     public void AddPlayerPiece(IPlayer player, IEnumerable<Hero> pieces) => _players[player].PlayerPieces.AddRange(pieces);
