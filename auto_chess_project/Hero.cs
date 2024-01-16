@@ -1,6 +1,6 @@
 class Hero : IPiece, IPosition
 {
-    public Guid PieceId {get;}
+    public string PieceId {get;}
     public string Name {get;}
     public PieceTypes PieceType {get;}
     public double Hp {get;}
@@ -12,7 +12,7 @@ class Hero : IPiece, IPosition
 
     public Hero(string name, PieceTypes pieceType, double hp, double attack, double armor, double attackRange)
     {
-        PieceId = Guid.NewGuid();
+        PieceId = Guid.NewGuid().ToString();
         Name = name;
         PieceType = pieceType;
         Hp = hp;
@@ -20,10 +20,6 @@ class Hero : IPiece, IPosition
         Armor = armor;
         AttackRange = attackRange;
     }
-
-    public Guid GetId() => PieceId;
-
-    public PieceTypes GetPieceTypes() => PieceType;
 
     public int[] GetPosition() => [X, Y];
 

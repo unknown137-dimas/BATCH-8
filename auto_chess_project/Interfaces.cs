@@ -6,7 +6,7 @@ interface IBoard
 
 interface IPlayer
 {
-    string Id {get;}
+    string PlayerId {get;}
     string Name {get;}
 }
 
@@ -20,15 +20,13 @@ interface IPosition
 
 interface IPiece
 {
-    Guid PieceId {get;}
+    string PieceId {get;}
     string Name {get;}
     double Hp {get;}
     double Attack {get;}
     double Armor {get;}
     double AttackRange {get;}
     PieceTypes PieceType {get;}
-    public Guid GetId();
-    public PieceTypes GetPieceTypes();
     public IEnumerable<IPiece> GetTarget();
     public void Skill();
 }
