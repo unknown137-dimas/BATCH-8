@@ -63,14 +63,35 @@ class GameController
 
     public bool RemovePlayerPiece(IPlayer player, Hero piece) => _players[player].PlayerPieces.Remove(piece);
 
+    public bool PutPlayerPiece(Hero piece, Position position)
+    {
+        if(_board.IsPositionEmpty(position))
+        {
+            if(_board.AddHeroPosition(piece, position))
+            {
+                piece.Move(position);
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    public bool IsFinishedPutAllPieces(IPlayer player)
+    {
+        List<bool> piecePosition = new();
+        foreach(var piece in GetPlayerPieces(player))
+        {
+            piecePosition.Add(Array.IndexOf(piece.GetPosition(), -1) >= 0 ? false : true);
+        }
+        return !piecePosition.Contains(false);
+    }
+
+    public bool IsValidPosition(Hero piece, Hero otherPiece) => piece.HeroPosition.X != otherPiece.HeroPosition.X || piece.HeroPosition.Y != otherPiece.HeroPosition.Y;
+
     public void NextPhase()
     {
         throw new NotImplementedException();
-    }
-
-    public void PutPlayerPiece(Hero piece, IPosition position)
-    {
-        piece.Move(position);
     }
 
     public bool CheckTargetAcquitition(IPlayer player, Hero piece, IPosition position)
