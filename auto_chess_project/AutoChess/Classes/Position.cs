@@ -28,7 +28,7 @@ class Position : IPosition
 
     public override int GetHashCode() =>  X.GetHashCode() + Y.GetHashCode();
 
-    public void Move(int newX, int newY)
+    public void UpdatePosition(int newX, int newY)
     {
         X = newX;
         Y = newY;
