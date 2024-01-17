@@ -86,8 +86,12 @@ class GameController
 	// Manage board
 	public Dictionary<Position, Hero> GetPlayerBoard(IPlayer player) => _board.GetPlayerBoard(player);
 
-	public bool UpdateHeroPosition(IPlayer player, string heroId, Position newPosition) => _board.UpdateHeroPosition(player, heroId, newPosition);
-	
+	public bool UpdateHeroPosition(IPlayer player, string heroId, Position newPosition)
+	{
+		GetPlayerData(player).GetHeroById(heroId)?.Move(newPosition);
+		return _board.UpdateHeroPosition(player, heroId, newPosition);
+	}
+
 	public bool PutPlayerPiece(IPlayer player, Hero piece, Position position)
 	{
 		if(_board.IsPositionEmpty(player, position))
