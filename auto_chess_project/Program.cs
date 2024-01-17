@@ -1,12 +1,14 @@
-﻿using Spectre.Console;
+﻿using System.Text;
+using Spectre.Console;
 using Spectre.Console.Rendering;
-class Program
+
+internal class Program
 {
-	static void FigletTitle(FigletFont font, string text)
+	static void FigletTitle(string text)
 	{
 		AnsiConsole.Clear();
 		AnsiConsole.Write(
-			new FigletText(font, text)
+			new FigletText(FigletFont.Load("../../../defaultFont.flf"), text)
 			.LeftJustified()
 			.Color(Color.Red)
 		);
@@ -15,9 +17,9 @@ class Program
 	static void Main()
 	{
 		// GAME CONFIGURATION
+		Console.OutputEncoding = Encoding.UTF8;
 		const int boardSize = 8;
 		int roll = 3;
-		var font = FigletFont.Load("../../../defaultFont.flf");
 
 		// HERO ICONS
 		Dictionary<PieceTypes, string> heroIcons = new()
@@ -41,7 +43,7 @@ class Program
 		
 		
 		// MAIN MENU
-		FigletTitle(font, "AutoChess");
+		FigletTitle("AutoChess");
 		AnsiConsole.Write(board);
 		var mainMenu = AnsiConsole.Prompt(
 			new SelectionPrompt<string>()
@@ -93,7 +95,7 @@ class Program
 
 			while(playerHeroes.Count < 5 && roll > 0)
 			{
-				FigletTitle(font, "Pick Your Heroes");
+				FigletTitle("Pick Your Heroes");
 				autoChess.CurrentGamePhase = Phases.ChoosingPieace;
 				var optionsList = autoChess.GenerateRandomHeroList(in heroesOptions);
 				heroOptionsStat.Clear();
@@ -146,7 +148,7 @@ class Program
 			// Loop until all player's piece on the board
 			while(!autoChess.IsFinishedPutAllPieces(player))
 			{
-				FigletTitle(font, "Place Your Heroes");
+				FigletTitle("Place Your Heroes");
 				AnsiConsole.Write(new Rule("[red]Player Hero's Position[/]"));
 				var playerPieces = autoChess.GetPlayerData(player).PlayerPieces;
 				// TODO
@@ -222,7 +224,7 @@ class Program
 			// PREVIEW MENU
 			// TODO
 			// 1. Change preview layout using board
-			FigletTitle(font, "Preview");
+			FigletTitle("Preview");
 			// Display player piece's position
 			AnsiConsole.Write(new Rule("[red]Player Hero's Position[/]"));
 			foreach(var piece in autoChess.GetPlayerData(player).PlayerPieces)
