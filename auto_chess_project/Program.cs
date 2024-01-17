@@ -8,7 +8,7 @@ internal class Program
 	{
 		AnsiConsole.Clear();
 		AnsiConsole.Write(
-			new FigletText(FigletFont.Load("../../../defaultFont.flf"), text)
+			new FigletText(FigletFont.Load("../../../AutoChess/Assets/doom.flf"), text)
 			.LeftJustified()
 			.Color(Color.Red)
 		);
@@ -200,7 +200,7 @@ internal class Program
 							}
 						)
 					);
-					success = autoChess.PutPlayerPiece(playerPiece, new Position(pieceX, pieceY));
+					success = autoChess.PutPlayerPiece(player, playerPiece, new Position(pieceX, pieceY));
 					if(!success)
 					{
 						AnsiConsole.Markup("[red]You can't put another hero in the same coordinate[/]\n");
@@ -217,7 +217,7 @@ internal class Program
 				{
 					int x = new Random().Next(0, boardSize);
 					int y = new Random().Next(4, boardSize);
-					success = autoChess.PutPlayerPiece(piece, new Position(x, y));
+					success = autoChess.PutPlayerPiece(bot, piece, new Position(x, y));
 				}
 			}
 
@@ -238,6 +238,20 @@ internal class Program
 			{
 				AnsiConsole.WriteLine($"{piece} | X:{piece.HeroPosition.X} Y:{piece.HeroPosition.Y}");
 			}
+
+            
+
+            // BATTLE VIEW
+            FigletTitle("Battle");
+            int round = 1;
+            AnsiConsole.Write(new Rule($"[red]Round {round}[/]"));
+            // TODO
+            // 1. Move player's piece around the board
+			// 2. Scan for other player's piece
+			// 3. Attack other player pieces
+			// 4. Repeat until 1 player left
+			// 5. Display round winner
+			// 6. Repeat for all round
 		}
 	}
 }
