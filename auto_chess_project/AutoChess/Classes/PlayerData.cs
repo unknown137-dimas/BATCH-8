@@ -9,4 +9,16 @@ class PlayerData
     {
         Hp = hp;
     }
+
+    public Hero? GetHeroById(string heroId)
+    {
+        foreach(var piece in PlayerPieces)
+        {
+            if(piece.PieceId == heroId)
+            {
+                return piece;
+            }
+        }
+        return null;
+    }
 }
