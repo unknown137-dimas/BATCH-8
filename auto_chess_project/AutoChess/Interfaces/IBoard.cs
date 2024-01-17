@@ -11,4 +11,5 @@ interface IBoard
     public bool AddHeroPosition(IPlayer player, Hero hero, Position position);
     public bool UpdateHeroPosition(IPlayer player, string heroId, Position newPosition);
     public bool RemoveHero(IPlayer player, string heroId);
+    public IEnumerable<Hero> GetAllEnemy(IPlayer player, Hero hero);
 }

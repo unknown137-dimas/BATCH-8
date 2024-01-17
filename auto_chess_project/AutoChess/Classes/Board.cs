@@ -2,8 +2,6 @@ class Board : IBoard
 {
     public int Width {get;}
     public int Height {get;}
-    // TODO
-    // Seperate between players
     public Dictionary<IPlayer, Dictionary<Position, Hero>> PiecesPositions {get; private set;} = new();
 
     public Board(int size)
@@ -53,6 +51,26 @@ class Board : IBoard
             if(playerPiece.Value.PieceId == heroId)
             {
                 result = PiecesPositions[player].Remove(playerPiece.Key);
+            }
+        }
+        return result;
+    }
+
+    public IEnumerable<Hero> GetAllEnemy(IPlayer player, Hero hero)
+    {
+        List<Hero> result = new();
+        var heroCurrentPosition = hero.HeroPosition;
+        foreach(var playerBoard in PiecesPositions)
+        {
+            if(playerBoard.Key != player)
+            {
+                foreach(var enemyHero in playerBoard.Value)
+                {
+                    if(heroCurrentPosition.IsInRange(enemyHero.Key, hero.AttackRange))
+                    {
+                        result.Add(enemyHero.Value);
+                    }
+                }
             }
         }
         return result;

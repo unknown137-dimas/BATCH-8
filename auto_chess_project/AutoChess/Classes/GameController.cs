@@ -119,10 +119,7 @@ class GameController
 	public bool IsValidPosition(Hero piece, Hero otherPiece) => piece.HeroPosition.X != otherPiece.HeroPosition.X || piece.HeroPosition.Y != otherPiece.HeroPosition.Y;
 
 	// Manage Battle
-	public IEnumerable<Hero> GetAllEnemy(IPlayer player, Hero hero)
-	{
-		throw new NotImplementedException();
-	}
+	public IEnumerable<Hero> GetAllEnemy(IPlayer player, Hero hero) => _board.GetAllEnemy(player, hero);
 
 	public string Attack(IPlayer player, string heroId, IPlayer otherPlayer, string otherHeroId)
 	{
