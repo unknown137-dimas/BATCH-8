@@ -73,11 +73,11 @@ class GameController
 
 	public bool RemovePlayerPiece(IPlayer player, Hero piece) => _players[player].PlayerPieces.Remove(piece);
 
-	public bool PutPlayerPiece(Hero piece, Position position)
+	public bool PutPlayerPiece(IPlayer player, Hero piece, Position position)
 	{
-		if(_board.IsPositionEmpty(position))
+		if(_board.IsPositionEmpty(player, position))
 		{
-			if(_board.AddHeroPosition(piece, position))
+			if(_board.AddHeroPosition(player, piece, position))
 			{
 				piece.Move(position);
 				return true;
