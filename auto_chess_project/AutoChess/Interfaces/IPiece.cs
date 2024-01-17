@@ -7,6 +7,5 @@ interface IPiece
     double Armor {get;}
     double AttackRange {get;}
     PieceTypes PieceType {get;}
-    public IEnumerable<IPiece> GetTarget();
     public void Skill();
 }

@@ -119,17 +119,12 @@ class GameController
 	public bool IsValidPosition(Hero piece, Hero otherPiece) => piece.HeroPosition.X != otherPiece.HeroPosition.X || piece.HeroPosition.Y != otherPiece.HeroPosition.Y;
 
 	// Manage Battle
-	public bool CheckTargetAcquitition(IPlayer player, Hero piece, IPosition position)
+	public IEnumerable<Hero> GetAllEnemy(IPlayer player, Hero hero)
 	{
 		throw new NotImplementedException();
 	}
 
-	public IEnumerable<IPosition> GetAllPossibleMove(IPlayer player, Hero piece)
-	{
-		throw new NotImplementedException();
-	}
-	
-	public int Attack(IPlayer player, Hero piece, IPlayer enemyPlayer, Hero enemyPiece)
+	public string Attack(IPlayer player, string heroId, IPlayer otherPlayer, string otherHeroId)
 	{
 		throw new NotImplementedException();
 	}

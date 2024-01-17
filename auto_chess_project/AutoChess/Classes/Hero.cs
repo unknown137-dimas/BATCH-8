@@ -36,11 +36,6 @@ class Hero : IPiece
     public void Move(int newX, int newY) => HeroPosition.UpdatePosition(newX, newY);
     public void Move(Position newPosition) => HeroPosition.UpdatePosition(newPosition.X, newPosition.Y);
 
-    public virtual IEnumerable<IPiece> GetTarget()
-    {
-        throw new NotImplementedException();
-    }
-
     public virtual void Skill()
     {
         throw new NotImplementedException();
