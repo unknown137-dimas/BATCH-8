@@ -14,23 +14,35 @@ class Program
 
     static void Main()
     {
-        // var panel = new Panel("");
-        // panel.Width = 3;
-        // panel.Height = 2;
-        // panel.Padding = new Padding(0,0,0,0);
-        // var column = new Columns(panel, panel, panel);
-        // column.Expand = false;
-        // column.Padding = new Padding(0,0,0,0);
-        // var row = new Rows(column, column, column);
-        // AnsiConsole.Write(row);
-
         // GAME CONFIGURATION
         const int boardSize = 8;
         int roll = 3;
         var font = FigletFont.Load("../../../defaultFont.flf");
+
+        // HERO ICONS
+        Dictionary<PieceTypes, string> heroIcons = new()
+        {
+            {PieceTypes.Knight, "🛡️"},
+            {PieceTypes.Warlock, "🌕"},
+            {PieceTypes.Warrior, "⚔️"},
+        };
+
+        // BOARD
+        var panel = new Panel(
+            new Markup(heroIcons[PieceTypes.Knight])
+        );
+        panel.Width = 4;
+        panel.Height = 3;
+        panel.Padding = new Padding(0,0,0,0);
+        var column = new Columns(panel, panel, panel);
+        column.Expand = false;
+        column.Padding = new Padding(0,0,0,0);
+        var board = new Rows(column, column, column);
+        
         
         // MAIN MENU
         FigletTitle(font, "AutoChess");
+        AnsiConsole.Write(board);
         var mainMenu = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
             .PageSize(5)
@@ -87,7 +99,7 @@ class Program
                 autoChess.CurrentGamePhase = Phases.ChoosingPieace;
                 var optionsList = autoChess.GenerateRandomHeroList(in heroesOptions);
                 heroOptionsStat.Clear();
-                int barWidth = 25;
+                int barWidth = 35;
                 foreach(var hero in optionsList)
                 {
                     var heroPanel = new Panel(
