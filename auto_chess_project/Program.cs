@@ -69,7 +69,8 @@ class Program
             // PICK HERO MENU
             // TODO
             // 1. How to edit/remove item from user (if user want to change item that already playerHeroes)
-            // 2. Pick menu layout (Live display?)
+            // 2. Fix BarChart
+            // 3. Move heroDatabase to library?
             Dictionary<string, HeroDetails> heroesDatabase = new()
             {
                 {"Hell Knight", new HeroDetails(PieceTypes.Knight, 700, 75, 5, 1)},
@@ -152,7 +153,7 @@ class Program
                 AnsiConsole.Write(new Rule("[red]Player Hero's Position[/]"));
                 var playerPieces = autoChess.GetPlayerData(player).PlayerPieces;
                 // TODO
-                // Change player's pieces position preview
+                // 1. Change preview layout using board
                 foreach(var piece in playerPieces)
                 {
                     AnsiConsole.WriteLine($"{piece} | X:{piece.HeroPosition.X} Y:{piece.HeroPosition.Y}");
@@ -223,7 +224,7 @@ class Program
 
             // PREVIEW MENU
             // TODO
-            // 1. Change preview layout
+            // 1. Change preview layout using board
             FigletTitle(font, "Preview");
             // Display player piece's position
             AnsiConsole.Write(new Rule("[red]Player Hero's Position[/]"));

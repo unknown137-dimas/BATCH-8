@@ -4,6 +4,11 @@ interface IBoard
     int Height {get;}
     public bool IsPositionEmpty(Position position);
     public bool AddHeroPosition(Hero hero, Position position);
+    // TODO
+    // 1. Add Board Collection? Nested List?
+    // 2. Add GetBoard Method
+    // 3. Add UpdateHeroPosition Method
+    // 4. ADd RemoveHero Method
 }
 
 interface IPlayer
