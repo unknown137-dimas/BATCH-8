@@ -4,7 +4,7 @@ class Board : IBoard
     public int Height {get;}
     // TODO
     // Seperate between players
-    private Dictionary<IPlayer, Dictionary<Position, Hero>> _piecesPositions = new();
+    public Dictionary<IPlayer, Dictionary<Position, Hero>> PiecesPositions {get; private set;} = new();
 
     public Board(int size)
     {
@@ -18,7 +18,11 @@ class Board : IBoard
         Height = height;
     }
 
-    public bool IsPositionEmpty(IPlayer player, Position position) => !_piecesPositions[player].ContainsKey(position);
+    public bool AddPlayer(IPlayer player) => PiecesPositions.TryAdd(player, new Dictionary<Position, Hero>());
     
-    public bool AddHeroPosition(IPlayer player, Hero hero, Position position) => _piecesPositions[player].TryAdd(position, hero);
+    public bool RemovePlayer(IPlayer player) => PiecesPositions.Remove(player);
+
+    public bool IsPositionEmpty(IPlayer player, Position position) => !PiecesPositions[player].ContainsKey(position);
+    
+    public bool AddHeroPosition(IPlayer player, Hero hero, Position position) => PiecesPositions[player].TryAdd(position, hero);
 }

@@ -51,7 +51,12 @@ class GameController
 	public HeroDetails GetHeroDetails(string heroName) => HeroesDatabase[heroName];
 
 	// Manage player
-	public bool AddPlayer(IPlayer newPlayer) => _players.TryAdd(newPlayer, new PlayerData(PlayerHp));
+	public bool AddPlayer(IPlayer newPlayer)
+	{
+		var addPlayer = _players.TryAdd(newPlayer, new PlayerData(PlayerHp));
+		var addPlayerBoard = _board.AddPlayer(newPlayer);
+		return !new List<bool>([addPlayer, addPlayerBoard]).Contains(false);
+	}
 
 	public void AddPlayer(IEnumerable<IPlayer> newPlayers)
 	{
@@ -61,7 +66,12 @@ class GameController
 		}
 	}
 
-	public bool RemovePlayer(IPlayer player) => _players.Remove(player);
+	public bool RemovePlayer(IPlayer player)
+	{
+		var playerRemove = _players.Remove(player);
+		var removePlayerBoard = _board.RemovePlayer(player);
+		return !new List<bool>([playerRemove, removePlayerBoard]).Contains(false);
+	}
 
 	public PlayerData GetPlayerData(IPlayer player) => _players[player];
 
