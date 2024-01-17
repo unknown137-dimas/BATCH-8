@@ -54,7 +54,7 @@ class GameController
 	public bool AddPlayer(IPlayer newPlayer)
 	{
 		var addPlayer = _players.TryAdd(newPlayer, new PlayerData(PlayerHp));
-		var addPlayerBoard = _board.AddPlayer(newPlayer);
+		var addPlayerBoard = _board.AddPlayerToBoard(newPlayer);
 		return !new List<bool>([addPlayer, addPlayerBoard]).Contains(false);
 	}
 
@@ -69,7 +69,7 @@ class GameController
 	public bool RemovePlayer(IPlayer player)
 	{
 		var playerRemove = _players.Remove(player);
-		var removePlayerBoard = _board.RemovePlayer(player);
+		var removePlayerBoard = _board.RemovePlayerFromBoard(player);
 		return !new List<bool>([playerRemove, removePlayerBoard]).Contains(false);
 	}
 
@@ -83,6 +83,11 @@ class GameController
 
 	public bool RemovePlayerPiece(IPlayer player, Hero piece) => _players[player].PlayerPieces.Remove(piece);
 
+	// Manage board
+	public Dictionary<Position, Hero> GetPlayerBoard(IPlayer player) => _board.GetPlayerBoard(player);
+
+	public bool UpdateHeroPosition(IPlayer player, string heroId, Position newPosition) => _board.UpdateHeroPosition(player, heroId, newPosition);
+	
 	public bool PutPlayerPiece(IPlayer player, Hero piece, Position position)
 	{
 		if(_board.IsPositionEmpty(player, position))
@@ -109,11 +114,7 @@ class GameController
 
 	public bool IsValidPosition(Hero piece, Hero otherPiece) => piece.HeroPosition.X != otherPiece.HeroPosition.X || piece.HeroPosition.Y != otherPiece.HeroPosition.Y;
 
-	public void NextPhase()
-	{
-		throw new NotImplementedException();
-	}
-
+	// Manage Battle
 	public bool CheckTargetAcquitition(IPlayer player, Hero piece, IPosition position)
 	{
 		throw new NotImplementedException();
