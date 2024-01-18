@@ -14,6 +14,25 @@ internal class Program
 		);
 	}
 
+	static Columns DisplayHeroStats(IEnumerable<string> heroList, Dictionary<string, HeroDetails> heroDb, int barWidth = 35)
+	{
+		List<Panel> heroStat = new();
+		foreach(var hero in heroList)
+		{
+			var heroPanel = new Panel(
+				new BarChart()
+				.Width(barWidth)
+				.AddItem("HP", heroDb[hero].Hp, Color.Green)
+				.AddItem("ATK", heroDb[hero].Attack, Color.Red3)
+				.AddItem("Armor", heroDb[hero].Armor, Color.Blue)
+				.AddItem("ATK Range", heroDb[hero].AttackRange, Color.Red1)
+			).Header(new PanelHeader(hero));
+			heroPanel.Padding = new Padding(0, 0, 0, 0);
+			heroStat.Add(heroPanel);
+		}
+		return new Columns(heroStat);
+	}
+
 	static void Main()
 	{
 		// GAME CONFIGURATION
@@ -74,6 +93,7 @@ internal class Program
 			// TODO
 			// 1. How to edit/remove item from user (if user want to change item that already playerHeroes)
 			// 2. Fix BarChart
+			// 3. Display picked hero
 			#region PICK_HERO_MENU
 			autoChess.AddHero("Poisonous Worm", new HeroDetails(PieceTypes.Warlock, 600, 55, 0, 3));
 			autoChess.AddHero("Hell Knight", new HeroDetails(PieceTypes.Knight, 700, 75, 5, 1));
@@ -88,35 +108,16 @@ internal class Program
 			autoChess.AddHero("Goddess of Light", new HeroDetails(PieceTypes.Priest, 400, 52.5, 0, 4));
 			autoChess.AddHero("Grand Herald", new HeroDetails(PieceTypes.Wizard, 600, 55, 0, 4));
 			var heroesDatabase = autoChess.HeroesDatabase;
-			var heroesOptions = new List<string>();
-			foreach(var key in heroesDatabase.Keys)
-			{
-				heroesOptions.Add(key.ToString());
-			}
-			List<Hero> playerHeroes = (List<Hero>)autoChess.GetPlayerPieces(player);
-			var heroOptionsStat = new List<IRenderable>();
 
-			while(playerHeroes.Count < 5 && roll > 0)
+			while(!autoChess.IsFinishedPickAllPieces(player) && roll > 0)
 			{
 				FigletTitle("Pick Your Heroes");
 				autoChess.CurrentGamePhase = Phases.ChoosingPieace;
-				var optionsList = autoChess.GenerateRandomHeroList(in heroesOptions);
-				heroOptionsStat.Clear();
-				int barWidth = 35;
-				foreach(var hero in optionsList)
-				{
-					var heroPanel = new Panel(
-						new BarChart()
-						.Width(barWidth)
-						.AddItem("HP", heroesDatabase[hero].Hp, Color.Green)
-						.AddItem("ATK", heroesDatabase[hero].Attack, Color.Red3)
-						.AddItem("Armor", heroesDatabase[hero].Armor, Color.Blue)
-						.AddItem("ATK Range", heroesDatabase[hero].AttackRange, Color.Red1)
-					).Header(new PanelHeader(hero));
-					heroPanel.Padding = new Padding(0, 0, 0, 0);
-					heroOptionsStat.Add(heroPanel);
-				}
-				AnsiConsole.Write(new Columns(heroOptionsStat));
+				AnsiConsole.Write(new Rule("[red]Picked Heroes[/]"));
+				AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player), heroesDatabase));
+				AnsiConsole.Write(new Rule("[red]Hero Options[/]"));
+				var optionsList = autoChess.GenerateRandomHeroList();
+				AnsiConsole.Write(DisplayHeroStats(optionsList, heroesDatabase));
 				var options = AnsiConsole.Prompt(
 					new MultiSelectionPrompt<string>()
 					.NotRequired()
@@ -126,25 +127,14 @@ internal class Program
 						$"[grey](Press [blue]<space>[/] to select hero, [green]<enter>[/] to accept and re-roll)[/]"
 						)
 				);
-				foreach(var pick in options)
-				{
-					// Set player piece
-					autoChess.AddPlayerPiece(player, new Hero(pick, heroesDatabase[pick]));
-				}
+				// Set player pieces
+				autoChess.AddPlayerPiece(player, options);
 				roll--;
-			}
-			// Keep first 5 item playerHeroes by user
-			if(playerHeroes.Count > 5)
-			{
-				playerHeroes = playerHeroes[0..5];
 			}
 
 			// BOT 
-			// Bot pick piece
-			foreach(var botPick in autoChess.GenerateRandomHeroList(in heroesOptions))
-			{
-				autoChess.AddPlayerPiece(bot, new Hero(botPick, heroesDatabase[botPick]));
-			}
+			// Bot pick pieces
+			autoChess.AddPlayerPiece(bot, autoChess.GenerateRandomHeroList());
 			#endregion
 			
 			// SET HERO POSITION MENU
@@ -155,20 +145,23 @@ internal class Program
 			{
 				FigletTitle("Place Your Heroes");
 				AnsiConsole.Write(new Rule("[red]Player Hero's Position[/]"));
-				var playerPieces = autoChess.GetPlayerData(player).PlayerPieces;
+				var playerPieces = (List<IPiece>)autoChess.GetPlayerPieces(player);
 				// TODO
 				// 1. Change preview layout using board
 				foreach(var piece in playerPieces)
 				{
-					Position piecePosition = autoChess.GetHeroPosition(player, piece.PieceId);
-					AnsiConsole.WriteLine($"{piece} | X:{piecePosition.X} Y:{piecePosition.Y}");
+					var piecePosition = autoChess.GetHeroPosition(player, piece.PieceId);
+					if(piecePosition is not null)
+					{
+						AnsiConsole.WriteLine($"{piece} | X:{piecePosition.X} Y:{piecePosition.Y}");
+					}
 				}
 				AnsiConsole.Write(new Rule("[red]Set Hero's Position[/]"));
 				var playerPiece = AnsiConsole.Prompt(
 					new SelectionPrompt<Hero>()
 					.PageSize(5)
 					.AddChoices(
-						playerPieces
+						playerPieces.ConvertAll(piece => (Hero)piece)
 					)
 				);
 				// Loop until piece placement success
@@ -237,32 +230,38 @@ internal class Program
 			AnsiConsole.Write(new Rule("[red]Player Hero's Position[/]"));
 			foreach(var piece in autoChess.GetPlayerData(player).PlayerPieces)
 			{
-				Position piecePosition = autoChess.GetHeroPosition(player, piece.PieceId);
-				AnsiConsole.WriteLine($"{piece} | X:{piecePosition.X} Y:{piecePosition.Y}");
+				IPosition? piecePosition = autoChess.GetHeroPosition(player, piece.PieceId);
+				if(piecePosition is not null)
+				{
+					AnsiConsole.WriteLine($"{piece} | X:{piecePosition.X} Y:{piecePosition.Y}");
+				}
 			}
 			
 			// Display BOT piece's position
 			AnsiConsole.Write(new Rule("[red]Bot Hero's Position[/]"));
 			foreach(var piece in autoChess.GetPlayerData(bot).PlayerPieces)
 			{
-				Position piecePosition = autoChess.GetHeroPosition(player, piece.PieceId);
-				AnsiConsole.WriteLine($"{piece} | X:{piecePosition.X} Y:{piecePosition.Y}");
+				IPosition? piecePosition = autoChess.GetHeroPosition(player, piece.PieceId);
+				if(piecePosition is not null)
+				{
+					AnsiConsole.WriteLine($"{piece} | X:{piecePosition.X} Y:{piecePosition.Y}");
+				}
 			}
 			#endregion
 
 			// BATTLE VIEW
-			#region BATTLE_VIEW
-			FigletTitle("Battle");
-			int round = 1;
-			AnsiConsole.Write(new Rule($"[red]Round {round}[/]"));
-			// TODO
-			// 1. Move player's piece around the board
-			// 2. Scan for other player's piece
-			// 3. Attack other player pieces
-			// 4. Repeat until 1 player left
-			// 5. Display round winner
-			// 6. Repeat for all round
-			#endregion
+			// #region BATTLE_VIEW
+			// FigletTitle("Battle");
+			// int round = 1;
+			// AnsiConsole.Write(new Rule($"[red]Round {round}[/]"));
+			// // TODO
+			// // 1. Move player's piece around the board
+			// // 2. Scan for other player's piece
+			// // 3. Attack other player pieces
+			// // 4. Repeat until 1 player left
+			// // 5. Display round winner
+			// // 6. Repeat for all round
+			// #endregion
 		}
 	}
 }
