@@ -138,6 +138,8 @@ internal class Program
 			#endregion
 			
 			// SET HERO POSITION MENU
+			// 1. How to cancel setting position for the selected piece
+			// 2. Ask confirmation to player for all position before going battle, if no, repeat to set hero position menu
 			#region SET_HERO_POSITION_MENU
 			autoChess.CurrentGamePhase = Phases.PlaceThePiece;
 			// Loop until all player's piece on the board
