@@ -160,7 +160,8 @@ internal class Program
 				// 1. Change preview layout using board
 				foreach(var piece in playerPieces)
 				{
-					AnsiConsole.WriteLine($"{piece} | X:{piece.HeroPosition.X} Y:{piece.HeroPosition.Y}");
+					Position piecePosition = autoChess.GetHeroPosition(player, piece.PieceId);
+					AnsiConsole.WriteLine($"{piece} | X:{piecePosition.X} Y:{piecePosition.Y}");
 				}
 				AnsiConsole.Write(new Rule("[red]Set Hero's Position[/]"));
 				var playerPiece = AnsiConsole.Prompt(
@@ -236,14 +237,16 @@ internal class Program
 			AnsiConsole.Write(new Rule("[red]Player Hero's Position[/]"));
 			foreach(var piece in autoChess.GetPlayerData(player).PlayerPieces)
 			{
-				AnsiConsole.WriteLine($"{piece} | X:{piece.HeroPosition.X} Y:{piece.HeroPosition.Y}");
+				Position piecePosition = autoChess.GetHeroPosition(player, piece.PieceId);
+				AnsiConsole.WriteLine($"{piece} | X:{piecePosition.X} Y:{piecePosition.Y}");
 			}
 			
 			// Display BOT piece's position
 			AnsiConsole.Write(new Rule("[red]Bot Hero's Position[/]"));
 			foreach(var piece in autoChess.GetPlayerData(bot).PlayerPieces)
 			{
-				AnsiConsole.WriteLine($"{piece} | X:{piece.HeroPosition.X} Y:{piece.HeroPosition.Y}");
+				Position piecePosition = autoChess.GetHeroPosition(player, piece.PieceId);
+				AnsiConsole.WriteLine($"{piece} | X:{piecePosition.X} Y:{piecePosition.Y}");
 			}
 			#endregion
 
