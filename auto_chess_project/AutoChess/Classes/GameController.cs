@@ -1,6 +1,6 @@
 class GameController
 {
-	private readonly IBoard _board;
+	private readonly Board _board;
 	public Dictionary<string, HeroDetails> HeroesDatabase {get; private set;} = new();
 	private readonly Dictionary<PieceTypes, int> _heroSlot = new() {{PieceTypes.Warrior, 3}, {PieceTypes.Hunter, 3}, {PieceTypes.Knight, 3}};
 	private Dictionary<IPlayer, PlayerData> _players = new();
@@ -8,27 +8,27 @@ class GameController
 	public Status CurrentGameStatus {get; set;} = Status.NotInitialized;
 	public Phases CurrentGamePhase {get; set;} = Phases.NotInitialized;
 
-	public GameController(IBoard board)
+	public GameController(Board board)
 	{
 		CurrentGameStatus = Status.Initialized;
 		_board = board;
 	}
 
-	public GameController(IBoard board, Dictionary<PieceTypes, int> heroSlot)
+	public GameController(Board board, Dictionary<PieceTypes, int> heroSlot)
 	{
 		CurrentGameStatus = Status.Initialized;
 		_board = board;
 		_heroSlot = heroSlot;
 	}
 
-	public GameController(IBoard board, List<IPlayer> players)
+	public GameController(Board board, List<IPlayer> players)
 	{
 		CurrentGameStatus = Status.Initialized;
 		_board = board;
 		AddPlayer(players);
 	}
 
-	public GameController(IBoard board, List<IPlayer> players, Dictionary<PieceTypes, int> heroSlot)
+	public GameController(Board board, List<IPlayer> players, Dictionary<PieceTypes, int> heroSlot)
 	{
 		CurrentGameStatus = Status.Initialized;
 		_board = board;
@@ -86,37 +86,22 @@ class GameController
 	// Manage board
 	public Dictionary<Position, Hero> GetPlayerBoard(IPlayer player) => _board.GetPlayerBoard(player);
 
-	public bool UpdateHeroPosition(IPlayer player, string heroId, Position newPosition)
-	{
-		GetPlayerData(player).GetHeroById(heroId)?.Move(newPosition);
-		return _board.UpdateHeroPosition(player, heroId, newPosition);
-	}
+	public Position GetHeroPosition(IPlayer player, string heroId) => _board.GetHeroPosition(player, heroId);
+
+	public bool UpdateHeroPosition(IPlayer player, string heroId, Position newPosition) => _board.UpdateHeroPosition(player, heroId, newPosition);
 
 	public bool PutPlayerPiece(IPlayer player, Hero piece, Position position)
 	{
 		if(_board.IsPositionEmpty(player, position))
 		{
-			if(_board.AddHeroPosition(player, piece, position))
-			{
-				piece.Move(position);
-				return true;
-			}
-			return false;
+			return _board.AddHeroPosition(player, piece, position);
 		}
 		return false;
 	}
 
-	public bool IsFinishedPutAllPieces(IPlayer player)
-	{
-		List<bool> piecePosition = new();
-		foreach(var piece in GetPlayerPieces(player))
-		{
-			piecePosition.Add(Array.IndexOf(piece.GetPosition(), -1) >= 0 ? false : true);
-		}
-		return !piecePosition.Contains(false);
-	}
+	public bool IsFinishedPutAllPieces(IPlayer player) => _board.GetPlayerBoard(player).Count == 5;
 
-	public bool IsValidPosition(Hero piece, Hero otherPiece) => piece.HeroPosition.X != otherPiece.HeroPosition.X || piece.HeroPosition.Y != otherPiece.HeroPosition.Y;
+	public bool IsValidPosition(IPlayer player, Hero piece, IPlayer otherPlayer, Hero otherPiece) => _board.GetHeroPosition(player, piece.PieceId)?.X != _board.GetHeroPosition(otherPlayer, otherPiece.PieceId)?.X || _board.GetHeroPosition(player, piece.PieceId)?.Y != _board.GetHeroPosition(otherPlayer, otherPiece.PieceId)?.Y;
 
 	// Manage Battle
 	public IEnumerable<Hero> GetAllEnemy(IPlayer player, Hero hero) => _board.GetAllEnemy(player, hero);
