@@ -5,7 +5,7 @@ interface IPiece
     double Hp {get;}
     double Attack {get;}
     double Armor {get;}
-    double AttackRange {get;}
+    int AttackRange {get;}
     PieceTypes PieceType {get;}
     public void Skill();
 }

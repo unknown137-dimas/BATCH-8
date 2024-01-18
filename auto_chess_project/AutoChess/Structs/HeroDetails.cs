@@ -4,8 +4,8 @@ public struct HeroDetails
     public double Hp;
     public double Attack;
     public double Armor;
-    public double AttackRange;
-    public HeroDetails(PieceTypes heroType, double hp, double attack, double armor, double attackRange)
+    public int AttackRange;
+    public HeroDetails(PieceTypes heroType, double hp, double attack, double armor, int attackRange)
     {
         HeroType = heroType;
         Hp = hp;

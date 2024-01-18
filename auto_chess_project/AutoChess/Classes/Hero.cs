@@ -6,10 +6,10 @@ class Hero : IPiece
     public double Hp {get;}
     public double Attack {get;}
     public double Armor {get;}
-    public double AttackRange {get;}
+    public int AttackRange {get;}
     public Position HeroPosition {get;} = new();
 
-    public Hero(string name, PieceTypes pieceType, double hp, double attack, double armor, double attackRange)
+    public Hero(string name, PieceTypes pieceType, double hp, double attack, double armor, int attackRange)
     {
         PieceId = Guid.NewGuid().ToString();
         Name = name;
