@@ -2,7 +2,7 @@ class Board : IBoard
 {
 	public int Width {get;}
 	public int Height {get;}
-	public Dictionary<IPlayer, Dictionary<Position, string>> PiecesPositions {get; private set;} = new();
+	public Dictionary<IPlayer, Dictionary<IPosition, string>> PiecesPositions {get; private set;} = new();
 
 	public Board(int size)
 	{
@@ -16,17 +16,17 @@ class Board : IBoard
 		Height = height;
 	}
 
-	public bool AddPlayerToBoard(IPlayer player) => PiecesPositions.TryAdd(player, new Dictionary<Position, string>());
+	public bool AddPlayerToBoard(IPlayer player) => PiecesPositions.TryAdd(player, new Dictionary<IPosition, string>());
 	
 	public bool RemovePlayerFromBoard(IPlayer player) => PiecesPositions.Remove(player);
 	
-	public Dictionary<Position, string> GetPlayerBoard(IPlayer player) => PiecesPositions[player];
+	public Dictionary<IPosition, string> GetPlayerBoard(IPlayer player) => PiecesPositions[player];
 
-	public bool IsPositionEmpty(IPlayer player, Position position) => !GetPlayerBoard(player).ContainsKey(position);
+	public bool IsPositionEmpty(IPlayer player, IPosition position) => !GetPlayerBoard(player).ContainsKey(position);
 	
-	public bool AddHeroPosition(IPlayer player, string heroId, Position position) => GetPlayerBoard(player).TryAdd(position, heroId);
+	public bool AddHeroPosition(IPlayer player, string heroId, IPosition position) => GetPlayerBoard(player).TryAdd(position, heroId);
 
-	public bool UpdateHeroPosition(IPlayer player, string heroId, Position newPosition)
+	public bool UpdateHeroPosition(IPlayer player, string heroId, IPosition newPosition)
 	{
 		bool result = false;
 		foreach(var playerPiece in GetPlayerBoard(player))
@@ -43,7 +43,7 @@ class Board : IBoard
 		return result;
 	}
 	
-	public Position? GetHeroPosition(IPlayer player, string heroId)
+	public IPosition? GetHeroPosition(IPlayer player, string heroId)
 	{
 		foreach(var playerPiece in GetPlayerBoard(player))
 		{
@@ -68,10 +68,10 @@ class Board : IBoard
 		return result;
 	}
 
-	public IEnumerable<string> GetAllEnemyId(IPlayer player, Hero hero)
+	public IEnumerable<string> GetAllEnemyId(IPlayer player, IPiece hero)
 	{
 		List<string> result = new();
-		Position? heroCurrentPosition = GetHeroPosition(player, hero.PieceId);
+		IPosition? heroCurrentPosition = GetHeroPosition(player, hero.PieceId);
 		if(heroCurrentPosition is not null)
 		{
 			foreach(var playerBoard in PiecesPositions)

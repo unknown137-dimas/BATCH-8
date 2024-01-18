@@ -8,4 +8,5 @@ interface IPiece
     int AttackRange {get;}
     PieceTypes PieceType {get;}
     public void Skill();
+    public string ToString();
 }

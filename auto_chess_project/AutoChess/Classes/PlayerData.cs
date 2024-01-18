@@ -1,6 +1,6 @@
 class PlayerData
 {
-    public List<Hero> PlayerPieces = new();
+    public List<IPiece> PlayerPieces = new();
     public bool Winner;
     public int Hp;
     public int Win;
@@ -10,7 +10,7 @@ class PlayerData
         Hp = hp;
     }
 
-    public Hero? GetHeroById(string heroId)
+    public IPiece? GetHeroById(string heroId)
     {
         foreach(var piece in PlayerPieces)
         {
