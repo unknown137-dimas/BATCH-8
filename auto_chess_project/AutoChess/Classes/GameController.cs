@@ -5,6 +5,7 @@ class GameController
 	private readonly Dictionary<PieceTypes, int> _heroSlot = new() {{PieceTypes.Warrior, 3}, {PieceTypes.Hunter, 3}, {PieceTypes.Knight, 3}};
 	private Dictionary<IPlayer, PlayerData> _players = new();
 	public int PlayerHp {get; set;} = 10;
+	public int PlayerPiecesCount {get; set;} = 5;
 	public Status CurrentGameStatus {get; set;} = Status.NotInitialized;
 	public Phases CurrentGamePhase {get; set;} = Phases.NotInitialized;
 
@@ -77,14 +78,33 @@ class GameController
 
 	// Manage player's piece
 	public IEnumerable<IPiece> GetPlayerPieces(IPlayer player) => _players[player].PlayerPieces;
-	public void AddPlayerPiece(IPlayer player, IPiece piece) => _players[player].PlayerPieces.Add(piece);
 
-	public void AddPlayerPiece(IPlayer player, IEnumerable<IPiece> pieces) => _players[player].PlayerPieces.AddRange(pieces);
+	public IEnumerable<string> GetPlayerPiecesName(IPlayer player) => ((List<IPiece>)GetPlayerPieces(player)).ConvertAll(piece => piece.Name);
+	
+	public bool AddPlayerPiece(IPlayer player, string heroName)
+	{
+		if(GetPlayerPieces(player).Count() < PlayerPiecesCount)
+		{
+			_players[player].PlayerPieces.Add(new Hero(heroName, HeroesDatabase[heroName]));
+			return true;
+		}
+		return false;
+	}
+
+	public void AddPlayerPiece(IPlayer player, IEnumerable<string> heroNames)
+	{
+		foreach(var heroName in heroNames)
+		{
+			AddPlayerPiece(player, heroName);
+		}
+	}
 
 	public bool RemovePlayerPiece(IPlayer player, IPiece piece) => _players[player].PlayerPieces.Remove(piece);
 
 	// Manage board
 	public Dictionary<IPosition, string> GetPlayerBoard(IPlayer player) => _board.GetPlayerBoard(player);
+
+	public bool IsPieceExistOnBoard(IPlayer player, string heroId) => _board.GetPlayerBoard(player).ContainsValue(heroId);
 
 	public IPosition? GetHeroPosition(IPlayer player, string heroId) => _board.GetHeroPosition(player, heroId);
 
@@ -94,12 +114,21 @@ class GameController
 	{
 		if(_board.IsPositionEmpty(player, position))
 		{
-			return _board.AddHeroPosition(player, piece.PieceId, position);
+			 if(!IsPieceExistOnBoard(player, piece.PieceId))
+			 {
+				return _board.AddHeroPosition(player, piece.PieceId, position);
+			 }
+			 else
+			 {
+				return _board.UpdateHeroPosition(player, piece.PieceId, position);
+			 }
 		}
 		return false;
 	}
 
-	public bool IsFinishedPutAllPieces(IPlayer player) => _board.GetPlayerBoard(player).Count == 5;
+	public bool IsFinishedPickAllPieces(IPlayer player) => GetPlayerPieces(player).Count() == PlayerPiecesCount;
+
+	public bool IsFinishedPutAllPieces(IPlayer player) => _board.GetPlayerBoard(player).Count == PlayerPiecesCount;
 
 	public bool IsValidPosition(IPlayer player, IPiece piece, IPlayer otherPlayer, IPiece otherPiece) => _board.GetHeroPosition(player, piece.PieceId)?.X != _board.GetHeroPosition(otherPlayer, otherPiece.PieceId)?.X || _board.GetHeroPosition(player, piece.PieceId)?.Y != _board.GetHeroPosition(otherPlayer, otherPiece.PieceId)?.Y;
 
@@ -115,14 +144,15 @@ class GameController
 	public bool SetWinner(IPlayer player) => _players[player].Winner = true;
 
 	// Generate random options
-	public IEnumerable<T> GenerateRandomHeroList<T>(in List<T> source)
+	public IEnumerable<string> GenerateRandomHeroList()
 	{
 		Random random = new();
-		List<T> options = new();
-		int n = 5;
+		List<string> options = new();
+		List<string> heroNames = HeroesDatabase.Keys.ToList().ConvertAll(hero => hero.ToString());
+		int n = PlayerPiecesCount;
 		while(n > 0)
 		{
-			options.Add(source[random.Next(0, source.Count)]);
+			options.Add(heroNames[random.Next(0, heroNames.Count)]);
 			n--;
 		}
 		return options;
