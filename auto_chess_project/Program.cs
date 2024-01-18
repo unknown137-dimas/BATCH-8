@@ -43,6 +43,7 @@ internal class Program
 		
 		
 		// MAIN MENU
+		#region MAIN_MENU
 		FigletTitle("AutoChess");
 		AnsiConsole.Write(board);
 		var mainMenu = AnsiConsole.Prompt(
@@ -55,6 +56,7 @@ internal class Program
 				]
 			)
 		);
+		#endregion
 
 		if(mainMenu == "Start")
 		{
@@ -72,6 +74,7 @@ internal class Program
 			// TODO
 			// 1. How to edit/remove item from user (if user want to change item that already playerHeroes)
 			// 2. Fix BarChart
+			#region PICK_HERO_MENU
 			autoChess.AddHero("Poisonous Worm", new HeroDetails(PieceTypes.Warlock, 600, 55, 0, 3));
 			autoChess.AddHero("Hell Knight", new HeroDetails(PieceTypes.Knight, 700, 75, 5, 1));
 			autoChess.AddHero("God of Thunder", new HeroDetails(PieceTypes.Mage, 950, 60, 0, 3));
@@ -142,8 +145,10 @@ internal class Program
 			{
 				autoChess.AddPlayerPiece(bot, new Hero(botPick, heroesDatabase[botPick]));
 			}
+			#endregion
 			
 			// SET HERO POSITION MENU
+			#region SET_HERO_POSITION_MENU
 			autoChess.CurrentGamePhase = Phases.PlaceThePiece;
 			// Loop until all player's piece on the board
 			while(!autoChess.IsFinishedPutAllPieces(player))
@@ -220,10 +225,12 @@ internal class Program
 					success = autoChess.PutPlayerPiece(bot, piece, new Position(x, y));
 				}
 			}
+			#endregion
 
 			// PREVIEW MENU
 			// TODO
 			// 1. Change preview layout using board
+			#region PREVIEW_MENU
 			FigletTitle("Preview");
 			// Display player piece's position
 			AnsiConsole.Write(new Rule("[red]Player Hero's Position[/]"));
@@ -238,20 +245,21 @@ internal class Program
 			{
 				AnsiConsole.WriteLine($"{piece} | X:{piece.HeroPosition.X} Y:{piece.HeroPosition.Y}");
 			}
+			#endregion
 
-            
-
-            // BATTLE VIEW
-            FigletTitle("Battle");
-            int round = 1;
-            AnsiConsole.Write(new Rule($"[red]Round {round}[/]"));
-            // TODO
-            // 1. Move player's piece around the board
+			// BATTLE VIEW
+			#region BATTLE_VIEW
+			FigletTitle("Battle");
+			int round = 1;
+			AnsiConsole.Write(new Rule($"[red]Round {round}[/]"));
+			// TODO
+			// 1. Move player's piece around the board
 			// 2. Scan for other player's piece
 			// 3. Attack other player pieces
 			// 4. Repeat until 1 player left
 			// 5. Display round winner
 			// 6. Repeat for all round
+			#endregion
 		}
 	}
 }
