@@ -2,7 +2,7 @@ class Board : IBoard
 {
 	public int Width {get;}
 	public int Height {get;}
-	public Dictionary<IPlayer, Dictionary<Position, Hero>> PiecesPositions {get; private set;} = new();
+	public Dictionary<IPlayer, Dictionary<Position, string>> PiecesPositions {get; private set;} = new();
 
 	public Board(int size)
 	{
@@ -16,43 +16,43 @@ class Board : IBoard
 		Height = height;
 	}
 
-	public bool AddPlayerToBoard(IPlayer player) => PiecesPositions.TryAdd(player, new Dictionary<Position, Hero>());
+	public bool AddPlayerToBoard(IPlayer player) => PiecesPositions.TryAdd(player, new Dictionary<Position, string>());
 	
 	public bool RemovePlayerFromBoard(IPlayer player) => PiecesPositions.Remove(player);
 	
-	public Dictionary<Position, Hero> GetPlayerBoard(IPlayer player) => PiecesPositions[player];
+	public Dictionary<Position, string> GetPlayerBoard(IPlayer player) => PiecesPositions[player];
 
 	public bool IsPositionEmpty(IPlayer player, Position position) => !GetPlayerBoard(player).ContainsKey(position);
 	
-	public bool AddHeroPosition(IPlayer player, Hero hero, Position position) => GetPlayerBoard(player).TryAdd(position, hero);
+	public bool AddHeroPosition(IPlayer player, string heroId, Position position) => GetPlayerBoard(player).TryAdd(position, heroId);
 
 	public bool UpdateHeroPosition(IPlayer player, string heroId, Position newPosition)
 	{
 		bool result = false;
 		foreach(var playerPiece in GetPlayerBoard(player))
 		{
-			if(playerPiece.Value.PieceId == heroId)
+			if(playerPiece.Value == heroId)
 			{
-				var piece = playerPiece.Value;
+				var pieceId = playerPiece.Value;
 				if(RemoveHero(player, heroId))
 				{
-					result = AddHeroPosition(player, piece, newPosition);
+					result = AddHeroPosition(player, pieceId, newPosition);
 				}
 			}
 		}
 		return result;
 	}
 	
-	public Position GetHeroPosition(IPlayer player, string heroId)
+	public Position? GetHeroPosition(IPlayer player, string heroId)
 	{
 		foreach(var playerPiece in GetPlayerBoard(player))
 		{
-			if(playerPiece.Value.PieceId == heroId)
+			if(playerPiece.Value == heroId)
 			{
 				return playerPiece.Key;
 			}
 		}
-		return new Position();
+		return null;
 	}
 
 	public bool RemoveHero(IPlayer player, string heroId)
@@ -60,7 +60,7 @@ class Board : IBoard
 		bool result = false;
 		foreach(var playerPiece in GetPlayerBoard(player))
 		{
-			if(playerPiece.Value.PieceId == heroId)
+			if(playerPiece.Value == heroId)
 			{
 				result = GetPlayerBoard(player).Remove(playerPiece.Key);
 			}
@@ -68,9 +68,9 @@ class Board : IBoard
 		return result;
 	}
 
-	public IEnumerable<Hero> GetAllEnemy(IPlayer player, Hero hero)
+	public IEnumerable<string> GetAllEnemyId(IPlayer player, Hero hero)
 	{
-		List<Hero> result = new();
+		List<string> result = new();
 		Position? heroCurrentPosition = GetHeroPosition(player, hero.PieceId);
 		if(heroCurrentPosition is not null)
 		{
