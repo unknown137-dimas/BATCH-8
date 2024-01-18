@@ -34,7 +34,7 @@ class Board : IBoard
 			if(playerPiece.Value == heroId)
 			{
 				var pieceId = playerPiece.Value;
-				if(RemoveHero(player, heroId))
+				if(RemoveHeroPosition(player, heroId))
 				{
 					result = AddHeroPosition(player, pieceId, newPosition);
 				}
@@ -55,7 +55,7 @@ class Board : IBoard
 		return null;
 	}
 
-	public bool RemoveHero(IPlayer player, string heroId)
+	public bool RemoveHeroPosition(IPlayer player, string heroId)
 	{
 		bool result = false;
 		foreach(var playerPiece in GetPlayerBoard(player))
