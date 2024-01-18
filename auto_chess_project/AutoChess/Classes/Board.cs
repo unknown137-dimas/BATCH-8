@@ -22,22 +22,16 @@ class Board : IBoard
 	
 	public Dictionary<IPosition, string> GetPlayerBoard(IPlayer player) => PiecesPositions[player];
 
-	public bool IsPositionEmpty(IPlayer player, IPosition position) => !GetPlayerBoard(player).ContainsKey(position);
-	
 	public bool AddHeroPosition(IPlayer player, string heroId, IPosition position) => GetPlayerBoard(player).TryAdd(position, heroId);
 
 	public bool UpdateHeroPosition(IPlayer player, string heroId, IPosition newPosition)
 	{
 		bool result = false;
-		foreach(var playerPiece in GetPlayerBoard(player))
+		if(GetHeroPosition(player, heroId) != null)
 		{
-			if(playerPiece.Value == heroId)
+			if(RemoveHeroPosition(player, heroId))
 			{
-				var pieceId = playerPiece.Value;
-				if(RemoveHeroPosition(player, heroId))
-				{
-					result = AddHeroPosition(player, pieceId, newPosition);
-				}
+				result = AddHeroPosition(player, heroId, newPosition);
 			}
 		}
 		return result;

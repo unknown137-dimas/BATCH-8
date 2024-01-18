@@ -7,5 +7,4 @@ interface IBoard
     public bool AddPlayerToBoard(IPlayer player);
     public bool RemovePlayerFromBoard(IPlayer player);
     public Dictionary<IPosition, string> GetPlayerBoard(IPlayer player);
-    public bool IsPositionEmpty(IPlayer player, IPosition position);
 }

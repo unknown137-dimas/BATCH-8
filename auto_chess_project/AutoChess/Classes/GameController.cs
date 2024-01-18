@@ -112,18 +112,11 @@ class GameController
 
 	public bool PutPlayerPiece(IPlayer player, IPiece piece, IPosition position)
 	{
-		if(_board.IsPositionEmpty(player, position))
+		if(_board.GetHeroPosition(player, piece.PieceId) == null)
 		{
-			 if(!IsPieceExistOnBoard(player, piece.PieceId))
-			 {
-				return _board.AddHeroPosition(player, piece.PieceId, position);
-			 }
-			 else
-			 {
-				return _board.UpdateHeroPosition(player, piece.PieceId, position);
-			 }
+			return _board.AddHeroPosition(player, piece.PieceId, position);
 		}
-		return false;
+		return _board.UpdateHeroPosition(player, piece.PieceId, position);
 	}
 
 	public bool IsFinishedPickAllPieces(IPlayer player) => GetPlayerPieces(player).Count() == PlayerPiecesCount;
