@@ -91,7 +91,7 @@ internal class Program
 			
 			// PICK HERO MENU
 			// TODO
-			// 1. How to edit/remove item from user (if user want to change item that already playerHeroes)
+			// 1. How to edit/remove item from user (if user want to change item that already picked)
 			// 2. Fix BarChart
 			// 3. Display picked hero
 			#region PICK_HERO_MENU
