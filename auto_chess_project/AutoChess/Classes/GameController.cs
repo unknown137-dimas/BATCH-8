@@ -81,6 +81,18 @@ class GameController
 	// Manage player's piece
 	public IEnumerable<IPiece> GetPlayerPieces(IPlayer player) => _players[player].PlayerPieces;
 
+	public IPiece? GetPlayerPiece(IPlayer player, string heroId)
+	{
+		foreach(var piece in GetPlayerPieces(player))
+		{
+			if(piece.PieceId == heroId)
+			{
+				return piece;
+			}
+		}
+		return null;
+	}
+
 	public IEnumerable<string> GetPlayerPiecesName(IPlayer player) => ((List<IPiece>)GetPlayerPieces(player)).ConvertAll(piece => piece.Name);
 	
 	public bool AddPlayerPiece(IPlayer player, string heroName)
