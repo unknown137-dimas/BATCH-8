@@ -14,9 +14,9 @@ internal class Program
 		);
 	}
 
-	static Columns DisplayHeroStats(IEnumerable<string> heroList, Dictionary<string, HeroDetails> heroDb, int barWidth = 35)
+	static IRenderable DisplayHeroStats(IEnumerable<string> heroList, Dictionary<string, HeroDetails> heroDb, int barWidth = 35)
 	{
-		List<Panel> heroStat = new();
+		List<IRenderable> heroStat = new();
 		foreach(var hero in heroList)
 		{
 			var heroPanel = new Panel(
@@ -31,6 +31,36 @@ internal class Program
 			heroStat.Add(heroPanel);
 		}
 		return new Columns(heroStat);
+	}
+	
+	static IRenderable DisplayBoard(int[] boardSize, Dictionary<IPosition, string> board)
+	{
+		 // RENDER BOARD
+		var panel = new Panel(
+			new Markup("0")
+		)
+		{
+			Width = 4,
+			Height = 3,
+			Padding = new Padding(0, 0, 0, 0)
+		};
+		List<IRenderable> rowsList = new();
+		for(int i = 0; i < boardSize[1]; i++)
+		{
+			List<IRenderable> columnsList = new();
+			for(int j = 0; j < boardSize[0]; j++)
+			{
+				columnsList.Add(panel);
+			}
+			rowsList.Add(
+				new Columns(columnsList)
+				{
+					Expand = false,
+					Padding = new Padding(0, 0, 0, 0)
+				}
+			);
+		}
+		return new Rows(rowsList);
 	}
 
 	static void Main()
@@ -47,24 +77,11 @@ internal class Program
 			{PieceTypes.Warlock, "🌕"},
 			{PieceTypes.Warrior, "⚔️"},
 		};
-
-		// BOARD
-		var panel = new Panel(
-			new Markup(heroIcons[PieceTypes.Knight])
-		);
-		panel.Width = 4;
-		panel.Height = 3;
-		panel.Padding = new Padding(0,0,0,0);
-		var column = new Columns(panel, panel, panel);
-		column.Expand = false;
-		column.Padding = new Padding(0,0,0,0);
-		var board = new Rows(column, column, column);
 		
 		
 		// MAIN MENU
 		#region MAIN_MENU
 		FigletTitle("AutoChess");
-		AnsiConsole.Write(board);
 		var mainMenu = AnsiConsole.Prompt(
 			new SelectionPrompt<string>()
 			.PageSize(5)
@@ -150,14 +167,15 @@ internal class Program
 				var playerPieces = (List<IPiece>)autoChess.GetPlayerPieces(player);
 				// TODO
 				// 1. Change preview layout using board
-				foreach(var piece in playerPieces)
-				{
-					var piecePosition = autoChess.GetHeroPosition(player, piece.PieceId);
-					if(piecePosition is not null)
-					{
-						AnsiConsole.WriteLine($"{piece} | X:{piecePosition.X} Y:{piecePosition.Y}");
-					}
-				}
+				AnsiConsole.Write(DisplayBoard(autoChess.GetBoardSize(), autoChess.GetPlayerBoard(player)));
+				// foreach(var piece in playerPieces)
+				// {
+				// 	var piecePosition = autoChess.GetHeroPosition(player, piece.PieceId);
+				// 	if(piecePosition is not null)
+				// 	{
+				// 		AnsiConsole.WriteLine($"{piece} | X:{piecePosition.X} Y:{piecePosition.Y}");
+				// 	}
+				// }
 				AnsiConsole.Write(new Rule("[red]Set Hero's Position[/]"));
 				var playerPiece = AnsiConsole.Prompt(
 					new SelectionPrompt<Hero>()
