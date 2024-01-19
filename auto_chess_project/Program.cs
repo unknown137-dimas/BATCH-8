@@ -33,21 +33,33 @@ internal class Program
 		return new Columns(heroStat);
 	}
 	
-	static IRenderable DisplayBoard(int[] boardSize, Dictionary<IPosition, string> board)
+	static IRenderable DisplayBoard(GameController autoChess, Dictionary<PieceTypes, string> heroIcons, IPlayer player = null)
 	{
 		 // RENDER BOARD
+		int[] boardSize = autoChess.GetBoardSize();
+		var board = player != null ? autoChess.GetPlayerBoard(player) : autoChess.GetAllHeroPosition();
 		List<IRenderable> rowsList = new();
-		for(int i = 0; i < boardSize[1]; i++)
+		for(int y = boardSize[1] - 1; y >= 0 ; y--)
 		{
 			List<IRenderable> columnsList = new();
-			for(int j = 0; j < boardSize[0]; j++)
+			for(int x = 0; x < boardSize[0]; x++)
 			{
+				string icons = " ?";
+				if(board.TryGetValue(new Position(x, y), out string heroId))
+				{
+					var hero = autoChess.GetPieceById(heroId);
+					if(hero != null)
+					{
+						heroIcons.TryGetValue(hero.PieceType, out icons);
+						icons = icons ?? "❌";
+					}
+				}
 				columnsList.Add(
 					new Panel(
-						new Markup("0")
+						new Markup(icons)
 					)
 					{
-						Width = 4,
+						Width = 5,
 						Height = 3,
 						Padding = new Padding(0, 0, 0, 0)
 					}
@@ -71,6 +83,21 @@ internal class Program
 		const int boardSize = 8;
 		int roll = 3;
 
+		// GAME CONTROLLER INIT
+		var autoChess = new GameController(new Board(boardSize));
+		autoChess.AddHero("Poisonous Worm", new HeroDetails(PieceTypes.Warlock, 600, 55, 0, 3));
+		autoChess.AddHero("Hell Knight", new HeroDetails(PieceTypes.Knight, 700, 75, 5, 1));
+		autoChess.AddHero("God of Thunder", new HeroDetails(PieceTypes.Mage, 950, 60, 0, 3));
+		autoChess.AddHero("Swordman", new HeroDetails(PieceTypes.Warrior, 600, 67.5, 5, 2));
+		autoChess.AddHero("Egersis Ranger", new HeroDetails(PieceTypes.Hunter, 450, 45, 5, 5));
+		autoChess.AddHero("Shadowcrawler", new HeroDetails(PieceTypes.Assassin, 550, 85, 5, 2));
+		autoChess.AddHero("Storm Shaman", new HeroDetails(PieceTypes.Shaman, 800, 47.5, 5, 4));
+		autoChess.AddHero("Warpwood Sage", new HeroDetails(PieceTypes.Druid, 650, 75, 5, 2));
+		autoChess.AddHero("Fallen Witcher", new HeroDetails(PieceTypes.Witcher, 750, 70, 5, 1));
+		autoChess.AddHero("Heaven Bomber ", new HeroDetails(PieceTypes.Mech, 500, 45, 5, 4));
+		autoChess.AddHero("Goddess of Light", new HeroDetails(PieceTypes.Priest, 400, 52.5, 0, 4));
+		autoChess.AddHero("Grand Herald", new HeroDetails(PieceTypes.Wizard, 600, 55, 0, 4));
+		
 		// HERO ICONS
 		Dictionary<PieceTypes, string> heroIcons = new()
 		{
@@ -98,10 +125,11 @@ internal class Program
 		if(mainMenu == "Start")
 		{
 			// PLAYER NAME INPUT MENU
+			// TODO
+			// 1. Menu to choose between Player vs Player or Player vs Bot
 			var playerName = AnsiConsole.Ask<string>("What's your [green]name[/]?");
 
-			// GAME CONTROLLER INIT
-			var autoChess = new GameController(new Board(boardSize));
+			// ADD PLAYER
 			var player = new Player(playerName);
 			var bot = new Player("BOT");
 			autoChess.AddPlayer(player);
@@ -111,22 +139,8 @@ internal class Program
 			// TODO
 			// 1. How to edit/remove item from user (if user want to change item that already picked)
 			// 2. Fix BarChart
-			// 3. Display picked hero
 			#region PICK_HERO_MENU
-			autoChess.AddHero("Poisonous Worm", new HeroDetails(PieceTypes.Warlock, 600, 55, 0, 3));
-			autoChess.AddHero("Hell Knight", new HeroDetails(PieceTypes.Knight, 700, 75, 5, 1));
-			autoChess.AddHero("God of Thunder", new HeroDetails(PieceTypes.Mage, 950, 60, 0, 3));
-			autoChess.AddHero("Swordman", new HeroDetails(PieceTypes.Warrior, 600, 67.5, 5, 2));
-			autoChess.AddHero("Egersis Ranger", new HeroDetails(PieceTypes.Hunter, 450, 45, 5, 5));
-			autoChess.AddHero("Shadowcrawler", new HeroDetails(PieceTypes.Assassin, 550, 85, 5, 2));
-			autoChess.AddHero("Storm Shaman", new HeroDetails(PieceTypes.Shaman, 800, 47.5, 5, 4));
-			autoChess.AddHero("Warpwood Sage", new HeroDetails(PieceTypes.Druid, 650, 75, 5, 2));
-			autoChess.AddHero("Fallen Witcher", new HeroDetails(PieceTypes.Witcher, 750, 70, 5, 1));
-			autoChess.AddHero("Heaven Bomber ", new HeroDetails(PieceTypes.Mech, 500, 45, 5, 4));
-			autoChess.AddHero("Goddess of Light", new HeroDetails(PieceTypes.Priest, 400, 52.5, 0, 4));
-			autoChess.AddHero("Grand Herald", new HeroDetails(PieceTypes.Wizard, 600, 55, 0, 4));
 			var heroesDatabase = autoChess.HeroesDatabase;
-
 			while(!autoChess.IsFinishedPickAllPieces(player) && roll > 0)
 			{
 				FigletTitle("Pick Your Heroes");
@@ -165,19 +179,9 @@ internal class Program
 			{
 				FigletTitle("Place Your Heroes");
 				AnsiConsole.Write(new Rule("[red]Player Hero's Position[/]"));
-				var playerPieces = (List<IPiece>)autoChess.GetPlayerPieces(player);
-				// TODO
-				// 1. Change preview layout using board
-				AnsiConsole.Write(DisplayBoard(autoChess.GetBoardSize(), autoChess.GetPlayerBoard(player)));
-				// foreach(var piece in playerPieces)
-				// {
-				// 	var piecePosition = autoChess.GetHeroPosition(player, piece.PieceId);
-				// 	if(piecePosition is not null)
-				// 	{
-				// 		AnsiConsole.WriteLine($"{piece} | X:{piecePosition.X} Y:{piecePosition.Y}");
-				// 	}
-				// }
+				AnsiConsole.Write(DisplayBoard(autoChess, heroIcons, player));
 				AnsiConsole.Write(new Rule("[red]Set Hero's Position[/]"));
+				var playerPieces = (List<IPiece>)autoChess.GetPlayerPieces(player);
 				var playerPiece = AnsiConsole.Prompt(
 					new SelectionPrompt<Hero>()
 					.PageSize(5)
@@ -244,30 +248,10 @@ internal class Program
 
 			// PREVIEW MENU
 			// TODO
-			// 1. Change preview layout using board
+			// 1. Display board to display both player in one board
 			#region PREVIEW_MENU
 			FigletTitle("Preview");
-			// Display player piece's position
-			AnsiConsole.Write(new Rule("[red]Player Hero's Position[/]"));
-			foreach(var piece in autoChess.GetPlayerData(player).PlayerPieces)
-			{
-				IPosition? piecePosition = autoChess.GetHeroPosition(player, piece.PieceId);
-				if(piecePosition is not null)
-				{
-					AnsiConsole.WriteLine($"{piece} | X:{piecePosition.X} Y:{piecePosition.Y}");
-				}
-			}
-			
-			// Display BOT piece's position
-			AnsiConsole.Write(new Rule("[red]Bot Hero's Position[/]"));
-			foreach(var piece in autoChess.GetPlayerData(bot).PlayerPieces)
-			{
-				IPosition? piecePosition = autoChess.GetHeroPosition(player, piece.PieceId);
-				if(piecePosition is not null)
-				{
-					AnsiConsole.WriteLine($"{piece} | X:{piecePosition.X} Y:{piecePosition.Y}");
-				}
-			}
+			AnsiConsole.Write(DisplayBoard(autoChess, heroIcons));
 			#endregion
 
 			// BATTLE VIEW
@@ -282,6 +266,7 @@ internal class Program
 			// // 4. Repeat until 1 player left
 			// // 5. Display round winner
 			// // 6. Repeat for all round
+			// // 8. How to handle multiple round
 			// #endregion
 		}
 	}
