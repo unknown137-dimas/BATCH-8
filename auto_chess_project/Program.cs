@@ -36,21 +36,22 @@ internal class Program
 	static IRenderable DisplayBoard(int[] boardSize, Dictionary<IPosition, string> board)
 	{
 		 // RENDER BOARD
-		var panel = new Panel(
-			new Markup("0")
-		)
-		{
-			Width = 4,
-			Height = 3,
-			Padding = new Padding(0, 0, 0, 0)
-		};
 		List<IRenderable> rowsList = new();
 		for(int i = 0; i < boardSize[1]; i++)
 		{
 			List<IRenderable> columnsList = new();
 			for(int j = 0; j < boardSize[0]; j++)
 			{
-				columnsList.Add(panel);
+				columnsList.Add(
+					new Panel(
+						new Markup("0")
+					)
+					{
+						Width = 4,
+						Height = 3,
+						Padding = new Padding(0, 0, 0, 0)
+					}
+				);
 			}
 			rowsList.Add(
 				new Columns(columnsList)
