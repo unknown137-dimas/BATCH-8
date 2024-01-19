@@ -42,6 +42,8 @@ class GameController
 
 	public int[] GetBoardSize() => [_board.Width, _board.Height];
 	
+	public Dictionary<IPlayer, Dictionary<IPosition, string>> GetBoard() => _board.PiecesPositions;
+	
 	// Manage hero database
 	public bool AddHero(string heroName, HeroDetails heroDetails) => HeroesDatabase.TryAdd(heroName, heroDetails);
 	
