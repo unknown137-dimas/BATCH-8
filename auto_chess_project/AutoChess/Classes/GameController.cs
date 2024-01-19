@@ -38,7 +38,7 @@ class GameController
 	}
 
 	// Get current game information
-	public IEnumerable<IPlayer> GetPlayers() => _players.Keys;
+	public IEnumerable<IPlayer> GetPlayers() => _players.Keys.ToList();
 
 	public int[] GetBoardSize() => [_board.Width, _board.Height];
 
