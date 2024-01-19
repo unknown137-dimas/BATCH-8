@@ -108,7 +108,7 @@ internal class Program
 		{
 			FigletTitle("Pick Your Heroes");
 			autoChess.CurrentGamePhase = Phases.ChoosingPieace;
-			AnsiConsole.Write(new Rule("[green]{player.Name}'s Heroes[/]"));
+			AnsiConsole.Write(new Rule($"[green]{player.Name}'s Heroes[/]"));
 			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
 			AnsiConsole.Write(new Rule("[blue]Hero Options[/]"));
 			var optionsList = autoChess.GenerateRandomHeroList();
@@ -134,7 +134,7 @@ internal class Program
 		while(!autoChess.IsFinishedPutAllPieces(player))
 		{
 			FigletTitle("Place Your Heroes");
-			AnsiConsole.Write(new Rule("[green]{player.Name} Hero's Position[/]"));
+			AnsiConsole.Write(new Rule($"[green]{player.Name} Hero's Position[/]"));
 			AnsiConsole.Write(DisplayBoard(player));
 			AnsiConsole.Write(new Rule("[red]Set Hero's Position[/]"));
 			var playerPieces = (List<IPiece>)autoChess.GetPlayerPieces(player);
