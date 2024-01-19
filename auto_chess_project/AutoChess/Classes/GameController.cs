@@ -106,8 +106,6 @@ class GameController
 	// Manage board
 	public Dictionary<IPosition, string> GetPlayerBoard(IPlayer player) => _board.GetPlayerBoard(player);
 
-	public bool IsPieceExistOnBoard(IPlayer player, string heroId) => _board.GetPlayerBoard(player).ContainsValue(heroId);
-
 	public IPosition? GetHeroPosition(IPlayer player, string heroId) => _board.GetHeroPosition(player, heroId);
 
 	public bool UpdateHeroPosition(IPlayer player, string heroId, IPosition newPosition) => _board.UpdateHeroPosition(player, heroId, newPosition);
