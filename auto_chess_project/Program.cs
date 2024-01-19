@@ -44,14 +44,14 @@ internal class Program
 			List<IRenderable> columnsList = new();
 			for(int x = 0; x < boardSize[0]; x++)
 			{
-				string icons = " ?";
+				string icons = "";
 				if(board.TryGetValue(new Position(x, y), out string heroId))
 				{
 					var hero = autoChess.GetPieceById(heroId);
 					if(hero != null)
 					{
 						heroIcons.TryGetValue(hero.PieceType, out icons);
-						icons = icons ?? "❌";
+						icons = icons ?? "";
 					}
 				}
 				columnsList.Add(
@@ -80,7 +80,7 @@ internal class Program
 	{
 		// GAME CONFIGURATION
 		Console.OutputEncoding = Encoding.UTF8;
-		const int boardSize = 8;
+		const int boardSize = 6;
 		int roll = 3;
 
 		// GAME CONTROLLER INIT
@@ -101,9 +101,18 @@ internal class Program
 		// HERO ICONS
 		Dictionary<PieceTypes, string> heroIcons = new()
 		{
+			{PieceTypes.Warlock, "📕"},
 			{PieceTypes.Knight, "🛡️"},
-			{PieceTypes.Warlock, "🌕"},
+			{PieceTypes.Mage, "🪄"},
 			{PieceTypes.Warrior, "⚔️"},
+			{PieceTypes.Hunter, "🏹"},
+			{PieceTypes.Assassin, "🗡️"},
+			{PieceTypes.Shaman, "👻"},
+			{PieceTypes.Druid, "🍃"},
+			{PieceTypes.Witcher, "🐺"},
+			{PieceTypes.Mech, "⚙️"},
+			{PieceTypes.Priest, "✝️"},
+			{PieceTypes.Wizard, "🔮"},
 		};
 		
 		
@@ -130,10 +139,10 @@ internal class Program
 			var playerName = AnsiConsole.Ask<string>("What's your [green]name[/]?");
 
 			// ADD PLAYER
-			var player = new Player(playerName);
-			var bot = new Player("BOT");
-			autoChess.AddPlayer(player);
-			autoChess.AddPlayer(bot);
+			var player1 = new Player(playerName);
+			var player2 = new Player("BOT");
+			autoChess.AddPlayer(player1);
+			autoChess.AddPlayer(player2);
 			
 			// PICK HERO MENU
 			// TODO
@@ -141,12 +150,12 @@ internal class Program
 			// 2. Fix BarChart
 			#region PICK_HERO_MENU
 			var heroesDatabase = autoChess.HeroesDatabase;
-			while(!autoChess.IsFinishedPickAllPieces(player) && roll > 0)
+			while(!autoChess.IsFinishedPickAllPieces(player1) && roll > 0)
 			{
 				FigletTitle("Pick Your Heroes");
 				autoChess.CurrentGamePhase = Phases.ChoosingPieace;
 				AnsiConsole.Write(new Rule("[red]Picked Heroes[/]"));
-				AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player), heroesDatabase));
+				AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player1), heroesDatabase));
 				AnsiConsole.Write(new Rule("[red]Hero Options[/]"));
 				var optionsList = autoChess.GenerateRandomHeroList();
 				AnsiConsole.Write(DisplayHeroStats(optionsList, heroesDatabase));
@@ -160,13 +169,13 @@ internal class Program
 						)
 				);
 				// Set player pieces
-				autoChess.AddPlayerPiece(player, options);
+				autoChess.AddPlayerPiece(player1, options);
 				roll--;
 			}
 
 			// BOT 
 			// Bot pick pieces
-			autoChess.AddPlayerPiece(bot, autoChess.GenerateRandomHeroList());
+			autoChess.AddPlayerPiece(player2, autoChess.GenerateRandomHeroList());
 			#endregion
 			
 			// SET HERO POSITION MENU
@@ -175,13 +184,13 @@ internal class Program
 			#region SET_HERO_POSITION_MENU
 			autoChess.CurrentGamePhase = Phases.PlaceThePiece;
 			// Loop until all player's piece on the board
-			while(!autoChess.IsFinishedPutAllPieces(player))
+			while(!autoChess.IsFinishedPutAllPieces(player1))
 			{
 				FigletTitle("Place Your Heroes");
 				AnsiConsole.Write(new Rule("[red]Player Hero's Position[/]"));
-				AnsiConsole.Write(DisplayBoard(autoChess, heroIcons, player));
+				AnsiConsole.Write(DisplayBoard(autoChess, heroIcons, player1));
 				AnsiConsole.Write(new Rule("[red]Set Hero's Position[/]"));
-				var playerPieces = (List<IPiece>)autoChess.GetPlayerPieces(player);
+				var playerPieces = (List<IPiece>)autoChess.GetPlayerPieces(player1);
 				var playerPiece = AnsiConsole.Prompt(
 					new SelectionPrompt<Hero>()
 					.PageSize(5)
@@ -201,8 +210,8 @@ internal class Program
 							{
 								return coordinate switch
 								{
-									< 0 => ValidationResult.Error("[red]The coordinate must be positive[/]"),
-									>= boardSize => ValidationResult.Error($"[red]The coordinate can't exceed the player's area ({boardSize})[/]"),
+									< 1 => ValidationResult.Error($"[red]The coordinate range from 1 to {boardSize}[/]"),
+									>= boardSize + 1 => ValidationResult.Error($"[red]The coordinate can't exceed the player's area ({boardSize})[/]"),
 									_ => ValidationResult.Success(),
 								};
 							}
@@ -217,14 +226,14 @@ internal class Program
 							{
 								return coordinate switch
 								{
-									< 0 => ValidationResult.Error("[red]The coordinate must be positive[/]"),
-									>= boardSize / 2 => ValidationResult.Error($"[red]The coordinate can't exceed the player's area ({boardSize / 2})[/]"),
+									< 1 => ValidationResult.Error($"[red]The coordinate range from 1 to {boardSize}[/]"),
+									>= (boardSize / 2) + 1 => ValidationResult.Error($"[red]The coordinate can't exceed the player's area ({boardSize / 2})[/]"),
 									_ => ValidationResult.Success(),
 								};
 							}
 						)
 					);
-					success = autoChess.PutPlayerPiece(player, playerPiece, new Position(pieceX, pieceY));
+					success = autoChess.PutPlayerPiece(player1, playerPiece, new Position(pieceX - 1, pieceY - 1));
 					if(!success)
 					{
 						AnsiConsole.Markup("[red]You can't put another hero in the same coordinate[/]\n");
@@ -234,21 +243,19 @@ internal class Program
 
 			// BOT
 			// Bot put piece
-			foreach(var piece in autoChess.GetPlayerData(bot).PlayerPieces)
+			foreach(var piece in autoChess.GetPlayerData(player2).PlayerPieces)
 			{
 				bool success = false;
 				while(!success)
 				{
 					int x = new Random().Next(0, boardSize);
-					int y = new Random().Next(4, boardSize);
-					success = autoChess.PutPlayerPiece(bot, piece, new Position(x, y));
+					int y = new Random().Next((boardSize % 2 == 0 ? boardSize / 2 : (boardSize / 2) + 1), boardSize);
+					success = autoChess.PutPlayerPiece(player2, piece, new Position(x, y));
 				}
 			}
 			#endregion
 
 			// PREVIEW MENU
-			// TODO
-			// 1. Display board to display both player in one board
 			#region PREVIEW_MENU
 			FigletTitle("Preview");
 			AnsiConsole.Write(DisplayBoard(autoChess, heroIcons));
