@@ -53,7 +53,7 @@ internal class Program
 				.AddItem("ATK", heroDb[hero].Attack, Color.Red3)
 				.AddItem("Armor", heroDb[hero].Armor, Color.Blue)
 				.AddItem("ATK Range", heroDb[hero].AttackRange, Color.Red1)
-			).Header(new PanelHeader(hero));
+			).Header(new PanelHeader(hero).Centered());
 			heroPanel.Padding = new Padding(0, 0, 0, 0);
 			heroStat.Add(heroPanel);
 		}
@@ -99,7 +99,7 @@ internal class Program
 				}
 			);
 		}
-		return new Rows(rowsList);
+		return Align.Center(new Rows(rowsList));
 	}
 
 	static void PickHero(IPlayer player)
@@ -108,9 +108,9 @@ internal class Program
 		{
 			FigletTitle("Pick Your Heroes");
 			autoChess.CurrentGamePhase = Phases.ChoosingPieace;
-			AnsiConsole.Write(new Rule($"[green]{player.Name}'s Heroes[/]"));
+			AnsiConsole.Write(new Rule($"[green]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
 			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
-			AnsiConsole.Write(new Rule("[blue]Hero Options[/]"));
+			AnsiConsole.Write(new Rule($"[blue]Hero Options | Roll Chance [[{Roll}]][/]"));
 			var optionsList = autoChess.GenerateRandomHeroList();
 			AnsiConsole.Write(DisplayHeroStats(optionsList));
 			var options = AnsiConsole.Prompt(
@@ -122,6 +122,7 @@ internal class Program
 					$"[grey](Press [blue]<space>[/] to select hero, [green]<enter>[/] to accept and re-Roll)[/]"
 					)
 			);
+			
 			// Set player pieces
 			autoChess.AddPlayerPiece(player, options);
 			Roll--;
@@ -131,12 +132,13 @@ internal class Program
 	static void SetHeroPosition(IPlayer player)
 	{
 		// Loop until all player's piece on the board
-		while(!autoChess.IsFinishedPutAllPieces(player))
+		bool confirm = false;
+		while(!autoChess.IsFinishedPutAllPieces(player) || !confirm)
 		{
 			FigletTitle("Place Your Heroes");
 			AnsiConsole.Write(new Rule($"[green]{player.Name} Hero's Position[/]"));
 			AnsiConsole.Write(DisplayBoard(player));
-			AnsiConsole.Write(new Rule("[red]Set Hero's Position[/]"));
+			AnsiConsole.Write(new Rule("[blue]Set Hero's Position[/]"));
 			var playerPieces = (List<IPiece>)autoChess.GetPlayerPieces(player);
 			var playerPiece = AnsiConsole.Prompt(
 				new SelectionPrompt<Hero>()
@@ -145,6 +147,7 @@ internal class Program
 					playerPieces.ConvertAll(piece => (Hero)piece)
 				)
 			);
+			
 			// Loop until piece placement success
 			bool success = false;
 			bool isSecondPlayer = ((List<IPlayer>)autoChess.GetPlayers()).IndexOf(player) == 1;
@@ -188,6 +191,13 @@ internal class Program
 				{
 					AnsiConsole.Markup("[red]You can't put another hero in the same coordinate[/]\n");
 				}
+			}
+			if(autoChess.IsFinishedPutAllPieces(player))
+			{
+				FigletTitle($"{player}'s Preview");
+				AnsiConsole.Write(new Rule($"[green]{player.Name} Hero's Position[/]"));
+				AnsiConsole.Write(DisplayBoard());
+				confirm = AnsiConsole.Confirm("Are you sure about your heroes placement?");
 			}
 		}
 	}
@@ -273,6 +283,7 @@ internal class Program
 			#endregion
 			
 			// SET HERO POSITION MENU
+			// TODO
 			// 1. How to cancel setting position for the selected piece
 			// 2. Ask confirmation to player for all position before going battle, if no, repeat to set hero position menu
 			// 3. Add coordinate label to the board
