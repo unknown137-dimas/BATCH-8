@@ -147,6 +147,9 @@ internal class Program
 			);
 			// Loop until piece placement success
 			bool success = false;
+			bool isSecondPlayer = ((List<IPlayer>)autoChess.GetPlayers()).IndexOf(player) == 1;
+			int yMinCoor = isSecondPlayer ? (BoardSize % 2 == 0 ? BoardSize / 2 : (BoardSize / 2) + 1) + 1 : 1;
+			int yMaxCoor = isSecondPlayer ? BoardSize : BoardSize / 2;
 			while(!success)
 			{
 				var pieceX = AnsiConsole.Prompt(
@@ -173,8 +176,8 @@ internal class Program
 						{
 							return coordinate switch
 							{
-								< 1 => ValidationResult.Error($"[red]The coordinate range from 1 to {BoardSize}[/]"),
-								>= (BoardSize / 2) + 1 => ValidationResult.Error($"[red]The coordinate can't exceed the player's area ({BoardSize / 2})[/]"),
+								var value when value < yMinCoor => ValidationResult.Error($"[red]The coordinate range from {yMinCoor} to {yMaxCoor}[/]"),
+								var value when value > yMaxCoor => ValidationResult.Error($"[red]The coordinate can't exceed the player's area ({yMaxCoor})[/]"),
 								_ => ValidationResult.Success(),
 							};
 						}
