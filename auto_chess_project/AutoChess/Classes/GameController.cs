@@ -121,7 +121,7 @@ class GameController
 
 	public bool IsFinishedPickAllPieces(IPlayer player) => GetPlayerPieces(player).Count() == PlayerPiecesCount;
 
-	public bool IsFinishedPutAllPieces(IPlayer player) => _board.GetPlayerBoard(player).Count == PlayerPiecesCount;
+	public bool IsFinishedPutAllPieces(IPlayer player) => _board.GetPlayerBoard(player).Count == GetPlayerPieces(player).Count();
 
 	public bool IsValidPosition(IPlayer player, IPiece piece, IPlayer otherPlayer, IPiece otherPiece) => _board.GetHeroPosition(player, piece.PieceId)?.X != _board.GetHeroPosition(otherPlayer, otherPiece.PieceId)?.X || _board.GetHeroPosition(player, piece.PieceId)?.Y != _board.GetHeroPosition(otherPlayer, otherPiece.PieceId)?.Y;
 
