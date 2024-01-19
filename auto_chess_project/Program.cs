@@ -27,8 +27,8 @@ internal class Program
 
 	// GAME CONTROLLER INIT
 	static GameController autoChess = new GameController(new Board(BoardSize));
-	static Player player1 = null;
-	static Player player2 = null;
+	static Player? player1 = null;
+	static Player? player2 = null;
 
 	static void FigletTitle(string text)
 	{
@@ -60,7 +60,7 @@ internal class Program
 		return new Columns(heroStat);
 	}
 	
-	static IRenderable DisplayBoard(IPlayer player = null)
+	static IRenderable DisplayBoard(IPlayer? player = null)
 	{
 		 // RENDER BOARD
 		int[] boardSize = autoChess.GetBoardSize();
@@ -71,19 +71,18 @@ internal class Program
 			List<IRenderable> columnsList = new();
 			for(int x = 0; x < boardSize[0]; x++)
 			{
-				string icons = "";
-				if(board.TryGetValue(new Position(x, y), out string heroId))
+				string? icons = null;
+				if(board.TryGetValue(new Position(x, y), out string? heroId))
 				{
 					var hero = autoChess.GetPieceById(heroId);
 					if(hero != null)
 					{
 						heroIcons.TryGetValue(hero.PieceType, out icons);
-						icons = icons ?? "";
 					}
 				}
 				columnsList.Add(
 					new Panel(
-						new Markup(icons)
+						new Markup(icons ?? "")
 					)
 					{
 						Width = 5,
