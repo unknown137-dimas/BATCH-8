@@ -41,8 +41,15 @@ class GameController
 	public IEnumerable<IPlayer> GetPlayers() => _players.Keys;
 
 	public int[] GetBoardSize() => [_board.Width, _board.Height];
-	
-	public Dictionary<IPlayer, Dictionary<IPosition, string>> GetBoard() => _board.PiecesPositions;
+
+	public IPiece? GetPieceById(string heroId)
+	{
+		foreach(var player in GetPlayers())
+		{
+			return GetPlayerData(player).GetHeroById(heroId);
+		}
+		return null;
+	}
 	
 	// Manage hero database
 	public bool AddHero(string heroName, HeroDetails heroDetails) => HeroesDatabase.TryAdd(heroName, heroDetails);
@@ -81,17 +88,7 @@ class GameController
 	// Manage player's piece
 	public IEnumerable<IPiece> GetPlayerPieces(IPlayer player) => _players[player].PlayerPieces;
 
-	public IPiece? GetPlayerPiece(IPlayer player, string heroId)
-	{
-		foreach(var piece in GetPlayerPieces(player))
-		{
-			if(piece.PieceId == heroId)
-			{
-				return piece;
-			}
-		}
-		return null;
-	}
+	public IPiece? GetPlayerPiece(IPlayer player, string heroId) => GetPlayerData(player).GetHeroById(heroId);
 
 	public IEnumerable<string> GetPlayerPiecesName(IPlayer player) => ((List<IPiece>)GetPlayerPieces(player)).ConvertAll(piece => piece.Name);
 	
@@ -119,6 +116,19 @@ class GameController
 	public Dictionary<IPosition, string> GetPlayerBoard(IPlayer player) => _board.GetPlayerBoard(player);
 
 	public IPosition? GetHeroPosition(IPlayer player, string heroId) => _board.GetHeroPosition(player, heroId);
+
+	public Dictionary<IPosition, string> GetAllHeroPosition()
+	{
+		Dictionary<IPosition, string> allHeroPosition = new();
+		foreach(var piecesPosition in _board.PiecesPositions.Values)
+		{
+			foreach(var piecePosition in piecesPosition)
+			{
+				allHeroPosition.TryAdd(piecePosition.Key, piecePosition.Value);
+			}
+		}
+		return allHeroPosition;
+	}
 
 	public bool UpdateHeroPosition(IPlayer player, string heroId, IPosition newPosition) => _board.UpdateHeroPosition(player, heroId, newPosition);
 
