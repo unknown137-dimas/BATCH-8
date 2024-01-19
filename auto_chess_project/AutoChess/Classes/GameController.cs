@@ -44,11 +44,16 @@ class GameController
 
 	public IPiece? GetPieceById(string heroId)
 	{
+		IPiece? result = null;
 		foreach(var player in GetPlayers())
 		{
-			return GetPlayerData(player).GetHeroById(heroId);
+			result = GetPlayerData(player).GetHeroById(heroId);
+			if(result != null)
+			{
+				return result;
+			}
 		}
-		return null;
+		return result;
 	}
 	
 	// Manage hero database
