@@ -3,7 +3,7 @@ class Hero : IPiece
     public string PieceId {get;}
     public string Name {get;}
     public PieceTypes PieceType {get;}
-    public double Hp {get;}
+    public double Hp {get; set;}
     public double Attack {get;}
     public double Armor {get;}
     public int AttackRange {get;}
@@ -33,6 +33,11 @@ class Hero : IPiece
     public virtual void Skill()
     {
         throw new NotImplementedException();
+    }
+
+    public void AttackEnemy(IPiece otherPiece)
+    {
+        otherPiece.Hp = this.Attack - otherPiece.Armor;
     }
 
     public override string ToString() => Name;

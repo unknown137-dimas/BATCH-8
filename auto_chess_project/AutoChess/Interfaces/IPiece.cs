@@ -2,7 +2,7 @@ interface IPiece
 {
     string PieceId {get;}
     string Name {get;}
-    double Hp {get;}
+    double Hp {get; set;}
     double Attack {get;}
     double Armor {get;}
     int AttackRange {get;}
