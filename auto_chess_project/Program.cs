@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Threading;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 
@@ -72,17 +73,24 @@ internal class Program
 			for(int x = 0; x < boardSize[0]; x++)
 			{
 				string? icons = null;
+				string? playerSide = null;
 				if(board.TryGetValue(new Position(x, y), out string? heroId))
 				{
 					var hero = autoChess.GetPieceById(heroId);
 					if(hero != null)
 					{
+						playerSide = autoChess.GetPlayerSide(autoChess.GetPlayerByPieceId(heroId)).ToString();
 						heroIcons.TryGetValue(hero.PieceType, out icons);
 					}
 				}
+				var label = "";
+				if(icons != null && playerSide!= null)
+				{
+					label = $"[underline {playerSide}]{icons}[/]";
+				}
 				columnsList.Add(
 					new Panel(
-						new Markup(icons ?? "")
+						new Markup(label)
 					)
 					{
 						Width = 5,
@@ -252,11 +260,20 @@ internal class Program
 			
 			// INPUT PLAYER NAME MENU
 			player1 = new Player(AnsiConsole.Ask<string>("[[PLAYER 1]] What's your [green]name[/]?"));
+			var sidesOptions = (List<Sides>)autoChess.GetGameSides();
+			var player1Side = AnsiConsole.Prompt(
+				new SelectionPrompt<Sides>()
+				.Title("Choose your [green]side[/]?")
+				.AddChoices(
+					sidesOptions
+				)
+			);
 			player2 = new Player(gameModeMenu.Contains("Bot") ? "BOT" : AnsiConsole.Ask<string>("[[PLAYER 2]] What's your [green]name[/]?"));
 			
 			// ADD PLAYER
-			autoChess.AddPlayer(player1);
-			autoChess.AddPlayer(player2);
+			autoChess.AddPlayer(player1, player1Side);
+			sidesOptions.Remove(player1Side);
+			autoChess.AddPlayer(player2, sidesOptions[0]);
 			
 			// PICK HERO MENU
 			// TODO
@@ -316,26 +333,37 @@ internal class Program
 			}
 			#endregion
 
-			// PREVIEW MENU
-			#region PREVIEW_MENU
-			FigletTitle("Preview");
-			AnsiConsole.Write(DisplayBoard());
-			#endregion
-
 			// BATTLE VIEW
-			// #region BATTLE_VIEW
-			// FigletTitle("Battle");
-			// int round = 1;
-			// AnsiConsole.Write(new Rule($"[red]Round {round}[/]"));
-			// // TODO
-			// // 1. Move player's piece around the board
-			// // 2. Scan for other player's piece
-			// // 3. Attack other player pieces
-			// // 4. Repeat until 1 player left
-			// // 5. Display round winner
-			// // 6. Repeat for all round
-			// // 8. How to handle multiple round
-			// #endregion
+			// TODO
+			// 1. Move player's piece around the board
+			// 2. Scan for other player's piece
+			// 3. Attack other player pieces
+			// 4. Repeat until 1 player left
+			// 5. Display round winner
+			// 6. Repeat for all round
+			// 8. How to handle multiple round
+			#region BATTLE_VIEW
+			int round = 1;
+			foreach(var piece in autoChess.GetPlayerPieces(player1))
+			{
+				FigletTitle("Battle");
+				AnsiConsole.Write(new Rule($"[red]Round {round}[/]"));
+				AnsiConsole.Write(DisplayBoard());
+				bool move = true;
+				while(move)
+				{
+					int x = new Random().Next(0, BoardSize);
+					int y = new Random().Next(0, BoardSize);
+					var newPosition = new Position(x, y);
+					if(autoChess.IsValidPosition(newPosition))
+					{
+						autoChess.UpdateHeroPosition(player1, piece.PieceId, newPosition);
+						move = false;
+					}
+				}
+				Thread.Sleep(2000);
+			}
+			#endregion
 		}
 	}
 }
