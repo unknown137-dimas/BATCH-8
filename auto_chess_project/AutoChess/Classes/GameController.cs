@@ -22,14 +22,14 @@ class GameController
 		_heroSlot = heroSlot;
 	}
 
-	public GameController(Board board, List<IPlayer> players)
+	public GameController(Board board, Dictionary<IPlayer, Sides> players)
 	{
 		CurrentGameStatus = Status.Initialized;
 		_board = board;
 		AddPlayer(players);
 	}
 
-	public GameController(Board board, List<IPlayer> players, Dictionary<PieceTypes, int> heroSlot)
+	public GameController(Board board, Dictionary<IPlayer, Sides> players, Dictionary<PieceTypes, int> heroSlot)
 	{
 		CurrentGameStatus = Status.Initialized;
 		_board = board;
@@ -55,6 +55,25 @@ class GameController
 		}
 		return result;
 	}
+
+	public Sides GetPlayerSide(IPlayer player) => GetPlayerData(player).PlayerSide;
+
+	public IPlayer? GetPlayerByPieceId(string heroId)
+	{
+		foreach(var playerPieces in _board.PiecesPositions)
+		{
+			foreach(var hero in playerPieces.Value)
+			{
+				if(hero.Value == heroId)
+				{
+					return playerPieces.Key;
+				}
+			}
+		}
+		return null;
+	}
+
+	public IEnumerable<Sides> GetGameSides() => Enum.GetValues(typeof(Sides)).Cast<Sides>().ToList();
 	
 	// Manage hero database
 	public bool AddHero(string heroName, HeroDetails heroDetails) => HeroesDatabase.TryAdd(heroName, heroDetails);
@@ -66,18 +85,18 @@ class GameController
 	public HeroDetails GetHeroDetails(string heroName) => HeroesDatabase[heroName];
 
 	// Manage player
-	public bool AddPlayer(IPlayer newPlayer)
+	public bool AddPlayer(IPlayer newPlayer, Sides playerSide)
 	{
-		var addPlayer = _players.TryAdd(newPlayer, new PlayerData(PlayerHp));
+		var addPlayer = _players.TryAdd(newPlayer, new PlayerData(PlayerHp, playerSide));
 		var addPlayerBoard = _board.AddPlayerToBoard(newPlayer);
 		return !new List<bool>([addPlayer, addPlayerBoard]).Contains(false);
 	}
 
-	public void AddPlayer(IEnumerable<IPlayer> newPlayers)
+	public void AddPlayer(Dictionary<IPlayer, Sides> newPlayers)
 	{
 		foreach(var player in newPlayers)
 		{
-			AddPlayer(player);
+			AddPlayer(player.Key, player.Value);
 		}
 	}
 
@@ -150,7 +169,7 @@ class GameController
 
 	public bool IsFinishedPutAllPieces(IPlayer player) => _board.GetPlayerBoard(player).Count == GetPlayerPieces(player).Count();
 
-	public bool IsValidPosition(IPlayer player, IPiece piece, IPlayer otherPlayer, IPiece otherPiece) => _board.GetHeroPosition(player, piece.PieceId)?.X != _board.GetHeroPosition(otherPlayer, otherPiece.PieceId)?.X || _board.GetHeroPosition(player, piece.PieceId)?.Y != _board.GetHeroPosition(otherPlayer, otherPiece.PieceId)?.Y;
+	public bool IsValidPosition(IPosition newPosition) => !GetAllHeroPosition().ContainsKey(newPosition);
 
 	// Manage Battle
 	public IEnumerable<string> GetAllEnemy(IPlayer player, IPiece hero) => _board.GetAllEnemyId(player, hero);
