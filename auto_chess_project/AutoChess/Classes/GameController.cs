@@ -117,7 +117,7 @@ class GameController
 	public PlayerData GetPlayerData(IPlayer player) => _players[player];
 
 	// Manage player's piece
-	public IEnumerable<IPiece> GetPlayerPieces(IPlayer player) => _players[player].PlayerPieces;
+	public IEnumerable<IPiece> GetPlayerPieces(IPlayer player) => GetPlayerData(player).PlayerPieces;
 
 	public IPiece? GetPlayerPiece(IPlayer player, string heroId) => GetPlayerData(player).GetHeroById(heroId);
 
@@ -127,7 +127,7 @@ class GameController
 	{
 		if(GetPlayerPieces(player).Count() < PlayerPiecesCount)
 		{
-			_players[player].PlayerPieces.Add(new Hero(heroName, HeroesDatabase[heroName]));
+			GetPlayerData(player).PlayerPieces.Add(new Hero(heroName, HeroesDatabase[heroName]));
 			return true;
 		}
 		return false;
@@ -141,7 +141,7 @@ class GameController
 		}
 	}
 
-	public bool RemovePlayerPiece(IPlayer player, IPiece piece) => _players[player].PlayerPieces.Remove(piece);
+	public bool RemovePlayerPiece(IPlayer player, IPiece piece) => GetPlayerData(player).PlayerPieces.Remove(piece);
 
 	// Manage board
 	public Dictionary<IPosition, string> GetPlayerBoard(IPlayer player) => _board.GetPlayerBoard(player);
@@ -178,6 +178,8 @@ class GameController
 
 	public bool IsValidPosition(IPosition newPosition) => !GetAllHeroPosition().ContainsKey(newPosition);
 
+	public bool RemoveHeroFromBoard(IPlayer player, string heroId) => GetPlayerBoard(player).Remove(GetHeroPosition(player, heroId));
+
 	// Manage Battle
 	public IEnumerable<string> GetAllEnemyId(IPlayer player, IPiece hero) => _board.GetAllEnemyId(player, hero);
 
@@ -187,7 +189,20 @@ class GameController
 	}
 	
 	// Set current round winner
-	public bool SetWinner(IPlayer player) => _players[player].Winner = true;
+	public void SetRoundWinner(IPlayer winner)
+	{
+		foreach(var player in GetPlayers())
+		{
+			if(player.PlayerId == winner.PlayerId)
+			{
+				GetPlayerData(player).Win++;
+			}
+			else
+			{
+				GetPlayerData(player).Hp--;
+			}
+		}
+	}
 
 	// Generate random options
 	public IEnumerable<string> GenerateRandomHeroList()
