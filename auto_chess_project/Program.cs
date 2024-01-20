@@ -6,7 +6,7 @@ using Spectre.Console.Rendering;
 internal class Program
 {
 	// GAME CONFIGURATION
-	const int BoardSize = 6;
+	const int BoardSize = 4;
 	static int Roll {get; set;} = 3;
 
 	// HERO ICONS
@@ -27,7 +27,7 @@ internal class Program
 	};
 
 	// GAME CONTROLLER INIT
-	static GameController autoChess = new GameController(new Board(BoardSize));
+	static GameController autoChess = new GameController(new Board(BoardSize), BoardSize);
 	static Player? player1 = null;
 	static Player? player2 = null;
 
@@ -63,7 +63,7 @@ internal class Program
 	
 	static IRenderable DisplayBoard(IPlayer? player = null)
 	{
-		 // RENDER BOARD
+		// RENDER BOARD
 		int[] boardSize = autoChess.GetBoardSize();
 		var board = player != null ? autoChess.GetPlayerBoard(player) : autoChess.GetAllHeroPosition();
 		List<IRenderable> rowsList = new();
@@ -119,7 +119,7 @@ internal class Program
 			AnsiConsole.Write(new Rule($"[green]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
 			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
 			AnsiConsole.Write(new Rule($"[blue]Hero Options | Roll Chance [[{Roll}]][/]"));
-			var optionsList = autoChess.GenerateRandomHeroList();
+			var optionsList = ((List<string>)autoChess.GenerateRandomHeroList())[0..BoardSize];
 			AnsiConsole.Write(DisplayHeroStats(optionsList));
 			var options = AnsiConsole.Prompt(
 				new MultiSelectionPrompt<string>()
@@ -146,6 +146,8 @@ internal class Program
 			FigletTitle("Place Your Heroes");
 			AnsiConsole.Write(new Rule($"[green]{player.Name} Hero's Position[/]"));
 			AnsiConsole.Write(DisplayBoard(player));
+			AnsiConsole.Write(new Rule($"[green]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
+			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
 			AnsiConsole.Write(new Rule("[blue]Set Hero's Position[/]"));
 			var playerPieces = (List<IPiece>)autoChess.GetPlayerPieces(player);
 			var playerPiece = AnsiConsole.Prompt(
@@ -248,8 +250,10 @@ internal class Program
 		if(mainMenu == "Start")
 		{
 			// GAME MODE MENU
+			#region GAME_MODE_MENU
 			var gameModeMenu = AnsiConsole.Prompt(
 				new SelectionPrompt<string>()
+				.Title("Game Mode")
 				.AddChoices(
 					[
 						 "[[😎]] Player vs [[😎]] Player",
@@ -257,8 +261,10 @@ internal class Program
 					]
 				)
 			);
+			#endregion
 			
 			// INPUT PLAYER NAME MENU
+			#region PLAYER_MENU
 			player1 = new Player(AnsiConsole.Ask<string>("[[PLAYER 1]] What's your [green]name[/]?"));
 			var sidesOptions = (List<Sides>)autoChess.GetGameSides();
 			var player1Side = AnsiConsole.Prompt(
@@ -274,6 +280,7 @@ internal class Program
 			autoChess.AddPlayer(player1, player1Side);
 			sidesOptions.Remove(player1Side);
 			autoChess.AddPlayer(player2, sidesOptions[0]);
+			#endregion
 			
 			// PICK HERO MENU
 			// TODO
@@ -302,9 +309,8 @@ internal class Program
 			// SET HERO POSITION MENU
 			// TODO
 			// 1. How to cancel setting position for the selected piece
-			// 2. Ask confirmation to player for all position before going battle, if no, repeat to set hero position menu
-			// 3. Add coordinate label to the board
-			// 4. Add coordinate info to piece selection
+			// 2. Display coordinate label to the board
+			// 3. Display coordinate info to piece selection
 			#region SET_HERO_POSITION_MENU
 			autoChess.CurrentGamePhase = Phases.PlaceThePiece;
 			if(!gameModeMenu.Contains("Bot"))
@@ -344,24 +350,59 @@ internal class Program
 			// 8. How to handle multiple round
 			#region BATTLE_VIEW
 			int round = 1;
-			foreach(var piece in autoChess.GetPlayerPieces(player1))
+			while(true)
 			{
-				FigletTitle("Battle");
-				AnsiConsole.Write(new Rule($"[red]Round {round}[/]"));
-				AnsiConsole.Write(DisplayBoard());
-				bool move = true;
-				while(move)
+				if(autoChess.GetPlayerPieces(player1).Count() == 0)
 				{
-					int x = new Random().Next(0, BoardSize);
-					int y = new Random().Next(0, BoardSize);
-					var newPosition = new Position(x, y);
-					if(autoChess.IsValidPosition(newPosition))
+					
+				}
+				// foreach(var player in autoChess.GetPlayers())
+				// {
+				// 	foreach(var piece in autoChess.GetPlayerPieces(player))
+				// 	{
+				// 		AnsiConsole.Write(new Markup($"[{autoChess.GetPlayerData(player).PlayerSide}]{piece.Name} | {piece.Hp}[/]"));
+				// 	}
+				// }
+				foreach(var player in autoChess.GetPlayers())
+				{
+					for(int i = 0; i < autoChess.GetPlayerPieces(player).Count(); i++)
 					{
-						autoChess.UpdateHeroPosition(player1, piece.PieceId, newPosition);
-						move = false;
+						var piece = ((List<Hero>)autoChess.GetPlayerPieces(player).ConvertAll(x => (Hero)x))[i];
+						FigletTitle("Battle");
+						AnsiConsole.Write(new Rule($"[red]Round {round}[/]"));
+						AnsiConsole.Write(DisplayBoard());
+						AnsiConsole.Write(new Markup($"[{autoChess.GetPlayerData(player).PlayerSide}]{piece.Name} | {piece.Hp}[/]\n"));
+						if(piece.Hp <= 0)
+						{
+							autoChess.RemovePlayerPiece(player, piece);
+							autoChess.RemoveHeroFromBoard(player, piece.PieceId);
+						}
+						if(autoChess.GetAllEnemyId(player, piece).Count() == 0)
+						{
+							bool move = true;
+							while(move)
+							{
+								int x = new Random().Next(0, BoardSize);
+								int y = new Random().Next(0, BoardSize);
+								var newPosition = new Position(x, y);
+								if(autoChess.IsValidPosition(newPosition))
+								{
+									autoChess.UpdateHeroPosition(player, piece.PieceId, newPosition);
+									move = false;
+								}
+							}
+						}
+						else
+						{
+							foreach(var enemyId in autoChess.GetAllEnemyId(player, piece))
+							{
+								piece.AttackEnemy(autoChess.GetPieceById(enemyId));
+							}
+						}
+						
+						Thread.Sleep(500);
 					}
 				}
-				Thread.Sleep(2000);
 			}
 			#endregion
 		}
