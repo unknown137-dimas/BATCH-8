@@ -37,7 +37,7 @@ class Hero : IPiece
 
     public void AttackEnemy(IPiece otherPiece)
     {
-        otherPiece.Hp = this.Attack - otherPiece.Armor;
+        otherPiece.Hp -= this.Attack - otherPiece.Armor;
     }
 
     public override string ToString() => Name;
