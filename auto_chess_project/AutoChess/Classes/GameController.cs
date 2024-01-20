@@ -4,8 +4,8 @@ class GameController
 	public Dictionary<string, HeroDetails> HeroesDatabase {get; private set;} = new();
 	private readonly Dictionary<PieceTypes, int> _heroSlot = new() {{PieceTypes.Warrior, 3}, {PieceTypes.Hunter, 3}, {PieceTypes.Knight, 3}};
 	private Dictionary<IPlayer, PlayerData> _players = new();
-	public int PlayerHp {get; set;} = 10;
-	public int PlayerPiecesCount {get; set;} = 5;
+	public int PlayerHp {get;} = 10;
+	public int PlayerPiecesCount {get;} = 5;
 	public Status CurrentGameStatus {get; set;} = Status.NotInitialized;
 	public Phases CurrentGamePhase {get; set;} = Phases.NotInitialized;
 
@@ -13,6 +13,13 @@ class GameController
 	{
 		CurrentGameStatus = Status.Initialized;
 		_board = board;
+	}
+
+	public GameController(Board board, int playerPiecesCount)
+	{
+		CurrentGameStatus = Status.Initialized;
+		_board = board;
+		PlayerPiecesCount = playerPiecesCount;
 	}
 
 	public GameController(Board board, Dictionary<PieceTypes, int> heroSlot)
@@ -172,9 +179,9 @@ class GameController
 	public bool IsValidPosition(IPosition newPosition) => !GetAllHeroPosition().ContainsKey(newPosition);
 
 	// Manage Battle
-	public IEnumerable<string> GetAllEnemy(IPlayer player, IPiece hero) => _board.GetAllEnemyId(player, hero);
+	public IEnumerable<string> GetAllEnemyId(IPlayer player, IPiece hero) => _board.GetAllEnemyId(player, hero);
 
-	public string Attack(IPlayer player, string heroId, IPlayer otherPlayer, string otherHeroId)
+	public string Attack(IPlayer player, string heroId)
 	{
 		throw new NotImplementedException();
 	}
