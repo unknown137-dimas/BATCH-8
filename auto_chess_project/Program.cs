@@ -354,20 +354,21 @@ internal class Program
 			{
 				if(autoChess.GetPlayerPieces(player1).Count() == 0)
 				{
-					
+					autoChess.SetRoundWinner(player2);
+					autoChess.GetPlayerData(player2).Winner = true;
+					break;
 				}
-				// foreach(var player in autoChess.GetPlayers())
-				// {
-				// 	foreach(var piece in autoChess.GetPlayerPieces(player))
-				// 	{
-				// 		AnsiConsole.Write(new Markup($"[{autoChess.GetPlayerData(player).PlayerSide}]{piece.Name} | {piece.Hp}[/]"));
-				// 	}
-				// }
+				else if(autoChess.GetPlayerPieces(player2).Count() == 0)
+				{
+					autoChess.SetRoundWinner(player1);
+					autoChess.GetPlayerData(player1).Winner = true;
+					break;
+				}
 				foreach(var player in autoChess.GetPlayers())
 				{
 					for(int i = 0; i < autoChess.GetPlayerPieces(player).Count(); i++)
 					{
-						var piece = ((List<Hero>)autoChess.GetPlayerPieces(player).ConvertAll(x => (Hero)x))[i];
+						var piece = ((List<IPiece>)autoChess.GetPlayerPieces(player)).ConvertAll(x => (Hero)x)[i];
 						FigletTitle("Battle");
 						AnsiConsole.Write(new Rule($"[red]Round {round}[/]"));
 						AnsiConsole.Write(DisplayBoard());
@@ -403,6 +404,23 @@ internal class Program
 						Thread.Sleep(500);
 					}
 				}
+			}
+			#endregion
+
+			// ROUND RESULT
+			#region ROUND_RESULT
+			FigletTitle("Round Result");
+			foreach(var player in autoChess.GetPlayers())
+			{
+				var playerData = autoChess.GetPlayerData(player);
+				var winIcon = "";
+				if(playerData.Winner)
+				{
+					winIcon = "🏆";
+				}
+				AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}][[{winIcon}]] {player.Name}[/]\n"));
+				AnsiConsole.Write(new Markup($"[[❤️]] Health Point : {playerData.Hp}\n"));
+				AnsiConsole.Write(new Markup($"[[🏆]] Win Point : {playerData.Win}\n"));
 			}
 			#endregion
 		}
