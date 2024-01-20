@@ -5,9 +5,12 @@ class PlayerData
     public int Hp;
     public int Win;
 
-    public PlayerData(int hp)
+    public Sides PlayerSide;
+
+    public PlayerData(int hp, Sides playerSide)
     {
         Hp = hp;
+        PlayerSide = playerSide;
     }
 
     public IPiece? GetHeroById(string heroId)

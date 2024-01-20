@@ -1,0 +1,5 @@
+enum Sides
+{
+    red,
+    blue,
+}
