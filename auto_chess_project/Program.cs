@@ -36,7 +36,7 @@ internal class Program
 		AnsiConsole.Clear();
 		AnsiConsole.Write(
 			new FigletText(FigletFont.Load("../../../AutoChess/Assets/doom.flf"), text)
-			.LeftJustified()
+			.Centered()
 			.Color(Color.Red)
 		);
 	}
@@ -103,7 +103,6 @@ internal class Program
 				new Columns(columnsList)
 				{
 					Expand = false,
-					Padding = new Padding(0, 0, 0, 0)
 				}
 			);
 		}
@@ -116,7 +115,7 @@ internal class Program
 		{
 			FigletTitle("Pick Your Heroes");
 			autoChess.CurrentGamePhase = Phases.ChoosingPieace;
-			AnsiConsole.Write(new Rule($"[green]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
+			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
 			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
 			AnsiConsole.Write(new Rule($"[blue]Hero Options | Roll Chance [[{Roll}]][/]"));
 			var optionsList = ((List<string>)autoChess.GenerateRandomHeroList())[0..BoardSize];
@@ -144,9 +143,9 @@ internal class Program
 		while(!autoChess.IsFinishedPutAllPieces(player) || !confirm)
 		{
 			FigletTitle("Place Your Heroes");
-			AnsiConsole.Write(new Rule($"[green]{player.Name} Hero's Position[/]"));
+			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name} Hero's Position[/]"));
 			AnsiConsole.Write(DisplayBoard(player));
-			AnsiConsole.Write(new Rule($"[green]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
+			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
 			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
 			AnsiConsole.Write(new Rule("[blue]Set Hero's Position[/]"));
 			var playerPieces = (List<IPiece>)autoChess.GetPlayerPieces(player);
@@ -165,6 +164,15 @@ internal class Program
 			int yMaxCoor = isSecondPlayer ? BoardSize : BoardSize / 2;
 			while(!success)
 			{
+				var heroPosition = autoChess.GetHeroPosition(player, playerPiece.PieceId);
+				var heroX = "?";
+				var heroY = "?";
+				if(heroPosition != null)
+				{
+					heroX = (heroPosition.X + 1).ToString();
+					heroY = (heroPosition.Y + 1).ToString();
+				}
+				AnsiConsole.Write(new Markup($"Current Position : X = {heroX}, Y = {heroY}\n"));
 				var pieceX = AnsiConsole.Prompt(
 					new TextPrompt<int>($"{playerPiece}'s [green]X[/] position?")
 					.PromptStyle("green")
@@ -205,8 +213,8 @@ internal class Program
 			if(autoChess.IsFinishedPutAllPieces(player))
 			{
 				FigletTitle($"{player}'s Preview");
-				AnsiConsole.Write(new Rule($"[green]{player.Name} Hero's Position[/]"));
-				AnsiConsole.Write(DisplayBoard());
+				AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name} Hero's Position[/]"));
+				AnsiConsole.Write(DisplayBoard(player));
 				confirm = AnsiConsole.Confirm("Are you sure about your heroes placement?");
 			}
 		}
@@ -287,7 +295,6 @@ internal class Program
 			// 1. How to edit/remove item from user (if user want to change item that already picked)
 			// 2. Fix BarChart
 			// 3. Display hero type when choosing a hero
-			// 4. Display how many roll left
 			#region PICK_HERO_MENU
 			if(!gameModeMenu.Contains("Bot"))
 			{
@@ -341,13 +348,8 @@ internal class Program
 
 			// BATTLE VIEW
 			// TODO
-			// 1. Move player's piece around the board
-			// 2. Scan for other player's piece
-			// 3. Attack other player pieces
-			// 4. Repeat until 1 player left
-			// 5. Display round winner
-			// 6. Repeat for all round
-			// 8. How to handle multiple round
+			// 1. Repeat for all round
+			// 2. How to handle multiple round
 			#region BATTLE_VIEW
 			int round = 1;
 			while(true)
@@ -409,7 +411,7 @@ internal class Program
 
 			// ROUND RESULT
 			#region ROUND_RESULT
-			FigletTitle("Round Result");
+			FigletTitle($"Round {round} Result");
 			foreach(var player in autoChess.GetPlayers())
 			{
 				var playerData = autoChess.GetPlayerData(player);
