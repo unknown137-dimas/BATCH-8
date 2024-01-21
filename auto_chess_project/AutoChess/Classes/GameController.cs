@@ -4,7 +4,7 @@ class GameController
 	public Dictionary<string, HeroDetails> HeroesDatabase {get; private set;} = new();
 	private readonly Dictionary<PieceTypes, int> _heroSlot = new() {{PieceTypes.Warrior, 3}, {PieceTypes.Hunter, 3}, {PieceTypes.Knight, 3}};
 	private Dictionary<IPlayer, PlayerData> _players = new();
-	public int PlayerHp {get;} = 10;
+	public int PlayerHp {get;} = 3;
 	public int PlayerPiecesCount {get;} = 5;
 	public Status CurrentGameStatus {get; set;} = Status.NotInitialized;
 	public Phases CurrentGamePhase {get; set;} = Phases.NotInitialized;
@@ -15,11 +15,12 @@ class GameController
 		_board = board;
 	}
 
-	public GameController(Board board, int playerPiecesCount)
+	public GameController(Board board, int playerPiecesCount, int playerHp)
 	{
 		CurrentGameStatus = Status.Initialized;
 		_board = board;
 		PlayerPiecesCount = playerPiecesCount;
+		PlayerHp = playerHp;
 	}
 
 	public GameController(Board board, Dictionary<PieceTypes, int> heroSlot)
