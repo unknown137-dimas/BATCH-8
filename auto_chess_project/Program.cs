@@ -29,12 +29,10 @@ internal class Program
 	};
 
 	// GAME CONTROLLER INIT
-	#region GAME_CONTROLLER
 	static GameController autoChess = new GameController(new Board(Size), PlayerPieces, Round);
 	static int[] boardSize = autoChess.GetBoardSize();
 	static Player? player1 = null;
 	static Player? player2 = null;
-	#endregion
 
 	static void FigletTitle(string text)
 	{
