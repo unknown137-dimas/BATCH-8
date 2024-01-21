@@ -7,7 +7,7 @@ internal class Program
 {
 	// GAME CONFIGURATION
 	const int BoardSize = 4;
-	static int Roll {get; set;} = 3;
+	static int Roll {get;} = 3;
 
 	// HERO ICONS
 	static Dictionary<PieceTypes, string> heroIcons = new()
@@ -111,13 +111,14 @@ internal class Program
 
 	static void PickHero(IPlayer player)
 	{
-		while(!autoChess.IsFinishedPickAllPieces(player) && Roll > 0)
+		int roll = Roll;
+		while(!autoChess.IsFinishedPickAllPieces(player) && roll > 0)
 		{
 			FigletTitle("Pick Your Heroes");
 			autoChess.CurrentGamePhase = Phases.ChoosingPieace;
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
 			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
-			AnsiConsole.Write(new Rule($"[blue]Hero Options | Roll Chance [[{Roll}]][/]"));
+			AnsiConsole.Write(new Rule($"[blue]Hero Options | Roll Chance [[{roll}]][/]"));
 			var optionsList = ((List<string>)autoChess.GenerateRandomHeroList())[0..BoardSize];
 			AnsiConsole.Write(DisplayHeroStats(optionsList));
 			var options = AnsiConsole.Prompt(
@@ -132,7 +133,7 @@ internal class Program
 			
 			// Set player pieces
 			autoChess.AddPlayerPiece(player, options);
-			Roll--;
+			roll--;
 		}
 	}
 
@@ -357,6 +358,8 @@ internal class Program
 				FigletTitle("Battle");
 				AnsiConsole.Write(new Rule($"[red]Round {round}[/]"));
 				AnsiConsole.Write(DisplayBoard());
+				
+				// Display each player's hero health
 				foreach(var player in autoChess.GetPlayers())
 				{
 					foreach(var piece in autoChess.GetPlayerPieces(player))
@@ -365,6 +368,7 @@ internal class Program
 					};
 				};
 				
+				// Round winner decision
 				if(autoChess.GetPlayerPieces(player1).Count() == 0)
 				{
 					autoChess.SetRoundWinner(player2);
@@ -378,6 +382,7 @@ internal class Program
 					break;
 				}
 
+				// Create a task for each player's piece
 				foreach(var player in autoChess.GetPlayers())
 				{
 					foreach(var piece in autoChess.GetPlayerPieces(player))
