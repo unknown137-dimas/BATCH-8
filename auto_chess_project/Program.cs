@@ -115,6 +115,7 @@ internal class Program
 	static void PickHero(IPlayer player)
 	{
 		int roll = Roll;
+		autoChess.ClearPlayerPieces(player);
 		while(!autoChess.IsFinishedPickAllPieces(player) && roll > 0)
 		{
 			FigletTitle("Pick Your Heroes");
@@ -166,17 +167,17 @@ internal class Program
 			bool isSecondPlayer = ((List<IPlayer>)autoChess.GetPlayers()).IndexOf(player) == 1;
 			int yMinCoor = isSecondPlayer ? (boardSize[1] % 2 == 0 ? boardSize[1] / 2 : (boardSize[1] / 2) + 1) + 1 : 1;
 			int yMaxCoor = isSecondPlayer ? boardSize[1] : boardSize[1] / 2;
+			var heroPosition = autoChess.GetHeroPosition(player, playerPiece.PieceId);
+			var heroX = "?";
+			var heroY = "?";
+			if(heroPosition != null)
+			{
+				heroX = (heroPosition.X + 1).ToString();
+				heroY = (heroPosition.Y + 1).ToString();
+			}
+			AnsiConsole.Write(new Markup($"Current Position : X = {heroX}, Y = {heroY}\n"));
 			while(!success)
 			{
-				var heroPosition = autoChess.GetHeroPosition(player, playerPiece.PieceId);
-				var heroX = "?";
-				var heroY = "?";
-				if(heroPosition != null)
-				{
-					heroX = (heroPosition.X + 1).ToString();
-					heroY = (heroPosition.Y + 1).ToString();
-				}
-				AnsiConsole.Write(new Markup($"Current Position : X = {heroX}, Y = {heroY}\n"));
 				var pieceX = AnsiConsole.Prompt(
 					new TextPrompt<int>($"{playerPiece}'s [green]X[/] position?")
 					.PromptStyle("green")
@@ -328,6 +329,7 @@ internal class Program
 				// 2. Display coordinate label to the board
 				#region SET_HERO_POSITION_MENU
 				autoChess.CurrentGamePhase = Phases.PlaceThePiece;
+				autoChess.ClearBoard();
 				if(!gameModeMenu.Contains("Bot"))
 				{
 					foreach(var player in autoChess.GetPlayers())
@@ -416,6 +418,8 @@ internal class Program
 					AnsiConsole.Write(new Markup($"[[🏆]] Win Point : {playerData.Win}\n"));
 				}
 				#endregion
+				AnsiConsole.Write(new Markup($"[rapidblink blue] Press any key to move to the next round...[/]\n").Centered());
+				Console.ReadLine();
 			}
 		}
 	}
