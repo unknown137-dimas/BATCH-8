@@ -6,18 +6,18 @@ class GameController
 	private Dictionary<IPlayer, PlayerData> _players = new();
 	public int PlayerHp {get;} = 3;
 	public int PlayerPiecesCount {get;} = 5;
-	public Status CurrentGameStatus {get; set;} = Status.NotInitialized;
-	public Phases CurrentGamePhase {get; set;} = Phases.NotInitialized;
+	public Status CurrentGameStatus {get; private set;} = Status.NotInitialized;
+	public Phases CurrentGamePhase {get; private set;} = Phases.NotInitialized;
 
 	public GameController(Board board)
 	{
-		CurrentGameStatus = Status.Initialized;
+		SetGameStatus(Status.Initialized);
 		_board = board;
 	}
 
 	public GameController(Board board, int playerPiecesCount, int playerHp)
 	{
-		CurrentGameStatus = Status.Initialized;
+		SetGameStatus(Status.Initialized);
 		_board = board;
 		PlayerPiecesCount = playerPiecesCount;
 		PlayerHp = playerHp;
@@ -25,27 +25,49 @@ class GameController
 
 	public GameController(Board board, Dictionary<PieceTypes, int> heroSlot)
 	{
-		CurrentGameStatus = Status.Initialized;
+		SetGameStatus(Status.Initialized);
 		_board = board;
 		_heroSlot = heroSlot;
 	}
 
 	public GameController(Board board, Dictionary<IPlayer, Sides> players)
 	{
-		CurrentGameStatus = Status.Initialized;
+		SetGameStatus(Status.Initialized);
 		_board = board;
 		AddPlayer(players);
 	}
 
 	public GameController(Board board, Dictionary<IPlayer, Sides> players, Dictionary<PieceTypes, int> heroSlot)
 	{
-		CurrentGameStatus = Status.Initialized;
+		SetGameStatus(Status.Initialized);
 		_board = board;
 		_heroSlot = heroSlot;
 		AddPlayer(players);
 	}
 
-	// Get current game information
+	// Manage current game information
+	public void SetGameStatus(Status gameStatus) => CurrentGameStatus = gameStatus;
+
+	public void SetGamePhase(Phases gamePhase)
+	{
+		CurrentGamePhase = gamePhase;
+		switch(gamePhase)
+		{
+			case Phases.ChoosingPiece:
+				ClearPlayerPieces();
+				break;
+			case Phases.PlaceThePiece:
+				ClearBoard();
+				break;
+			case Phases.BattleBegin:
+				((List<IPlayer>)GetPlayers()).ForEach(player => SetWinner(player, false));
+				break;
+			default:
+				break;
+		}
+
+	}
+
 	public IEnumerable<IPlayer> GetPlayers() => _players.Keys.ToList();
 
 	public int[] GetBoardSize() => [_board.Width, _board.Height];
@@ -146,6 +168,8 @@ class GameController
 
 	public void ClearPlayerPieces(IPlayer player) => GetPlayerData(player).PlayerPieces.Clear();
 
+	public void ClearPlayerPieces() => ((List<IPlayer>)GetPlayers()).ForEach(player => ClearPlayerPieces(player));
+
 	// Manage board
 	public Dictionary<IPosition, string> GetPlayerBoard(IPlayer player) => _board.GetPlayerBoard(player);
 
@@ -236,6 +260,9 @@ class GameController
 			}
 		}
 	}
+
+	// Set winner state
+	public void SetWinner(IPlayer player, bool IsWin) => GetPlayerData(player).Winner = IsWin;
 
 	// Generate random options
 	public IEnumerable<string> GenerateRandomHeroList()

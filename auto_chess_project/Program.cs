@@ -115,11 +115,9 @@ internal class Program
 	static void PickHero(IPlayer player)
 	{
 		int roll = Roll;
-		autoChess.ClearPlayerPieces(player);
 		while(!autoChess.IsFinishedPickAllPieces(player) && roll > 0)
 		{
 			FigletTitle("Pick Your Heroes");
-			autoChess.CurrentGamePhase = Phases.ChoosingPieace;
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
 			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
 			AnsiConsole.Write(new Rule($"[blue]Hero Options | Roll Chance [[{roll}]][/]"));
@@ -225,6 +223,22 @@ internal class Program
 		}
 	}
 
+	static void DisplayResult()
+	{
+		foreach(var player in autoChess.GetPlayers())
+		{
+			var playerData = autoChess.GetPlayerData(player);
+			var winIcon = "";
+			if(playerData.Winner)
+			{
+				winIcon = "🏆";
+			}
+			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}][[{winIcon}]] {player.Name}[/]\n"));
+			AnsiConsole.Write(new Markup($"[[❤️]] Health Point : {playerData.Hp}\n"));
+			AnsiConsole.Write(new Markup($"[[🏆]] Win Point : {playerData.Win}\n"));
+		}
+	}
+
 	static void Main()
 	{
 		// Enable emoji support
@@ -306,6 +320,7 @@ internal class Program
 				// 2. Fix BarChart
 				// 3. Display hero type when choosing a hero
 				#region PICK_HERO_MENU
+				autoChess.SetGamePhase(Phases.ChoosingPiece);
 				if(!gameModeMenu.Contains("Bot"))
 				{
 					foreach(var player in autoChess.GetPlayers())
@@ -328,8 +343,7 @@ internal class Program
 				// 1. How to cancel setting position for the selected piece
 				// 2. Display coordinate label to the board
 				#region SET_HERO_POSITION_MENU
-				autoChess.CurrentGamePhase = Phases.PlaceThePiece;
-				autoChess.ClearBoard();
+				autoChess.SetGamePhase(Phases.PlaceThePiece);
 				if(!gameModeMenu.Contains("Bot"))
 				{
 					foreach(var player in autoChess.GetPlayers())
@@ -361,6 +375,8 @@ internal class Program
 				// 1. Repeat for all round
 				// 2. How to handle multiple round
 				#region BATTLE_VIEW
+				autoChess.SetGameStatus(Status.OnGoing);
+				autoChess.SetGamePhase(Phases.BattleBegin);
 				while(true)
 				{
 					FigletTitle("Battle");
@@ -404,23 +420,21 @@ internal class Program
 
 				// ROUND RESULT
 				#region ROUND_RESULT
+				autoChess.SetGamePhase(Phases.BattleEnd);
 				FigletTitle($"Round {round} Result");
-				foreach(var player in autoChess.GetPlayers())
-				{
-					var playerData = autoChess.GetPlayerData(player);
-					var winIcon = "";
-					if(playerData.Winner)
-					{
-						winIcon = "🏆";
-					}
-					AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}][[{winIcon}]] {player.Name}[/]\n"));
-					AnsiConsole.Write(new Markup($"[[❤️]] Health Point : {playerData.Hp}\n"));
-					AnsiConsole.Write(new Markup($"[[🏆]] Win Point : {playerData.Win}\n"));
-				}
-				#endregion
+				DisplayResult();
 				AnsiConsole.Write(new Markup($"[rapidblink blue] Press any key to move to the next round...[/]\n").Centered());
 				Console.ReadLine();
+				#endregion
 			}
+
+			// FINAL RESULT
+			#region FINAL_RESULT
+			autoChess.SetGameStatus(Status.End);
+			autoChess.SetGamePhase(Phases.TheChampion);
+			FigletTitle($"Final Result");
+			DisplayResult();
+			#endregion
 		}
 	}
 }

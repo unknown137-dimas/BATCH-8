@@ -1,7 +1,7 @@
 public enum Phases
 {
     NotInitialized,
-    ChoosingPieace,
+    ChoosingPiece,
     PlaceThePiece,
     BattleBegin,
     BattleEnd,
