@@ -183,9 +183,37 @@ class GameController
 	// Manage Battle
 	public IEnumerable<string> GetAllEnemyId(IPlayer player, IPiece hero) => _board.GetAllEnemyId(player, hero);
 
-	public string Attack(IPlayer player, string heroId)
+	public async Task Attack(IPlayer player, IPiece piece)
 	{
-		throw new NotImplementedException();
+		if(piece.Hp <= 0)
+		{
+			RemovePlayerPiece(player, piece);
+			RemoveHeroFromBoard(player, piece.PieceId);
+		}
+		if(GetAllEnemyId(player, piece).Count() == 0)
+		{
+			bool move = true;
+			while(move)
+			{
+				int[] boardSize = GetBoardSize();
+				int x = new Random().Next(0, boardSize[0]);
+				int y = new Random().Next(0, boardSize[1]);
+				var newPosition = new Position(x, y);
+				if(IsValidPosition(newPosition))
+				{
+					UpdateHeroPosition(player, piece.PieceId, newPosition);
+					move = false;
+				}
+			}
+		}
+		else
+		{
+			foreach(var enemyId in GetAllEnemyId(player, piece))
+			{
+				((Hero)piece).AttackEnemy(GetPieceById(enemyId));
+			}
+		}
+		await Task.Delay(1000);
 	}
 	
 	// Set current round winner
