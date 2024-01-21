@@ -115,7 +115,7 @@ internal class Program
 	static void PickHero(IPlayer player)
 	{
 		int roll = Roll;
-		while(!autoChess.IsFinishedPickAllPieces(player) && roll > 0)
+		while(!autoChess.IsFinishedPickAllPieces(player) && roll >= 0)
 		{
 			FigletTitle("Pick Your Heroes");
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
@@ -143,6 +143,10 @@ internal class Program
 	{
 		// Loop until all player's piece on the board
 		bool confirm = false;
+		if(autoChess.GetPlayerPieces(player).Count() == 0)
+		{
+			confirm = true;
+		}
 		while(!autoChess.IsFinishedPutAllPieces(player) || !confirm)
 		{
 			FigletTitle("Place Your Heroes");
@@ -228,14 +232,19 @@ internal class Program
 		foreach(var player in autoChess.GetPlayers())
 		{
 			var playerData = autoChess.GetPlayerData(player);
-			var winIcon = "";
-			if(playerData.Winner)
+			StringBuilder roundResult = new();
+			foreach(var result in playerData.Win)
 			{
-				winIcon = "🏆";
+				roundResult.Append(result ? "🏆" : "☠️");
 			}
-			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}][[{winIcon}]] {player.Name}[/]\n"));
-			AnsiConsole.Write(new Markup($"[[❤️]] Health Point : {playerData.Hp}\n"));
-			AnsiConsole.Write(new Markup($"[[🏆]] Win Point : {playerData.Win}\n"));
+			StringBuilder healthPoint = new();
+			for(int i = 0; i < playerData.Hp; i++)
+			{
+				healthPoint.Append("❤️");
+			}
+			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}][[{(playerData.Winner ? "🏆" : "☠️")}]] {player.Name}[/]\n"));
+			AnsiConsole.Write(new Markup($"[[❤️]] Health Point : {healthPoint.ToString()}\n"));
+			AnsiConsole.Write(new Markup($"[[🏆]] Round Result : {roundResult.ToString()}\n"));
 		}
 	}
 
@@ -268,14 +277,14 @@ internal class Program
 			.PageSize(5)
 			.AddChoices(
 				[
-					"Start",
-					"Exit"
+					"✅ Start",
+					"❌ Exit"
 				]
 			)
 		);
 		#endregion
 
-		if(mainMenu == "Start")
+		if(mainMenu.Contains("Start"))
 		{
 			// GAME MODE MENU
 			#region GAME_MODE_MENU

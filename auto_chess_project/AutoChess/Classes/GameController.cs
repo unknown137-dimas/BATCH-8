@@ -252,10 +252,11 @@ class GameController
 		{
 			if(player.PlayerId == winner.PlayerId)
 			{
-				GetPlayerData(player).Win++;
+				GetPlayerData(player).Win.Add(true);
 			}
 			else
 			{
+				GetPlayerData(player).Win.Add(false);
 				GetPlayerData(player).Hp--;
 			}
 		}

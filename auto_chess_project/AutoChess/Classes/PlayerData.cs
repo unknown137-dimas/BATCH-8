@@ -3,7 +3,7 @@ class PlayerData
     public List<IPiece> PlayerPieces = new();
     public bool Winner;
     public int Hp;
-    public int Win;
+    public List<bool> Win = new();
 
     public Sides PlayerSide;
 
@@ -23,5 +23,17 @@ class PlayerData
             }
         }
         return null;
+    }
+
+    public int GetWinPoint()
+    {
+        int winPoint = 0;
+        Win.ForEach(x => {
+            if(x)
+            {
+                winPoint++;
+            }
+        });
+        return winPoint;
     }
 }
