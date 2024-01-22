@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Threading;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 
@@ -15,16 +14,16 @@ internal class Program
 	static Dictionary<PieceTypes, string> heroIcons = new()
 	{
 		{PieceTypes.Warlock, "📕"},
-		{PieceTypes.Knight, "🛡️"},
+		{PieceTypes.Knight, "🐴"},
 		{PieceTypes.Mage, "🪄"},
-		{PieceTypes.Warrior, "⚔️"},
+		{PieceTypes.Warrior, "🛡️"},
 		{PieceTypes.Hunter, "🏹"},
 		{PieceTypes.Assassin, "🗡️"},
 		{PieceTypes.Shaman, "👻"},
 		{PieceTypes.Druid, "🍃"},
 		{PieceTypes.Witcher, "🐺"},
-		{PieceTypes.Mech, "⚙️"},
-		{PieceTypes.Priest, "✝️"},
+		{PieceTypes.Mech, "🦾"},
+		{PieceTypes.Priest, "📖"},
 		{PieceTypes.Wizard, "🔮"},
 	};
 
@@ -82,12 +81,12 @@ internal class Program
 					var hero = autoChess.GetPieceById(heroId);
 					if(hero != null)
 					{
-						playerSide = autoChess.GetPlayerSide(autoChess.GetPlayerByPieceId(heroId)).ToString();
+						playerSide = autoChess.GetPlayerSide(autoChess.GetPlayerByPieceId(heroId)!).ToString();
 						heroIcons.TryGetValue(hero.PieceType, out icons);
 					}
 				}
 				var label = "";
-				if(icons != null && playerSide!= null)
+				if(icons != null && playerSide != null)
 				{
 					label = $"[underline {playerSide}]{icons}[/]";
 				}
@@ -235,14 +234,14 @@ internal class Program
 			StringBuilder roundResult = new();
 			foreach(var result in playerData.Win)
 			{
-				roundResult.Append(result ? "🏆" : "☠️");
+				roundResult.Append(result ? "🏆" : "💀");
 			}
 			StringBuilder healthPoint = new();
 			for(int i = 0; i < playerData.Hp; i++)
 			{
 				healthPoint.Append("❤️");
 			}
-			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}][[{(playerData.Winner ? "🏆" : "☠️")}]] {player.Name}[/]\n"));
+			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}][[{(playerData.Winner ? "🏆" : "💀")}]] {player.Name}[/]\n"));
 			AnsiConsole.Write(new Markup($"[[❤️]] Health Point : {healthPoint.ToString()}\n"));
 			AnsiConsole.Write(new Markup($"[[🏆]] Round Result : {roundResult.ToString()}\n"));
 		}
@@ -423,7 +422,7 @@ internal class Program
 							Task.Run(() => autoChess.Attack(player, piece));
 						};
 					};
-					Thread.Sleep(1000);
+					Thread.Sleep(500);
 				}
 				#endregion
 
