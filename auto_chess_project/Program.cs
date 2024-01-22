@@ -404,7 +404,7 @@ internal class Program
 					while(!autoChess.IsFinishedPickAllPieces(player2) && roll >= 0)
 					{
 						var options = (List<string>)autoChess.GenerateRandomHeroList();
-						autoChess.AddPlayerPiece(player2, options[0..options.Count]);
+						autoChess.AddPlayerPiece(player2, options[0..new Random().Next(options.Count + 1)]);
 						roll--;
 					}
 				}
