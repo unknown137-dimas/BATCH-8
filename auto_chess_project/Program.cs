@@ -52,13 +52,15 @@ internal class Program
 			var heroPanel = new Panel(
 				new BarChart()
 				.Width(barWidth)
-				.AddItem("HP", ScaleHeroStat((int)Math.Round(heroDb[hero].Hp), 1000, barWidth), Color.Green)
-				.AddItem("ATK", ScaleHeroStat((int)Math.Round(heroDb[hero].Attack), 400, barWidth), Color.Red3)
-				.AddItem("Armor", ScaleHeroStat((int)Math.Round(heroDb[hero].Armor), 30, barWidth), Color.Blue)
-				.AddItem("ATK Range", ScaleHeroStat(heroDb[hero].AttackRange, 30, barWidth), Color.Red1)
+				.Label(hero)
+				.CenterLabel()
+				.AddItem("HP", ScaleHeroStat((int)Math.Round(heroDb[hero].Hp), 1200, barWidth), Color.Green1)
+				.AddItem("ATK", ScaleHeroStat((int)Math.Round(heroDb[hero].Attack), 400, barWidth), Color.Red1)
+				.AddItem("ATK Range", ScaleHeroStat(heroDb[hero].AttackRange, 30, barWidth), Color.DarkOrange)
+				.AddItem("Armor", ScaleHeroStat((int)Math.Round(heroDb[hero].Armor), 30, barWidth), Color.Blue1)
 				.HideValues()
 				.WithMaxValue(barWidth)
-			).Header(new PanelHeader(hero).Centered());
+			).Header(new PanelHeader($"[[{heroIcons[heroDb[hero].HeroType]}]] {heroDb[hero].HeroType}").Centered());
 			heroPanel.Padding = new Padding(0, 0, 0, 0);
 			heroStat.Add(heroPanel);
 		}
@@ -130,7 +132,7 @@ internal class Program
 				.PageSize(5)
 				.AddChoices(optionsList)
 				.InstructionsText(
-					$"[grey](Press [yellow1]<space>[/] to select hero, [green]<enter>[/] to accept and re-Roll)[/]"
+					$"[grey](Press [yellow1]<space>[/] to select hero, [green1]<enter>[/] to accept and re-Roll)[/]"
 					)
 				.HighlightStyle(autoChess.GetPlayerData(player).PlayerSide.ToString())
 			);
@@ -152,8 +154,15 @@ internal class Program
 		while(!autoChess.IsFinishedPutAllPieces(player) || !confirm)
 		{
 			FigletTitle("Place Your Heroes");
+			bool isSecondPlayer = ((List<IPlayer>)autoChess.GetPlayers()).IndexOf(player) == 1;
+			int yMinCoor = isSecondPlayer ? (boardSize[1] % 2 == 0 ? boardSize[1] / 2 : (boardSize[1] / 2) + 1) + 1 : 1;
+			int yMaxCoor = isSecondPlayer ? boardSize[1] : boardSize[1] / 2;
+			var heroX = "?";
+			var heroY = "?";
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name} Hero's Position[/]"));
 			AnsiConsole.Write(DisplayBoard(player));
+			AnsiConsole.MarkupLine($"The valid [green1]X coordinate[/] is between [green1]1[/] and [green1]{boardSize[0]}[/]");
+			AnsiConsole.MarkupLine($"The valid [green1]Y coordinate[/] is between [green1]{yMinCoor}[/] and [green1]{yMaxCoor}[/]");
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
 			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]Set Hero's Position[/]"));
@@ -169,25 +178,18 @@ internal class Program
 			
 			// Loop until piece placement success
 			bool success = false;
-			bool isSecondPlayer = ((List<IPlayer>)autoChess.GetPlayers()).IndexOf(player) == 1;
-			int yMinCoor = isSecondPlayer ? (boardSize[1] % 2 == 0 ? boardSize[1] / 2 : (boardSize[1] / 2) + 1) + 1 : 1;
-			int yMaxCoor = isSecondPlayer ? boardSize[1] : boardSize[1] / 2;
 			var heroPosition = autoChess.GetHeroPosition(player, playerPiece.PieceId);
-			var heroX = "?";
-			var heroY = "?";
 			if(heroPosition != null)
 			{
 				heroX = (heroPosition.X + 1).ToString();
 				heroY = (heroPosition.Y + 1).ToString();
 			}
 			AnsiConsole.Write(new Markup($"{playerPiece}'s Current Position : X = {heroX}, Y = {heroY}\n"));
-			AnsiConsole.Write(new Markup($"The valid [green]X coordinate[/] is between [green]1[/] and [green]{boardSize[0]}[/]\n"));
-			AnsiConsole.Write(new Markup($"The valid [green]Y coordinate[/] is between [green]{yMinCoor}[/] and [green]{yMaxCoor}[/]\n"));
 			while(!success)
 			{
 				var pieceX = AnsiConsole.Prompt(
-					new TextPrompt<int>($"{playerPiece}'s [green]X[/] position?")
-					.PromptStyle("green")
+					new TextPrompt<int>($"{playerPiece}'s [green1]X[/] position?")
+					.PromptStyle("green1")
 					.ValidationErrorMessage("[red]That's not a valid coordinate[/]")
 					.Validate(coordinate =>
 						{
@@ -202,8 +204,8 @@ internal class Program
 				);
 
 				var pieceY = AnsiConsole.Prompt(
-					new TextPrompt<int>($"{playerPiece}'s [green]Y[/] position?")
-					.PromptStyle("green")
+					new TextPrompt<int>($"{playerPiece}'s [green1]Y[/] position?")
+					.PromptStyle("green1")
 					.ValidationErrorMessage("[red]That's not a valid coordinate[/]")
 					.Validate(coordinate =>
 						{
@@ -262,18 +264,63 @@ internal class Program
 
 		// Add hero to hero database
 		#region HERO_INIT
-		autoChess.AddHero("Poisonous Worm", new HeroDetails(PieceTypes.Warlock, 600, 55, 0, 3));
+		// Knight
+		autoChess.AddHero("Frost Knight", new HeroDetails(PieceTypes.Knight, 500, 47.5, 5, 3));
 		autoChess.AddHero("Hell Knight", new HeroDetails(PieceTypes.Knight, 700, 75, 5, 1));
+		autoChess.AddHero("Evil Knight", new HeroDetails(PieceTypes.Knight, 750, 50, 10, 2));
+		autoChess.AddHero("Dragon Knight", new HeroDetails(PieceTypes.Knight, 800, 65, 10, 1));
+		// Warlock
+		autoChess.AddHero("Desperate Doctor", new HeroDetails(PieceTypes.Warlock, 550, 45, 5, 3));
+		autoChess.AddHero("Poisonous Worm", new HeroDetails(PieceTypes.Warlock, 600, 55, 0, 3));
+		autoChess.AddHero("Venomancer", new HeroDetails(PieceTypes.Warlock, 1000, 65, 0, 1));
+		autoChess.AddHero("Dark Spirit", new HeroDetails(PieceTypes.Warlock, 1000, 50, 5, 3));
+		// Mage
+		autoChess.AddHero("Ogre Mage", new HeroDetails(PieceTypes.Mage, 700, 60, 5, 2));
+		autoChess.AddHero("Thunder Spirit", new HeroDetails(PieceTypes.Mage, 750, 60, 5, 3));
+		autoChess.AddHero("Tortola Elder", new HeroDetails(PieceTypes.Mage, 650, 42.5, 5, 5));
 		autoChess.AddHero("God of Thunder", new HeroDetails(PieceTypes.Mage, 950, 60, 0, 3));
+		// Warrior
+		autoChess.AddHero("Tusk Champion", new HeroDetails(PieceTypes.Warrior, 650, 52.5, 5, 1));
 		autoChess.AddHero("Swordman", new HeroDetails(PieceTypes.Warrior, 600, 67.5, 5, 2));
+		autoChess.AddHero("God of War", new HeroDetails(PieceTypes.Warrior, 800, 0, 6, 2));
+		autoChess.AddHero("Pirate Captain", new HeroDetails(PieceTypes.Warrior, 950, 82.5, 8, 2));
+		autoChess.AddHero("Sacred Lancer", new HeroDetails(PieceTypes.Warrior, 1050, 90, 10, 3));
+		// Hunter
 		autoChess.AddHero("Egersis Ranger", new HeroDetails(PieceTypes.Hunter, 450, 45, 5, 5));
+		autoChess.AddHero("Dwarf Sniper", new HeroDetails(PieceTypes.Hunter, 450, 70, 5, 5));
+		autoChess.AddHero("Bobo", new HeroDetails(PieceTypes.Hunter, 600, 60, 5, 4));
+		autoChess.AddHero("Spider Queen", new HeroDetails(PieceTypes.Hunter, 900, 95, 5, 1));
+		autoChess.AddHero("Tsunami Stalker", new HeroDetails(PieceTypes.Hunter, 950, 50, 5, 1));
+		// Assassin
+		autoChess.AddHero("Soul Breaker", new HeroDetails(PieceTypes.Assassin, 550, 60, 5, 1));
+		autoChess.AddHero("Abyssalcrawler", new HeroDetails(PieceTypes.Assassin, 500, 55, 5, 2));
 		autoChess.AddHero("Shadowcrawler", new HeroDetails(PieceTypes.Assassin, 550, 85, 5, 2));
+		autoChess.AddHero("Thorn Predator", new HeroDetails(PieceTypes.Assassin, 700, 67.5, 10, 1));
+		// Shaman
+		autoChess.AddHero("Defector", new HeroDetails(PieceTypes.Shaman, 550, 45, 5, 3));
 		autoChess.AddHero("Storm Shaman", new HeroDetails(PieceTypes.Shaman, 800, 47.5, 5, 4));
+		autoChess.AddHero("The Scryer", new HeroDetails(PieceTypes.Shaman, 1000, 75, 5, 4));
+		// Druid
+		autoChess.AddHero("Unicorn", new HeroDetails(PieceTypes.Druid, 400, 55, 5, 3));
+		autoChess.AddHero("Wisper Seer", new HeroDetails(PieceTypes.Druid, 500, 47.5, 2, 3));
 		autoChess.AddHero("Warpwood Sage", new HeroDetails(PieceTypes.Druid, 650, 75, 5, 2));
+		autoChess.AddHero("Razorclaw", new HeroDetails(PieceTypes.Druid, 800, 55, 0, 3));
+		autoChess.AddHero("Khan", new HeroDetails(PieceTypes.Druid, 1000, 115, 10, 1));
+		// Witcher
+		autoChess.AddHero("Taboo Witcher", new HeroDetails(PieceTypes.Witcher, 550, 50, 5, 2));
 		autoChess.AddHero("Fallen Witcher", new HeroDetails(PieceTypes.Witcher, 750, 70, 5, 1));
-		autoChess.AddHero("Heaven Bomber ", new HeroDetails(PieceTypes.Mech, 500, 45, 5, 4));
+		// Mech
+		autoChess.AddHero("Heaven Bomber", new HeroDetails(PieceTypes.Mech, 500, 45, 5, 4));
+		autoChess.AddHero("Ripper", new HeroDetails(PieceTypes.Mech, 800, 57.5, 6, 1));
+		autoChess.AddHero("Gem Artisan", new HeroDetails(PieceTypes.Mech, 800, 55, 6, 1));
+		autoChess.AddHero("Helicopter", new HeroDetails(PieceTypes.Mech, 900, 77.5, 10, 3));
+		// Priest
 		autoChess.AddHero("Goddess of Light", new HeroDetails(PieceTypes.Priest, 400, 52.5, 0, 4));
+		autoChess.AddHero("Fortune Teller", new HeroDetails(PieceTypes.Priest, 550, 62.5, 5, 3));
+		autoChess.AddHero("Cave Prodigy", new HeroDetails(PieceTypes.Priest, 800, 50, 6, 3));
+		// Wizard
 		autoChess.AddHero("Grand Herald", new HeroDetails(PieceTypes.Wizard, 600, 55, 0, 4));
+		autoChess.AddHero("Grimtouch", new HeroDetails(PieceTypes.Wizard, 750, 80, 5, 3));
 		#endregion
 		
 		// MAIN MENU
@@ -312,17 +359,17 @@ internal class Program
 			// INPUT PLAYER NAME MENU
 			#region PLAYER_MENU
 			FigletTitle("Enter Your Name");
-			player1 = new Player(AnsiConsole.Ask<string>("[[PLAYER 1]] What's your [green]name[/]?"));
+			player1 = new Player(AnsiConsole.Ask<string>("[[PLAYER 1]] What's your [green1]name[/]?"));
 			var sidesOptions = (List<Sides>)autoChess.GetGameSides();
 			var player1Side = AnsiConsole.Prompt(
 				new SelectionPrompt<Sides>()
-				.Title("Choose your [green]side[/]?")
+				.Title("Choose your [green1]side[/]?")
 				.AddChoices(
 					sidesOptions
 				)
 				.HighlightStyle(Color.Yellow1)
 			);
-			player2 = new Player(gameModeMenu.Contains("Bot") ? "BOT" : AnsiConsole.Ask<string>("[[PLAYER 2]] What's your [green]name[/]?"));
+			player2 = new Player(gameModeMenu.Contains("Bot") ? "BOT" : AnsiConsole.Ask<string>("[[PLAYER 2]] What's your [green1]name[/]?"));
 			
 			// ADD PLAYER
 			autoChess.AddPlayer(player1, player1Side);
@@ -336,8 +383,7 @@ internal class Program
 				// PICK HERO MENU
 				// TODO
 				// 1. How to edit/remove item from user (if user want to change item that already picked)
-				// 2. Fix BarChart
-				// 3. Display hero type when choosing a hero
+				// 2. Display hero type when choosing a hero
 				#region PICK_HERO_MENU
 				autoChess.SetGamePhase(Phases.ChoosingPiece);
 				if(!gameModeMenu.Contains("Bot"))
@@ -390,7 +436,6 @@ internal class Program
 				#endregion
 
 				// BATTLE VIEW
-				// TODO
 				#region BATTLE_VIEW
 				autoChess.SetGameStatus(Status.OnGoing);
 				autoChess.SetGamePhase(Phases.BattleBegin);
@@ -431,7 +476,7 @@ internal class Program
 							Task.Run(() => autoChess.Attack(player, piece));
 						};
 					};
-					Thread.Sleep(500);
+					Thread.Sleep(700);
 				}
 				#endregion
 
