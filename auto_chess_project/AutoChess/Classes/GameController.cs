@@ -242,7 +242,7 @@ class GameController
 				((Hero)piece).AttackEnemy(GetPieceById(enemyId)!);
 			}
 		}
-		await Task.Delay(1000);
+		await Task.Delay(100);
 	}
 	
 	// Set current round winner
