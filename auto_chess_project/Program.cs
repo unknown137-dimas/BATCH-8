@@ -52,9 +52,9 @@ internal class Program
 			var heroPanel = new Panel(
 				new BarChart()
 				.Width(barWidth)
-				.AddItem("HP", ScaleHeroStat((int)heroDb[hero].Hp, 1000, barWidth), Color.Green)
-				.AddItem("ATK", ScaleHeroStat((int)heroDb[hero].Attack, 400, barWidth), Color.Red3)
-				.AddItem("Armor", ScaleHeroStat((int)heroDb[hero].Armor, 30, barWidth), Color.Blue)
+				.AddItem("HP", ScaleHeroStat((int)Math.Round(heroDb[hero].Hp), 1000, barWidth), Color.Green)
+				.AddItem("ATK", ScaleHeroStat((int)Math.Round(heroDb[hero].Attack), 400, barWidth), Color.Red3)
+				.AddItem("Armor", ScaleHeroStat((int)Math.Round(heroDb[hero].Armor), 30, barWidth), Color.Blue)
 				.AddItem("ATK Range", ScaleHeroStat(heroDb[hero].AttackRange, 30, barWidth), Color.Red1)
 				.HideValues()
 				.WithMaxValue(barWidth)
