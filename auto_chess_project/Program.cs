@@ -440,7 +440,7 @@ internal class Program
 				#region BATTLE_VIEW
 				autoChess.SetGameStatus(Status.OnGoing);
 				autoChess.SetGamePhase(Phases.BattleBegin);
-				while(true)
+				while(autoChess.GetRoundWinner() == null)
 				{
 					FigletTitle("Battle");
 					AnsiConsole.Write(new Rule($"[red]Round {round}[/]"));
@@ -455,20 +455,6 @@ internal class Program
 						};
 					};
 					
-					// Round winner decision
-					if(autoChess.GetPlayerPieces(player1).Count() == 0)
-					{
-						autoChess.SetRoundWinner(player2);
-						autoChess.GetPlayerData(player2).Winner = true;
-						break;
-					}
-					else if(autoChess.GetPlayerPieces(player2).Count() == 0)
-					{
-						autoChess.SetRoundWinner(player1);
-						autoChess.GetPlayerData(player1).Winner = true;
-						break;
-					}
-
 					// Create a task for each player's piece
 					foreach(var player in autoChess.GetPlayers())
 					{
