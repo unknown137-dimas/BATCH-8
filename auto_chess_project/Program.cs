@@ -6,9 +6,10 @@ internal class Program
 {
 	// GAME CONFIGURATION
 	const int Size = 4;
-	const int PlayerPieces = 4;
-	static int Roll {get;} = 3;
-	static int Round {get;} = 3;
+	const int maxPlayerPieces = 4;
+	const int initPlayerHp = 3;
+	static int maxRoll {get;} = 3;
+	static int maxRound {get;} = 3;
 
 	// HERO ICONS
 	static Dictionary<PieceTypes, string> heroIcons = new()
@@ -28,7 +29,7 @@ internal class Program
 	};
 
 	// GAME CONTROLLER INIT
-	static GameController autoChess = new GameController(new Board(Size), PlayerPieces, Round);
+	static GameController autoChess = new GameController(new Board(Size), maxPlayerPieces, initPlayerHp);
 	static int[] boardSize = autoChess.GetBoardSize();
 	static Player? player1 = null;
 	static Player? player2 = null;
@@ -117,7 +118,7 @@ internal class Program
 
 	static void PickHero(IPlayer player)
 	{
-		int roll = Roll;
+		int roll = maxRoll;
 		while(!autoChess.IsFinishedPickAllPieces(player) && roll >= 0)
 		{
 			FigletTitle("Pick Your Heroes");
@@ -239,10 +240,10 @@ internal class Program
 		foreach(var player in autoChess.GetPlayers())
 		{
 			var playerData = autoChess.GetPlayerData(player);
-			StringBuilder roundResult = new();
+			StringBuilder battleResult = new();
 			foreach(var result in playerData.Win)
 			{
-				roundResult.Append(result ? "🏆" : "💀");
+				battleResult.Append(result ? "🏆" : "💀");
 			}
 			StringBuilder healthPoint = new();
 			for(int i = 0; i < playerData.Hp; i++)
@@ -250,8 +251,8 @@ internal class Program
 				healthPoint.Append("❤️");
 			}
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}][[{(playerData.Winner ? "🏆" : "💀")}]] {player.Name}[/]\n"));
-			AnsiConsole.Write(new Markup($"[[❤️]] Health Point : {healthPoint.ToString()}\n"));
-			AnsiConsole.Write(new Markup($"[[🏆]] Round Result : {roundResult.ToString()}\n"));
+			AnsiConsole.Write(new Markup($"[[❤️]] Health Point : {healthPoint}\n"));
+			AnsiConsole.Write(new Markup($"[[⚔️]] Battle Result : {battleResult}\n"));
 		}
 	}
 
@@ -378,7 +379,7 @@ internal class Program
 			#endregion
 			
 			// LOOP ALL ROUND
-			for(int round  = 1; round <= Round; round++)
+			for(int round  = 1; round <= maxRound; round++)
 			{
 				// PICK HERO MENU
 				// TODO
