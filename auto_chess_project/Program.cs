@@ -69,7 +69,7 @@ internal class Program
 		int[] boardSize = autoChess.GetBoardSize();
 		var board = player != null ? autoChess.GetPlayerBoard(player) : autoChess.GetAllHeroPosition();
 		List<IRenderable> rowsList = new();
-		for(int y = boardSize[1] - 1; y >= 0 ; y--)
+		for(int y = boardSize[1] - 1; y >= 0; y--)
 		{
 			List<IRenderable> columnsList = new();
 			for(int x = 0; x < boardSize[0]; x++)
@@ -176,7 +176,9 @@ internal class Program
 				heroX = (heroPosition.X + 1).ToString();
 				heroY = (heroPosition.Y + 1).ToString();
 			}
-			AnsiConsole.Write(new Markup($"Current Position : X = {heroX}, Y = {heroY}\n"));
+			AnsiConsole.Write(new Markup($"{playerPiece}'s Current Position : X = {heroX}, Y = {heroY}\n"));
+			AnsiConsole.Write(new Markup($"The valid [green]X coordinate[/] is between [green]1[/] and [green]{boardSize[0]}[/]\n"));
+			AnsiConsole.Write(new Markup($"The valid [green]Y coordinate[/] is between [green]{yMinCoor}[/] and [green]{yMaxCoor}[/]\n"));
 			while(!success)
 			{
 				var pieceX = AnsiConsole.Prompt(
