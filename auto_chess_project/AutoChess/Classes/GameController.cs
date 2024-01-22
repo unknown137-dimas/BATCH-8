@@ -338,7 +338,7 @@ class GameController
 		Random random = new();
 		List<string> options = new();
 		List<string> heroNames = HeroesDatabase.Keys.ToList().ConvertAll(hero => hero.ToString());
-		int n = PlayerPiecesCount;
+		int n = 5;
 		while(n > 0)
 		{
 			options.Add(heroNames[random.Next(0, heroNames.Count)]);

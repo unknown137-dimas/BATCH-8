@@ -5,11 +5,11 @@ using Spectre.Console.Rendering;
 internal class Program
 {
 	// GAME CONFIGURATION
-	const int Size = 4;
+	const int Size = 6;
 	const int maxPlayerPieces = 4;
-	const int initPlayerHp = 3;
+	const int initPlayerHp = 1;
 	static int maxRoll {get;} = 3;
-	static int maxRound {get;} = 3;
+	static int maxRound {get;} = 1;
 
 	// HERO ICONS
 	static Dictionary<PieceTypes, string> heroIcons = new()
@@ -125,7 +125,7 @@ internal class Program
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
 			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]Hero Options | Roll Chance [[{roll}]][/]"));
-			var optionsList = ((List<string>)autoChess.GenerateRandomHeroList())[0..autoChess.GetBoardSize()[0]];
+			var optionsList = ((List<string>)autoChess.GenerateRandomHeroList());
 			AnsiConsole.Write(DisplayHeroStats(optionsList));
 			var options = AnsiConsole.Prompt(
 				new MultiSelectionPrompt<string>()
@@ -400,7 +400,13 @@ internal class Program
 					
 					// BOT 
 					// Bot pick pieces
-					autoChess.AddPlayerPiece(player2, autoChess.GenerateRandomHeroList());
+					int roll = maxRoll;
+					while(!autoChess.IsFinishedPickAllPieces(player2) && roll >= 0)
+					{
+						var options = (List<string>)autoChess.GenerateRandomHeroList();
+						autoChess.AddPlayerPiece(player2, options[0..options.Count]);
+						roll--;
+					}
 				}
 				#endregion
 				
