@@ -39,7 +39,7 @@ internal class Program
 		AnsiConsole.Write(
 			new FigletText(FigletFont.Load("../../../AutoChess/Assets/doom.flf"), text)
 			.Centered()
-			.Color(Color.Red)
+			.Color(Color.OrangeRed1)
 		);
 	}
 
@@ -88,7 +88,7 @@ internal class Program
 				var label = "";
 				if(icons != null && playerSide != null)
 				{
-					label = $"[underline {playerSide}]{icons}[/]";
+					label = $"[bold underline {playerSide}]{icons}[/]";
 				}
 				columnsList.Add(
 					new Panel(
@@ -119,7 +119,7 @@ internal class Program
 			FigletTitle("Pick Your Heroes");
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
 			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
-			AnsiConsole.Write(new Rule($"[blue]Hero Options | Roll Chance [[{roll}]][/]"));
+			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]Hero Options | Roll Chance [[{roll}]][/]"));
 			var optionsList = ((List<string>)autoChess.GenerateRandomHeroList())[0..autoChess.GetBoardSize()[0]];
 			AnsiConsole.Write(DisplayHeroStats(optionsList));
 			var options = AnsiConsole.Prompt(
@@ -128,8 +128,9 @@ internal class Program
 				.PageSize(5)
 				.AddChoices(optionsList)
 				.InstructionsText(
-					$"[grey](Press [blue]<space>[/] to select hero, [green]<enter>[/] to accept and re-Roll)[/]"
+					$"[grey](Press [yellow1]<space>[/] to select hero, [green]<enter>[/] to accept and re-Roll)[/]"
 					)
+				.HighlightStyle(autoChess.GetPlayerData(player).PlayerSide.ToString())
 			);
 			
 			// Set player pieces
@@ -153,7 +154,7 @@ internal class Program
 			AnsiConsole.Write(DisplayBoard(player));
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
 			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
-			AnsiConsole.Write(new Rule("[blue]Set Hero's Position[/]"));
+			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]Set Hero's Position[/]"));
 			var playerPieces = (List<IPiece>)autoChess.GetPlayerPieces(player);
 			var playerPiece = AnsiConsole.Prompt(
 				new SelectionPrompt<Hero>()
@@ -161,6 +162,7 @@ internal class Program
 				.AddChoices(
 					playerPieces.ConvertAll(piece => (Hero)piece)
 				)
+				.HighlightStyle(autoChess.GetPlayerData(player).PlayerSide.ToString())
 			);
 			
 			// Loop until piece placement success
@@ -282,6 +284,7 @@ internal class Program
 					"❌ Exit"
 				]
 			)
+			.HighlightStyle(new Style(Color.Yellow1))
 		);
 		#endregion
 
@@ -298,6 +301,7 @@ internal class Program
 						 "[[😎]] Player vs [[🤖]] Bot"
 					]
 				)
+				.HighlightStyle(Color.Yellow1)
 			);
 			#endregion
 			
@@ -312,6 +316,7 @@ internal class Program
 				.AddChoices(
 					sidesOptions
 				)
+				.HighlightStyle(Color.Yellow1)
 			);
 			player2 = new Player(gameModeMenu.Contains("Bot") ? "BOT" : AnsiConsole.Ask<string>("[[PLAYER 2]] What's your [green]name[/]?"));
 			
@@ -382,8 +387,6 @@ internal class Program
 
 				// BATTLE VIEW
 				// TODO
-				// 1. Repeat for all round
-				// 2. How to handle multiple round
 				#region BATTLE_VIEW
 				autoChess.SetGameStatus(Status.OnGoing);
 				autoChess.SetGamePhase(Phases.BattleBegin);
@@ -433,7 +436,7 @@ internal class Program
 				autoChess.SetGamePhase(Phases.BattleEnd);
 				FigletTitle($"Round {round} Result");
 				DisplayResult();
-				AnsiConsole.Write(new Markup($"[rapidblink blue] Press any key to move to the next round...[/]\n").Centered());
+				AnsiConsole.Write(new Markup($"[rapidblink yellow1] Press any key to move to the next round...[/]\n").Centered());
 				Console.ReadLine();
 				#endregion
 			}
