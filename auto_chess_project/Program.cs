@@ -283,7 +283,7 @@ internal class Program
 		// Warrior
 		autoChess.AddHero("Tusk Champion", new HeroDetails(PieceTypes.Warrior, 650, 52.5, 5, 1));
 		autoChess.AddHero("Swordman", new HeroDetails(PieceTypes.Warrior, 600, 67.5, 5, 2));
-		autoChess.AddHero("God of War", new HeroDetails(PieceTypes.Warrior, 800, 0, 6, 2));
+		autoChess.AddHero("God of War", new HeroDetails(PieceTypes.Warrior, 800, 70, 6, 2));
 		autoChess.AddHero("Pirate Captain", new HeroDetails(PieceTypes.Warrior, 950, 82.5, 8, 2));
 		autoChess.AddHero("Sacred Lancer", new HeroDetails(PieceTypes.Warrior, 1050, 90, 10, 3));
 		// Hunter
@@ -429,7 +429,7 @@ internal class Program
 						while(!success)
 						{
 							int x = new Random().Next(0, boardSize[0]);
-							int y = new Random().Next((boardSize[1] % 2 == 0 ? boardSize[1] / 2 : (boardSize[1] / 2) + 1), boardSize[1]);
+							int y = new Random().Next(boardSize[1] % 2 == 0 ? boardSize[1] / 2 : (boardSize[1] / 2) + 1, boardSize[1]);
 							success = autoChess.PutPlayerPiece(player2, piece, new Position(x, y));
 						}
 					}
