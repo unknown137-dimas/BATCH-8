@@ -52,10 +52,11 @@ internal class Program
 			var heroPanel = new Panel(
 				new BarChart()
 				.Width(barWidth)
-				.AddItem("HP", heroDb[hero].Hp, Color.Green)
-				.AddItem("ATK", heroDb[hero].Attack, Color.Red3)
-				.AddItem("Armor", heroDb[hero].Armor, Color.Blue)
-				.AddItem("ATK Range", heroDb[hero].AttackRange, Color.Red1)
+				.AddItem("HP", ScaleHeroStat((int)heroDb[hero].Hp, 1000, barWidth), Color.Green)
+				.AddItem("ATK", ScaleHeroStat((int)heroDb[hero].Attack, 400, barWidth), Color.Red3)
+				.AddItem("Armor", ScaleHeroStat((int)heroDb[hero].Armor, 30, barWidth), Color.Blue)
+				.AddItem("ATK Range", ScaleHeroStat(heroDb[hero].AttackRange, 30, barWidth), Color.Red1)
+				.HideValues()
 			).Header(new PanelHeader(hero).Centered());
 			heroPanel.Padding = new Padding(0, 0, 0, 0);
 			heroStat.Add(heroPanel);
@@ -251,6 +252,8 @@ internal class Program
 		}
 	}
 
+	static int ScaleHeroStat(int originalValue, int originalMax, int scaleMax) => (originalValue * (scaleMax - 1) / originalMax) + 1;
+	
 	static void Main()
 	{
 		// Enable emoji support
