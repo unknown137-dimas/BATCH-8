@@ -62,6 +62,21 @@ class GameController
 			case Phases.BattleBegin:
 				((List<IPlayer>)GetPlayers()).ForEach(player => SetWinner(player, false));
 				break;
+			case Phases.BattleEnd:
+				var roundWinner = GetRoundWinner();
+				if(roundWinner != null)
+				{
+					SetRoundWinner(roundWinner);
+					SetWinner(roundWinner);
+				}
+				break;
+			case Phases.TheChampion:
+				var champion = GetChampion();
+				if(champion != null)
+				{
+					SetWinner(champion);
+				}
+				break;
 			default:
 				break;
 		}
@@ -104,7 +119,59 @@ class GameController
 	}
 
 	public IEnumerable<Sides> GetGameSides() => Enum.GetValues(typeof(Sides)).Cast<Sides>().ToList();
+
+	public int GetPlayerWinPoint(IPlayer player)
+	{
+		int winPoint = 0;
+		foreach(var winStatus in GetPlayerData(player).Win)
+		{
+			if(winStatus)
+			{
+				winPoint++;
+			}
+			
+		}
+		return winPoint;
+	}
+
+	public IPlayer? GetRoundWinner()
+	{
+		var player1 = ((List<IPlayer>)GetPlayers())[0];
+		var player2 = ((List<IPlayer>)GetPlayers())[1];
+		if(GetPlayerPieces(player1).Count() == 0)
+		{
+			return player2;
+		}
+		else if(GetPlayerPieces(player2).Count() == 0)
+		{
+			return player1;
+		}
+		else
+		{
+			return null;
+		}
+	}
 	
+	public IPlayer? GetChampion()
+	{
+		var player1 = ((List<IPlayer>)GetPlayers())[0];
+		var player2 = ((List<IPlayer>)GetPlayers())[1];
+		var player1WinPoint = GetPlayerWinPoint(player1);
+		var player2WinPoint = GetPlayerWinPoint(player2);
+		if(player1WinPoint > player2WinPoint)
+		{
+			return player1;
+		}
+		else if(player1WinPoint < player2WinPoint)
+		{
+			return player2;
+		}
+		else
+		{
+			return null;
+		}
+	}
+
 	// Manage hero database
 	public bool AddHero(string heroName, HeroDetails heroDetails) => HeroesDatabase.TryAdd(heroName, heroDetails);
 	
@@ -263,7 +330,7 @@ class GameController
 	}
 
 	// Set winner state
-	public void SetWinner(IPlayer player, bool IsWin) => GetPlayerData(player).Winner = IsWin;
+	public void SetWinner(IPlayer player, bool IsWin = true) => GetPlayerData(player).Winner = IsWin;
 
 	// Generate random options
 	public IEnumerable<string> GenerateRandomHeroList()
