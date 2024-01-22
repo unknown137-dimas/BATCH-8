@@ -57,6 +57,7 @@ internal class Program
 				.AddItem("Armor", ScaleHeroStat((int)heroDb[hero].Armor, 30, barWidth), Color.Blue)
 				.AddItem("ATK Range", ScaleHeroStat(heroDb[hero].AttackRange, 30, barWidth), Color.Red1)
 				.HideValues()
+				.WithMaxValue(barWidth)
 			).Header(new PanelHeader(hero).Centered());
 			heroPanel.Padding = new Padding(0, 0, 0, 0);
 			heroStat.Add(heroPanel);
