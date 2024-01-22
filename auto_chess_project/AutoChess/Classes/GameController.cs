@@ -205,7 +205,7 @@ class GameController
 
 	public bool IsValidPosition(IPosition newPosition) => !GetAllHeroPosition().ContainsKey(newPosition);
 
-	public bool RemoveHeroFromBoard(IPlayer player, string heroId) => GetPlayerBoard(player).Remove(GetHeroPosition(player, heroId));
+	public bool RemoveHeroFromBoard(IPlayer player, string heroId) => GetPlayerBoard(player).Remove(GetHeroPosition(player, heroId)!);
 
 	public void ClearBoard() => ((List<IPlayer>)GetPlayers()).ForEach(player => GetPlayerBoard(player).Clear());
 
@@ -239,7 +239,7 @@ class GameController
 		{
 			foreach(var enemyId in GetAllEnemyId(player, piece))
 			{
-				((Hero)piece).AttackEnemy(GetPieceById(enemyId));
+				((Hero)piece).AttackEnemy(GetPieceById(enemyId)!);
 			}
 		}
 		await Task.Delay(1000);
