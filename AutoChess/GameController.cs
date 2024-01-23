@@ -140,11 +140,11 @@ public class GameController
 	{
 		var player1 = ((List<IPlayer>)GetPlayers())[0];
 		var player2 = ((List<IPlayer>)GetPlayers())[1];
-		if(GetPlayerPieces(player1).Count() == 0 && GetPlayerPieces(player2).Count() > 0)
+		if(GetPlayerBoard(player1).Count == 0 && GetPlayerBoard(player2).Count > 0)
 		{
 			return player2;
 		}
-		else if(GetPlayerPieces(player1).Count() > 0 && GetPlayerPieces(player2).Count() == 0)
+		else if(GetPlayerBoard(player1).Count > 0 && GetPlayerBoard(player2).Count == 0)
 		{
 			return player1;
 		}
@@ -316,7 +316,11 @@ public class GameController
 		{
 			foreach(var enemyId in GetAllEnemyId(player, piece))
 			{
-				((Hero)piece).AttackEnemy(GetPieceById(enemyId)!);
+				var enemy = GetPieceById(enemyId);
+				if(enemy != null && enemy.Hp > 0)
+				{
+					((Hero)piece).AttackEnemy(enemy);
+				}
 			}
 		}
 		await Task.Delay(100);

@@ -453,9 +453,13 @@ Width = 5,
 					// Display each player's hero health
 					foreach(var player in autoChess.GetPlayers())
 					{
-						foreach(var piece in autoChess.GetPlayerPieces(player))
+						foreach(var playerPieces in autoChess.GetPlayerBoard(player))
 						{
-							AnsiConsole.Write(new Markup($"[{autoChess.GetPlayerData(player).PlayerSide}]{piece.Name} | {piece.Hp}[/]\n"));
+							var piece = autoChess.GetPieceById(playerPieces.Value);
+							if(piece != null && piece.Hp >= 0)
+							{
+								AnsiConsole.Write(new Markup($"[{autoChess.GetPlayerData(player).PlayerSide}]{piece.Name} | {piece.Hp}[/]\n"));
+							}
 						};
 					};
 					
@@ -467,7 +471,7 @@ Width = 5,
 							Task.Run(() => autoChess.Attack(player, piece));
 						};
 					};
-					Thread.Sleep(500);
+					Thread.Sleep(700);
 				}
 				#endregion
 
