@@ -1,7 +1,7 @@
 using System.Runtime.Serialization;
 
 [DataContract]
-public struct HeroDetails
+public class HeroDetails
 {
 	[DataMember]
 	public PieceTypes HeroType;

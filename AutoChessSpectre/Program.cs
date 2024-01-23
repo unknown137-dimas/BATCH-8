@@ -49,21 +49,21 @@ internal class Program
 	static IRenderable DisplayHeroStats(IEnumerable<string> heroList, int barWidth = 35)
 	{
 		List<IRenderable> heroStat = new();
-		var heroDb = autoChess.HeroesDatabase;
 		foreach(var hero in heroList)
 		{
+			var heroDetail = autoChess.GetHeroDetails(hero);
 			var heroPanel = new Panel(
 				new BarChart()
 				.Width(barWidth)
 				.Label(hero)
 				.CenterLabel()
-				.AddItem("HP", ScaleHeroStat((int)Math.Round(heroDb[hero].Hp), 1200, barWidth), Color.Green1)
-				.AddItem("ATK", ScaleHeroStat((int)Math.Round(heroDb[hero].Attack), 400, barWidth), Color.Red1)
-				.AddItem("ATK Range", ScaleHeroStat(heroDb[hero].AttackRange, 30, barWidth), Color.DarkOrange)
-				.AddItem("Armor", ScaleHeroStat((int)Math.Round(heroDb[hero].Armor), 30, barWidth), Color.Blue1)
+				.AddItem("HP", ScaleHeroStat((int)Math.Round(heroDetail.Hp), 1200, barWidth), Color.Green1)
+				.AddItem("ATK", ScaleHeroStat((int)Math.Round(heroDetail.Attack), 400, barWidth), Color.Red1)
+				.AddItem("ATK Range", ScaleHeroStat(heroDetail.AttackRange, 30, barWidth), Color.DarkOrange)
+				.AddItem("Armor", ScaleHeroStat((int)Math.Round(heroDetail.Armor), 30, barWidth), Color.Blue1)
 				.HideValues()
 				.WithMaxValue(barWidth)
-			).Header(new PanelHeader($"[[{heroIcons[heroDb[hero].HeroType]}]] {heroDb[hero].HeroType}").Centered());
+			).Header(new PanelHeader($"[[{heroIcons[heroDetail.HeroType]}]] {heroDetail.HeroType}").Centered());
 			heroPanel.Padding = new Padding(0, 0, 0, 0);
 			heroStat.Add(heroPanel);
 		}
