@@ -4,7 +4,7 @@ public interface IBoard
     int Height {get;}
     Dictionary<IPlayer, Dictionary<IPosition, string>> PiecesPositions {get;}
 
-    public bool AddPlayerToBoard(IPlayer player);
-    public bool RemovePlayerFromBoard(IPlayer player);
-    public Dictionary<IPosition, string> GetPlayerBoard(IPlayer player);
+    bool AddPlayerToBoard(IPlayer player);
+    bool RemovePlayerFromBoard(IPlayer player);
+    Dictionary<IPosition, string> GetPlayerBoard(IPlayer player);
 }

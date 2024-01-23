@@ -7,6 +7,6 @@ public interface IPiece
     double Armor {get;}
     int AttackRange {get;}
     PieceTypes PieceType {get;}
-    public void Skill();
-    public string ToString();
+    void Skill();
+    string ToString();
 }
