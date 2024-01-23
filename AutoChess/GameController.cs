@@ -293,7 +293,6 @@ public class GameController
 	{
 		if(piece.Hp <= 0)
 		{
-			RemovePlayerPiece(player, piece);
 			RemoveHeroFromBoard(player, piece.PieceId);
 		}
 		if(GetAllEnemyId(player, piece).Count() == 0)
@@ -323,7 +322,7 @@ public class GameController
 				}
 			}
 		}
-		await Task.Delay(100);
+		await Task.Delay(1000);
 	}
 	
 	// Set current round winner

@@ -451,17 +451,22 @@ Width = 5,
 					AnsiConsole.Write(DisplayBoard());
 					
 					// Display each player's hero health
+					List<IRenderable> playerColumn = new();
 					foreach(var player in autoChess.GetPlayers())
 					{
-						foreach(var playerPieces in autoChess.GetPlayerBoard(player))
+						int barWidth = 45;
+						var heroHealthBar = new BarChart().Width(barWidth).WithMaxValue(barWidth).HideValues();
+						foreach(var playerPiece in autoChess.GetPlayerPieces(player))
 						{
-							var piece = autoChess.GetPieceById(playerPieces.Value);
-							if(piece != null && piece.Hp >= 0)
+							var piece = autoChess.GetPieceById(playerPiece.PieceId);
+							if(piece != null)
 							{
-								AnsiConsole.Write(new Markup($"[{autoChess.GetPlayerData(player).PlayerSide}]{piece.Name} | {piece.Hp}[/]\n"));
+							heroHealthBar.AddItem((piece.Hp > 0 ? piece.Name : $"[[💀]] {piece.Name}"), ScaleHeroStat(((int)Math.Round(piece.Hp)), 1200, barWidth), Color.Green1);
 							}
 						};
+						playerColumn.Add(new Panel(heroHealthBar).Header(new PanelHeader($"[{autoChess.GetPlayerData(player).PlayerSide} bold]{player.Name}[/]").Centered()));
 					};
+					AnsiConsole.Write(new Columns(playerColumn));
 					
 					// Create a task for each player's piece
 					foreach(var player in autoChess.GetPlayers())
@@ -471,7 +476,7 @@ Width = 5,
 							Task.Run(() => autoChess.Attack(player, piece));
 						};
 					};
-					Thread.Sleep(700);
+					Thread.Sleep(1000);
 				}
 				#endregion
 
