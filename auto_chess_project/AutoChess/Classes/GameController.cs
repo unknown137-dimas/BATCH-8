@@ -138,11 +138,11 @@ class GameController
 	{
 		var player1 = ((List<IPlayer>)GetPlayers())[0];
 		var player2 = ((List<IPlayer>)GetPlayers())[1];
-		if(GetPlayerPieces(player1).Count() == 0)
+		if(GetPlayerPieces(player1).Count() == 0 && GetPlayerPieces(player2).Count() > 0)
 		{
 			return player2;
 		}
-		else if(GetPlayerPieces(player2).Count() == 0)
+		else if(GetPlayerPieces(player1).Count() > 0 && GetPlayerPieces(player2).Count() == 0)
 		{
 			return player1;
 		}
