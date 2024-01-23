@@ -63,7 +63,7 @@ internal class Program
 				.AddItem("Armor", ScaleHeroStat((int)Math.Round(heroDb[hero].Armor), 30, barWidth), Color.Blue1)
 				.HideValues()
 				.WithMaxValue(barWidth)
-			).Header(new PanelHeader($" [[{heroIcons[heroDb[hero].HeroType]}]] {heroDb[hero].HeroType} ").Centered());
+			).Header(new PanelHeader($"[[{heroIcons[heroDb[hero].HeroType]}]] {heroDb[hero].HeroType}").Centered());
 			heroPanel.Padding = new Padding(0, 0, 0, 0);
 			heroStat.Add(heroPanel);
 		}
@@ -89,7 +89,7 @@ internal class Program
 			}
 			allHeroPosition.Add(
 				new Markup(
-					$"X = {heroX}, Y = {heroY}"
+					$"X = [{(heroX != "?" ? "green1" : "red1")}]{heroX}[/], Y = [{(heroY != "?" ? "green1" : "red1")}]{heroY}[/]"
 				).Centered()
 			);
 		}
