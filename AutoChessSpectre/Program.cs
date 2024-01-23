@@ -33,8 +33,8 @@ internal class Program
 	// GAME CONTROLLER INIT
 	static GameController autoChess = new GameController(new Board(Size), maxPlayerPieces, initPlayerHp);
 	static int[] boardSize = autoChess.GetBoardSize();
-	static Player? player1 = null;
-	static Player? player2 = null;
+	static Player? playerOne = null;
+	static Player? playerTwo = null;
 
 	static void FigletTitle(string text)
 	{
@@ -351,7 +351,7 @@ Width = 5,
 			// INPUT PLAYER NAME MENU
 			#region PLAYER_MENU
 			FigletTitle("Enter Your Name");
-			player1 = new Player(AnsiConsole.Ask<string>("[[PLAYER 1]] What's your [green1]name[/]?"));
+			playerOne = new Player(AnsiConsole.Ask<string>("[[PLAYER 1]] What's your [green1]name[/]?"));
 			var sidesOptions = (List<Sides>)autoChess.GetGameSides();
 			var player1Side = AnsiConsole.Prompt(
 				new SelectionPrompt<Sides>()
@@ -361,12 +361,12 @@ Width = 5,
 				)
 				.HighlightStyle(Color.Yellow1)
 			);
-			player2 = new Player(gameModeMenu.Contains("Bot") ? "BOT" : AnsiConsole.Ask<string>("[[PLAYER 2]] What's your [green1]name[/]?"));
+			playerTwo = new Player(gameModeMenu.Contains("Bot") ? "BOT" : AnsiConsole.Ask<string>("[[PLAYER 2]] What's your [green1]name[/]?"));
 			
 			// ADD PLAYER
-			autoChess.AddPlayer(player1, player1Side);
+			autoChess.AddPlayer(playerOne, player1Side);
 			sidesOptions.Remove(player1Side);
-			autoChess.AddPlayer(player2, sidesOptions[0]);
+			autoChess.AddPlayer(playerTwo, sidesOptions[0]);
 			#endregion
 			
 			// LOOP ALL ROUND
@@ -387,17 +387,17 @@ Width = 5,
 				}
 				else
 				{
-					PickHero(player1);
+					PickHero(playerOne);
 					
 					// BOT 
 					// Bot pick pieces
 					int roll = maxRoll;
-					while(!autoChess.IsFinishedPickAllPieces(player2) && roll >= 0)
+					while(!autoChess.IsFinishedPickAllPieces(playerTwo) && roll >= 0)
 					{
 						var options = (List<string>?)autoChess.GenerateRandomHeroList();
 						if(options != null)
 						{
-							autoChess.AddPlayerPiece(player2, options[0..new Random().Next(options.Count + 1)]);
+							autoChess.AddPlayerPiece(playerTwo, options[0..new Random().Next(options.Count + 1)]);
 							roll--;
 						}
 						else
@@ -423,18 +423,18 @@ Width = 5,
 				}
 				else
 				{
-					SetHeroPosition(player1);
+					SetHeroPosition(playerOne);
 					
 					// BOT
 					// Bot put piece
-					foreach(var piece in autoChess.GetPlayerData(player2).PlayerPieces)
+					foreach(var piece in autoChess.GetPlayerData(playerTwo).PlayerPieces)
 					{
 						bool success = false;
 						while(!success)
 						{
 							int x = new Random().Next(0, boardSize[0]);
 							int y = new Random().Next(boardSize[1] % 2 == 0 ? boardSize[1] / 2 : (boardSize[1] / 2) + 1, boardSize[1]);
-							success = autoChess.PutPlayerPiece(player2, piece, new Position(x, y));
+							success = autoChess.PutPlayerPiece(playerTwo, piece, new Position(x, y));
 						}
 					}
 				}
