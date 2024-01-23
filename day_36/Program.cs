@@ -34,18 +34,18 @@ class Program
 		// Serializer & Deserializer
 		
 		// Data
-		List<Hero> heroDb = new();
-		heroDb.Add(new Hero("Dimas", 100, 20));
-		heroDb.Add(new Hero("Fitrio", 200, 30));
-		heroDb.Add(new Hero("Kurniawan", 300, 40));
+		Dictionary<string, Hero> heroDb = new();
+		heroDb.Add("Dimas", new Hero("Dimas", 100, 20));
+		heroDb.Add("Fitrio", new Hero("Fitrio", 200, 30));
+		heroDb.Add("Kurniawan", new Hero("Kurniawan", 300, 40));
 		
 		
 		// Output data
-		List<Hero> result = new();
+		Dictionary<string, Hero> result = new();
 		
 		// JSON Serializer & Deserializer
 		string jsonPath = @"hero.json";
-		DataContractJsonSerializer jsonSerializer = new(typeof(List<Hero>));
+		DataContractJsonSerializer jsonSerializer = new(typeof(Dictionary<string, Hero>));
 		using(FileStream fs = new(jsonPath, FileMode.Create))
 		{
 			
@@ -59,19 +59,19 @@ class Program
 		using(FileStream fs = new(jsonPath, FileMode.Open))
 		{
 			// Read the json file
-			result = (List<Hero>)jsonSerializer.ReadObject(fs);
+			result = (Dictionary<string, Hero>)jsonSerializer.ReadObject(fs);
 		}
 		
 		foreach(var hero in result)
 		{
-			Console.WriteLine($"{hero.Name} | HP:{hero.Hp}, ATK:{hero.Attack}");
+			Console.WriteLine($"{hero.Value.Name} | HP:{hero.Value.Hp}, ATK:{hero.Value.Attack}");
 		}
 		
 	}
 }
 
 [DataContract]
-class Hero
+struct Hero
 {
 	[DataMember]
 	public string Name {get; private set;}
