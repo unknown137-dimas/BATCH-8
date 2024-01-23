@@ -175,9 +175,17 @@ class GameController
 	// Manage hero database
 	public bool AddHero(string heroName, HeroDetails heroDetails) => HeroesDatabase.TryAdd(heroName, heroDetails);
 	
+	public void AddHero(Dictionary<string, HeroDetails> heroes)
+	{
+		foreach(var hero in heroes)
+		{
+			AddHero(hero.Key, hero.Value);
+		}
+	}
+	
 	public bool RemoveHero(string heroName)  => HeroesDatabase.Remove(heroName);
 	
-	public IEnumerable<string> GetHeroName() => HeroesDatabase.Keys.ToList();
+	public IEnumerable<string> GetHeroName() => HeroesDatabase.Keys.ToList().ConvertAll(hero => hero.ToString());
 	
 	public HeroDetails GetHeroDetails(string heroName) => HeroesDatabase[heroName];
 
@@ -333,15 +341,18 @@ class GameController
 	public void SetWinner(IPlayer player, bool IsWin = true) => GetPlayerData(player).Winner = IsWin;
 
 	// Generate random options
-	public IEnumerable<string> GenerateRandomHeroList()
+	public IEnumerable<string>? GenerateRandomHeroList()
 	{
-		Random random = new();
 		List<string> options = new();
-		List<string> heroNames = HeroesDatabase.Keys.ToList().ConvertAll(hero => hero.ToString());
+		var heroNames = (List<string>)GetHeroName();
+		if(heroNames.Count == 0)
+		{
+			return null;
+		}
 		int n = 4;
 		while(n > 0)
 		{
-			options.Add(heroNames[random.Next(0, heroNames.Count)]);
+			options.Add(heroNames[new Random().Next(0, heroNames.Count)]);
 			n--;
 		}
 		return options;

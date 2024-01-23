@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.Serialization.Json;
+using System.Text;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 
@@ -151,22 +152,29 @@ Width = 5,
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
 			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]Hero Options | Roll Chance [[{roll}]][/]"));
-			var optionsList = ((List<string>)autoChess.GenerateRandomHeroList());
-			AnsiConsole.Write(DisplayHeroStats(optionsList));
-			var options = AnsiConsole.Prompt(
-				new MultiSelectionPrompt<string>()
-				.NotRequired()
-				.PageSize(5)
-				.AddChoices(optionsList)
-				.InstructionsText(
-					$"[grey](Press [yellow1]<space>[/] to select hero, [green1]<enter>[/] to accept and re-Roll)[/]"
-					)
-				.HighlightStyle(autoChess.GetPlayerData(player).PlayerSide.ToString())
-			);
-			
-			// Set player pieces
-			autoChess.AddPlayerPiece(player, options);
-			roll--;
+			var optionsList = (List<string>?)autoChess.GenerateRandomHeroList();
+			if(optionsList != null)
+			{
+				AnsiConsole.Write(DisplayHeroStats(optionsList));
+				var options = AnsiConsole.Prompt(
+					new MultiSelectionPrompt<string>()
+					.NotRequired()
+					.PageSize(5)
+					.AddChoices(optionsList)
+					.InstructionsText(
+						$"[grey](Press [yellow1]<space>[/] to select hero, [green1]<enter>[/] to accept and re-Roll)[/]"
+						)
+					.HighlightStyle(autoChess.GetPlayerData(player).PlayerSide.ToString())
+				);
+				
+				// Set player pieces
+				autoChess.AddPlayerPiece(player, options);
+				roll--;
+			}
+			else
+			{
+				Environment.Exit(0);
+			}
 		}
 	}
 
@@ -282,65 +290,28 @@ Width = 5,
 		// Enable emoji support
 		Console.OutputEncoding = Encoding.UTF8;
 
-		// Add hero to hero database
+		// Load hero from json file to hero database
 		#region HERO_INIT
-		// Knight
-		autoChess.AddHero("Frost Knight", new HeroDetails(PieceTypes.Knight, 500, 47.5, 5, 3));
-		autoChess.AddHero("Hell Knight", new HeroDetails(PieceTypes.Knight, 700, 75, 5, 1));
-		autoChess.AddHero("Evil Knight", new HeroDetails(PieceTypes.Knight, 750, 50, 10, 2));
-		autoChess.AddHero("Dragon Knight", new HeroDetails(PieceTypes.Knight, 800, 65, 10, 1));
-		// Warlock
-		autoChess.AddHero("Desperate Doctor", new HeroDetails(PieceTypes.Warlock, 550, 45, 5, 3));
-		autoChess.AddHero("Poisonous Worm", new HeroDetails(PieceTypes.Warlock, 600, 55, 0, 3));
-		autoChess.AddHero("Venomancer", new HeroDetails(PieceTypes.Warlock, 1000, 65, 0, 1));
-		autoChess.AddHero("Dark Spirit", new HeroDetails(PieceTypes.Warlock, 1000, 50, 5, 3));
-		// Mage
-		autoChess.AddHero("Ogre Mage", new HeroDetails(PieceTypes.Mage, 700, 60, 5, 2));
-		autoChess.AddHero("Thunder Spirit", new HeroDetails(PieceTypes.Mage, 750, 60, 5, 3));
-		autoChess.AddHero("Tortola Elder", new HeroDetails(PieceTypes.Mage, 650, 42.5, 5, 5));
-		autoChess.AddHero("God of Thunder", new HeroDetails(PieceTypes.Mage, 950, 60, 0, 3));
-		// Warrior
-		autoChess.AddHero("Tusk Champion", new HeroDetails(PieceTypes.Warrior, 650, 52.5, 5, 1));
-		autoChess.AddHero("Swordman", new HeroDetails(PieceTypes.Warrior, 600, 67.5, 5, 2));
-		autoChess.AddHero("God of War", new HeroDetails(PieceTypes.Warrior, 800, 70, 6, 2));
-		autoChess.AddHero("Pirate Captain", new HeroDetails(PieceTypes.Warrior, 950, 82.5, 8, 2));
-		autoChess.AddHero("Sacred Lancer", new HeroDetails(PieceTypes.Warrior, 1050, 90, 10, 3));
-		// Hunter
-		autoChess.AddHero("Egersis Ranger", new HeroDetails(PieceTypes.Hunter, 450, 45, 5, 5));
-		autoChess.AddHero("Dwarf Sniper", new HeroDetails(PieceTypes.Hunter, 450, 70, 5, 5));
-		autoChess.AddHero("Bobo", new HeroDetails(PieceTypes.Hunter, 600, 60, 5, 4));
-		autoChess.AddHero("Spider Queen", new HeroDetails(PieceTypes.Hunter, 900, 95, 5, 1));
-		autoChess.AddHero("Tsunami Stalker", new HeroDetails(PieceTypes.Hunter, 950, 50, 5, 1));
-		// Assassin
-		autoChess.AddHero("Soul Breaker", new HeroDetails(PieceTypes.Assassin, 550, 60, 5, 1));
-		autoChess.AddHero("Abyssalcrawler", new HeroDetails(PieceTypes.Assassin, 500, 55, 5, 2));
-		autoChess.AddHero("Shadowcrawler", new HeroDetails(PieceTypes.Assassin, 550, 85, 5, 2));
-		autoChess.AddHero("Thorn Predator", new HeroDetails(PieceTypes.Assassin, 700, 67.5, 10, 1));
-		// Shaman
-		autoChess.AddHero("Defector", new HeroDetails(PieceTypes.Shaman, 550, 45, 5, 3));
-		autoChess.AddHero("Storm Shaman", new HeroDetails(PieceTypes.Shaman, 800, 47.5, 5, 4));
-		autoChess.AddHero("The Scryer", new HeroDetails(PieceTypes.Shaman, 1000, 75, 5, 4));
-		// Druid
-		autoChess.AddHero("Unicorn", new HeroDetails(PieceTypes.Druid, 400, 55, 5, 3));
-		autoChess.AddHero("Wisper Seer", new HeroDetails(PieceTypes.Druid, 500, 47.5, 2, 3));
-		autoChess.AddHero("Warpwood Sage", new HeroDetails(PieceTypes.Druid, 650, 75, 5, 2));
-		autoChess.AddHero("Razorclaw", new HeroDetails(PieceTypes.Druid, 800, 55, 0, 3));
-		autoChess.AddHero("Khan", new HeroDetails(PieceTypes.Druid, 1000, 115, 10, 1));
-		// Witcher
-		autoChess.AddHero("Taboo Witcher", new HeroDetails(PieceTypes.Witcher, 550, 50, 5, 2));
-		autoChess.AddHero("Fallen Witcher", new HeroDetails(PieceTypes.Witcher, 750, 70, 5, 1));
-		// Mech
-		autoChess.AddHero("Heaven Bomber", new HeroDetails(PieceTypes.Mech, 500, 45, 5, 4));
-		autoChess.AddHero("Ripper", new HeroDetails(PieceTypes.Mech, 800, 57.5, 6, 1));
-		autoChess.AddHero("Gem Artisan", new HeroDetails(PieceTypes.Mech, 800, 55, 6, 1));
-		autoChess.AddHero("Helicopter", new HeroDetails(PieceTypes.Mech, 900, 77.5, 10, 3));
-		// Priest
-		autoChess.AddHero("Goddess of Light", new HeroDetails(PieceTypes.Priest, 400, 52.5, 0, 4));
-		autoChess.AddHero("Fortune Teller", new HeroDetails(PieceTypes.Priest, 550, 62.5, 5, 3));
-		autoChess.AddHero("Cave Prodigy", new HeroDetails(PieceTypes.Priest, 800, 50, 6, 3));
-		// Wizard
-		autoChess.AddHero("Grand Herald", new HeroDetails(PieceTypes.Wizard, 600, 55, 0, 4));
-		autoChess.AddHero("Grimtouch", new HeroDetails(PieceTypes.Wizard, 750, 80, 5, 3));
+		// Read hero_database.json file
+		string jsonPath = "../../../AutoChess/Assets/hero_database.json";
+		DataContractJsonSerializer jsonSerializer = new(typeof(Dictionary<string, HeroDetails>));
+		if(File.Exists(jsonPath))
+		{
+			using(FileStream fs = new(jsonPath, FileMode.Open))
+			{
+				var heroes = (Dictionary<string, HeroDetails>?)jsonSerializer.ReadObject(fs);
+				if(heroes != null)
+				{
+					autoChess.AddHero(heroes);
+				}
+			}
+		}
+		else
+		{
+			AnsiConsole.Write(new Markup($"[rapidblink red1]Hero database is empty, please add hero first[/]\n").Centered());
+			Console.ReadKey();
+			Environment.Exit(0);
+		}
 		#endregion
 		
 		// MAIN MENU
@@ -422,9 +393,16 @@ Width = 5,
 					int roll = maxRoll;
 					while(!autoChess.IsFinishedPickAllPieces(player2) && roll >= 0)
 					{
-						var options = (List<string>)autoChess.GenerateRandomHeroList();
-						autoChess.AddPlayerPiece(player2, options[0..new Random().Next(options.Count + 1)]);
-						roll--;
+						var options = (List<string>?)autoChess.GenerateRandomHeroList();
+						if(options != null)
+						{
+							autoChess.AddPlayerPiece(player2, options[0..new Random().Next(options.Count + 1)]);
+							roll--;
+						}
+						else
+						{
+							Environment.Exit(0);
+						}
 					}
 				}
 				#endregion
@@ -497,7 +475,7 @@ Width = 5,
 				autoChess.SetGamePhase(Phases.BattleEnd);
 				FigletTitle($"Round {round} Result");
 				DisplayResult();
-				AnsiConsole.Write(new Markup($"[rapidblink yellow1] Press any key to move to the next round...[/]\n").Centered());
+				AnsiConsole.Write(new Markup($"[rapidblink yellow1]Press any key to move to the next round...[/]\n").Centered());
 				Console.ReadLine();
 				#endregion
 			}

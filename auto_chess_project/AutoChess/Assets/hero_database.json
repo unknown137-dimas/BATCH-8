@@ -1,0 +1,452 @@
+[
+  {
+    "Key": "Frost Knight",
+    "Value": {
+      "Armor": 5,
+      "Attack": 47.5,
+      "AttackRange": 3,
+      "HeroType": 0,
+      "Hp": 500
+    }
+  },
+  {
+    "Key": "Hell Knight",
+    "Value": {
+      "Armor": 5,
+      "Attack": 75,
+      "AttackRange": 1,
+      "HeroType": 0,
+      "Hp": 700
+    }
+  },
+  {
+    "Key": "Evil Knight",
+    "Value": {
+      "Armor": 10,
+      "Attack": 50,
+      "AttackRange": 2,
+      "HeroType": 0,
+      "Hp": 750
+    }
+  },
+  {
+    "Key": "Dragon Knight",
+    "Value": {
+      "Armor": 10,
+      "Attack": 65,
+      "AttackRange": 1,
+      "HeroType": 0,
+      "Hp": 800
+    }
+  },
+  {
+    "Key": "Desperate Doctor",
+    "Value": {
+      "Armor": 5,
+      "Attack": 45,
+      "AttackRange": 3,
+      "HeroType": 1,
+      "Hp": 550
+    }
+  },
+  {
+    "Key": "Poisonous Worm",
+    "Value": {
+      "Armor": 0,
+      "Attack": 55,
+      "AttackRange": 3,
+      "HeroType": 1,
+      "Hp": 600
+    }
+  },
+  {
+    "Key": "Venomancer",
+    "Value": {
+      "Armor": 0,
+      "Attack": 65,
+      "AttackRange": 1,
+      "HeroType": 1,
+      "Hp": 1000
+    }
+  },
+  {
+    "Key": "Dark Spirit",
+    "Value": {
+      "Armor": 5,
+      "Attack": 50,
+      "AttackRange": 3,
+      "HeroType": 1,
+      "Hp": 1000
+    }
+  },
+  {
+    "Key": "Ogre Mage",
+    "Value": {
+      "Armor": 5,
+      "Attack": 60,
+      "AttackRange": 2,
+      "HeroType": 2,
+      "Hp": 700
+    }
+  },
+  {
+    "Key": "Thunder Spirit",
+    "Value": {
+      "Armor": 5,
+      "Attack": 60,
+      "AttackRange": 3,
+      "HeroType": 2,
+      "Hp": 750
+    }
+  },
+  {
+    "Key": "Tortola Elder",
+    "Value": {
+      "Armor": 5,
+      "Attack": 42.5,
+      "AttackRange": 5,
+      "HeroType": 2,
+      "Hp": 650
+    }
+  },
+  {
+    "Key": "God of Thunder",
+    "Value": {
+      "Armor": 0,
+      "Attack": 60,
+      "AttackRange": 3,
+      "HeroType": 2,
+      "Hp": 950
+    }
+  },
+  {
+    "Key": "Tusk Champion",
+    "Value": {
+      "Armor": 5,
+      "Attack": 52.5,
+      "AttackRange": 1,
+      "HeroType": 3,
+      "Hp": 650
+    }
+  },
+  {
+    "Key": "Swordman",
+    "Value": {
+      "Armor": 5,
+      "Attack": 67.5,
+      "AttackRange": 2,
+      "HeroType": 3,
+      "Hp": 600
+    }
+  },
+  {
+    "Key": "God of War",
+    "Value": {
+      "Armor": 6,
+      "Attack": 70,
+      "AttackRange": 2,
+      "HeroType": 3,
+      "Hp": 800
+    }
+  },
+  {
+    "Key": "Pirate Captain",
+    "Value": {
+      "Armor": 8,
+      "Attack": 82.5,
+      "AttackRange": 2,
+      "HeroType": 3,
+      "Hp": 950
+    }
+  },
+  {
+    "Key": "Sacred Lancer",
+    "Value": {
+      "Armor": 10,
+      "Attack": 90,
+      "AttackRange": 3,
+      "HeroType": 3,
+      "Hp": 1050
+    }
+  },
+  {
+    "Key": "Egersis Ranger",
+    "Value": {
+      "Armor": 5,
+      "Attack": 45,
+      "AttackRange": 5,
+      "HeroType": 4,
+      "Hp": 450
+    }
+  },
+  {
+    "Key": "Dwarf Sniper",
+    "Value": {
+      "Armor": 5,
+      "Attack": 70,
+      "AttackRange": 5,
+      "HeroType": 4,
+      "Hp": 450
+    }
+  },
+  {
+    "Key": "Bobo",
+    "Value": {
+      "Armor": 5,
+      "Attack": 60,
+      "AttackRange": 4,
+      "HeroType": 4,
+      "Hp": 600
+    }
+  },
+  {
+    "Key": "Spider Queen",
+    "Value": {
+      "Armor": 5,
+      "Attack": 95,
+      "AttackRange": 1,
+      "HeroType": 4,
+      "Hp": 900
+    }
+  },
+  {
+    "Key": "Tsunami Stalker",
+    "Value": {
+      "Armor": 5,
+      "Attack": 50,
+      "AttackRange": 1,
+      "HeroType": 4,
+      "Hp": 950
+    }
+  },
+  {
+    "Key": "Soul Breaker",
+    "Value": {
+      "Armor": 5,
+      "Attack": 60,
+      "AttackRange": 1,
+      "HeroType": 5,
+      "Hp": 550
+    }
+  },
+  {
+    "Key": "Abyssalcrawler",
+    "Value": {
+      "Armor": 5,
+      "Attack": 55,
+      "AttackRange": 2,
+      "HeroType": 5,
+      "Hp": 500
+    }
+  },
+  {
+    "Key": "Shadowcrawler",
+    "Value": {
+      "Armor": 5,
+      "Attack": 85,
+      "AttackRange": 2,
+      "HeroType": 5,
+      "Hp": 550
+    }
+  },
+  {
+    "Key": "Thorn Predator",
+    "Value": {
+      "Armor": 10,
+      "Attack": 67.5,
+      "AttackRange": 1,
+      "HeroType": 5,
+      "Hp": 700
+    }
+  },
+  {
+    "Key": "Defector",
+    "Value": {
+      "Armor": 5,
+      "Attack": 45,
+      "AttackRange": 3,
+      "HeroType": 6,
+      "Hp": 550
+    }
+  },
+  {
+    "Key": "Storm Shaman",
+    "Value": {
+      "Armor": 5,
+      "Attack": 47.5,
+      "AttackRange": 4,
+      "HeroType": 6,
+      "Hp": 800
+    }
+  },
+  {
+    "Key": "The Scryer",
+    "Value": {
+      "Armor": 5,
+      "Attack": 75,
+      "AttackRange": 4,
+      "HeroType": 6,
+      "Hp": 1000
+    }
+  },
+  {
+    "Key": "Unicorn",
+    "Value": {
+      "Armor": 5,
+      "Attack": 55,
+      "AttackRange": 3,
+      "HeroType": 7,
+      "Hp": 400
+    }
+  },
+  {
+    "Key": "Wisper Seer",
+    "Value": {
+      "Armor": 2,
+      "Attack": 47.5,
+      "AttackRange": 3,
+      "HeroType": 7,
+      "Hp": 500
+    }
+  },
+  {
+    "Key": "Warpwood Sage",
+    "Value": {
+      "Armor": 5,
+      "Attack": 75,
+      "AttackRange": 2,
+      "HeroType": 7,
+      "Hp": 650
+    }
+  },
+  {
+    "Key": "Razorclaw",
+    "Value": {
+      "Armor": 0,
+      "Attack": 55,
+      "AttackRange": 3,
+      "HeroType": 7,
+      "Hp": 800
+    }
+  },
+  {
+    "Key": "Khan",
+    "Value": {
+      "Armor": 10,
+      "Attack": 115,
+      "AttackRange": 1,
+      "HeroType": 7,
+      "Hp": 1000
+    }
+  },
+  {
+    "Key": "Taboo Witcher",
+    "Value": {
+      "Armor": 5,
+      "Attack": 50,
+      "AttackRange": 2,
+      "HeroType": 8,
+      "Hp": 550
+    }
+  },
+  {
+    "Key": "Fallen Witcher",
+    "Value": {
+      "Armor": 5,
+      "Attack": 70,
+      "AttackRange": 1,
+      "HeroType": 8,
+      "Hp": 750
+    }
+  },
+  {
+    "Key": "Heaven Bomber",
+    "Value": {
+      "Armor": 5,
+      "Attack": 45,
+      "AttackRange": 4,
+      "HeroType": 9,
+      "Hp": 500
+    }
+  },
+  {
+    "Key": "Ripper",
+    "Value": {
+      "Armor": 6,
+      "Attack": 57.5,
+      "AttackRange": 1,
+      "HeroType": 9,
+      "Hp": 800
+    }
+  },
+  {
+    "Key": "Gem Artisan",
+    "Value": {
+      "Armor": 6,
+      "Attack": 55,
+      "AttackRange": 1,
+      "HeroType": 9,
+      "Hp": 800
+    }
+  },
+  {
+    "Key": "Helicopter",
+    "Value": {
+      "Armor": 10,
+      "Attack": 77.5,
+      "AttackRange": 3,
+      "HeroType": 9,
+      "Hp": 900
+    }
+  },
+  {
+    "Key": "Goddess of Light",
+    "Value": {
+      "Armor": 0,
+      "Attack": 52.5,
+      "AttackRange": 4,
+      "HeroType": 10,
+      "Hp": 400
+    }
+  },
+  {
+    "Key": "Fortune Teller",
+    "Value": {
+      "Armor": 5,
+      "Attack": 62.5,
+      "AttackRange": 3,
+      "HeroType": 10,
+      "Hp": 550
+    }
+  },
+  {
+    "Key": "Cave Prodigy",
+    "Value": {
+      "Armor": 6,
+      "Attack": 50,
+      "AttackRange": 3,
+      "HeroType": 10,
+      "Hp": 800
+    }
+  },
+  {
+    "Key": "Grand Herald",
+    "Value": {
+      "Armor": 0,
+      "Attack": 55,
+      "AttackRange": 4,
+      "HeroType": 11,
+      "Hp": 600
+    }
+  },
+  {
+    "Key": "Grimtouch",
+    "Value": {
+      "Armor": 5,
+      "Attack": 80,
+      "AttackRange": 3,
+      "HeroType": 11,
+      "Hp": 750
+    }
+  }
+]
