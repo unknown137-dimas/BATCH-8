@@ -1,4 +1,6 @@
-class GameController
+namespace AutoChess;
+
+public class GameController
 {
 	private readonly Board _board;
 	public Dictionary<string, HeroDetails> HeroesDatabase {get; private set;} = new();

@@ -1,4 +1,4 @@
-class Board : IBoard
+public class Board : IBoard
 {
 	public int Width {get;}
 	public int Height {get;}

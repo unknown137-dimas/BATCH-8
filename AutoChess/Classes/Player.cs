@@ -1,4 +1,4 @@
-class Player : IPlayer
+public class Player : IPlayer
 {
     public string PlayerId  {get;}
     public string Name {get;}

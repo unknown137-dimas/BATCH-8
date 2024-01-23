@@ -2,6 +2,7 @@
 using System.Text;
 using Spectre.Console;
 using Spectre.Console.Rendering;
+using AutoChess;
 
 internal class Program
 {
@@ -39,7 +40,7 @@ internal class Program
 	{
 		AnsiConsole.Clear();
 		AnsiConsole.Write(
-			new FigletText(FigletFont.Load("../../../AutoChess/Assets/doom.flf"), text)
+			new FigletText(FigletFont.Load("Assets/doom.flf"), text)
 			.Centered()
 			.Color(Color.OrangeRed1)
 		);
@@ -293,7 +294,7 @@ Width = 5,
 		// Load hero from json file to hero database
 		#region HERO_INIT
 		// Read hero_database.json file
-		string jsonPath = "../../../AutoChess/Assets/hero_database.json";
+		string jsonPath = "Assets/hero_database.json";
 		DataContractJsonSerializer jsonSerializer = new(typeof(Dictionary<string, HeroDetails>));
 		if(File.Exists(jsonPath))
 		{
@@ -466,7 +467,7 @@ Width = 5,
 							Task.Run(() => autoChess.Attack(player, piece));
 						};
 					};
-					Thread.Sleep(700);
+					Thread.Sleep(500);
 				}
 				#endregion
 

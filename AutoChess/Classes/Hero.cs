@@ -1,4 +1,4 @@
-class Hero : IPiece
+public class Hero : IPiece
 {
     public string PieceId {get;}
     public string Name {get;}

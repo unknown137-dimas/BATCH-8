@@ -1,4 +1,4 @@
-interface IPiece
+public interface IPiece
 {
     string PieceId {get;}
     string Name {get;}

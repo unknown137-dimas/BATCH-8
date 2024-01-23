@@ -1,4 +1,4 @@
-enum Sides
+public enum Sides
 {
     red,
     blue,

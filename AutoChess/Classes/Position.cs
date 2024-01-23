@@ -1,4 +1,4 @@
-class Position : IPosition
+public class Position : IPosition
 {
     public int X {get; private set;} = -1;
     public int Y {get; private set;} = -1;

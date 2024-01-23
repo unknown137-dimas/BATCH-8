@@ -21,8 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "day_8", "day_8\day_8.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "day_9", "day_9\day_9.csproj", "{340A5BA7-574A-4EDD-819A-15A75E4C4554}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "auto_chess_project", "auto_chess_project\auto_chess_project.csproj", "{88758C2C-B4EE-459E-AF70-1FEBE9BB327A}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "day_10", "day_10\day_10.csproj", "{BED138C3-5F03-4C7A-A69B-5CAF9DAE93CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "day_28", "day_28\day_28.csproj", "{8BF7B4C3-AAF2-43FB-8B4E-8977A659A743}"
@@ -34,6 +32,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "day_32", "day_32\day_32.csproj", "{B499714C-BA61-4981-80C0-DBB7A753B061}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "day_36", "day_36\day_36.csproj", "{4502C974-A01B-4530-A7EA-35F1ACA5C0FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoChess", "AutoChess\AutoChess.csproj", "{1BE19C99-1ACE-4014-BBC2-8A48D0FBF8B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoChessSpectre", "AutoChessSpectre\AutoChessSpectre.csproj", "{BD8707B3-ECC8-471A-A9D4-728BDF28D114}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,6 +103,14 @@ Global
 		{4502C974-A01B-4530-A7EA-35F1ACA5C0FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4502C974-A01B-4530-A7EA-35F1ACA5C0FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4502C974-A01B-4530-A7EA-35F1ACA5C0FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BE19C99-1ACE-4014-BBC2-8A48D0FBF8B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BE19C99-1ACE-4014-BBC2-8A48D0FBF8B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BE19C99-1ACE-4014-BBC2-8A48D0FBF8B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BE19C99-1ACE-4014-BBC2-8A48D0FBF8B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD8707B3-ECC8-471A-A9D4-728BDF28D114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD8707B3-ECC8-471A-A9D4-728BDF28D114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD8707B3-ECC8-471A-A9D4-728BDF28D114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD8707B3-ECC8-471A-A9D4-728BDF28D114}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
