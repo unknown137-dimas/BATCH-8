@@ -1,0 +1,17 @@
+[
+  {
+    "Attack": 20,
+    "Hp": 100,
+    "Name": "Dimas"
+  },
+  {
+    "Attack": 30,
+    "Hp": 200,
+    "Name": "Fitrio"
+  },
+  {
+    "Attack": 40,
+    "Hp": 300,
+    "Name": "Kurniawan"
+  }
+]
