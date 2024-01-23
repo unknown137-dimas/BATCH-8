@@ -61,11 +61,37 @@ internal class Program
 				.AddItem("Armor", ScaleHeroStat((int)Math.Round(heroDb[hero].Armor), 30, barWidth), Color.Blue1)
 				.HideValues()
 				.WithMaxValue(barWidth)
-			).Header(new PanelHeader($"[[{heroIcons[heroDb[hero].HeroType]}]] {heroDb[hero].HeroType}").Centered());
+			).Header(new PanelHeader($" [[{heroIcons[heroDb[hero].HeroType]}]] {heroDb[hero].HeroType} ").Centered());
 			heroPanel.Padding = new Padding(0, 0, 0, 0);
 			heroStat.Add(heroPanel);
 		}
 		return new Columns(heroStat);
+	}
+	
+	static IRenderable DisplayHeroPosition(IEnumerable<IPiece> playerPieces)
+	{
+		List<IRenderable> allHeroPosition = new();
+		foreach(var piece in playerPieces)
+		{
+			var player = autoChess.GetPlayerByPieceId(piece.PieceId);
+			var heroX = "?";
+			var heroY = "?";
+			if(player != null)
+			{
+				var heroPosition = autoChess.GetHeroPosition(player, piece.PieceId);
+				if(heroPosition != null)
+				{
+					heroX = (heroPosition.X + 1).ToString();
+					heroY = (heroPosition.Y + 1).ToString();
+				}
+			}
+			allHeroPosition.Add(
+				new Markup(
+					$"X = {heroX}, Y = {heroY}"
+				).Centered()
+			);
+		}
+		return new Columns(allHeroPosition);
 	}
 	
 	static IRenderable DisplayBoard(IPlayer? player = null)
@@ -100,7 +126,7 @@ internal class Program
 						new Markup(label)
 					)
 					{
-						Width = 5,
+Width = 5,
 						Height = 3,
 						Padding = new Padding(0, 0, 0, 0)
 					}
@@ -158,14 +184,14 @@ internal class Program
 			bool isSecondPlayer = ((List<IPlayer>)autoChess.GetPlayers()).IndexOf(player) == 1;
 			int yMinCoor = isSecondPlayer ? (boardSize[1] % 2 == 0 ? boardSize[1] / 2 : (boardSize[1] / 2) + 1) + 1 : 1;
 			int yMaxCoor = isSecondPlayer ? boardSize[1] : boardSize[1] / 2;
-			var heroX = "?";
-			var heroY = "?";
+			
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name} Hero's Position[/]"));
 			AnsiConsole.Write(DisplayBoard(player));
 			AnsiConsole.MarkupLine($"The valid [green1]X coordinate[/] is between [green1]1[/] and [green1]{boardSize[0]}[/]");
 			AnsiConsole.MarkupLine($"The valid [green1]Y coordinate[/] is between [green1]{yMinCoor}[/] and [green1]{yMaxCoor}[/]");
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
 			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
+			AnsiConsole.Write(DisplayHeroPosition(autoChess.GetPlayerPieces(player)));
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]Set Hero's Position[/]"));
 			var playerPieces = (List<IPiece>)autoChess.GetPlayerPieces(player);
 			var playerPiece = AnsiConsole.Prompt(
@@ -179,13 +205,6 @@ internal class Program
 			
 			// Loop until piece placement success
 			bool success = false;
-			var heroPosition = autoChess.GetHeroPosition(player, playerPiece.PieceId);
-			if(heroPosition != null)
-			{
-				heroX = (heroPosition.X + 1).ToString();
-				heroY = (heroPosition.Y + 1).ToString();
-			}
-			AnsiConsole.Write(new Markup($"{playerPiece}'s Current Position : X = {heroX}, Y = {heroY}\n"));
 			while(!success)
 			{
 				var pieceX = AnsiConsole.Prompt(
