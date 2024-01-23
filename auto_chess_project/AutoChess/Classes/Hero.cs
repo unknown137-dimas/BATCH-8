@@ -8,11 +8,11 @@ class Hero : IPiece
     public double Armor {get;}
     public int AttackRange {get;}
 
-    public Hero(string name, PieceTypes pieceType, double hp, double attack, double armor, int attackRange)
+    public Hero(string name, PieceTypes heroType, double hp, double attack, double armor, int attackRange)
     {
         PieceId = Guid.NewGuid().ToString();
         Name = name;
-        PieceType = pieceType;
+        PieceType = heroType;
         Hp = hp;
         Attack = attack;
         Armor = armor;
@@ -37,7 +37,7 @@ class Hero : IPiece
 
     public void AttackEnemy(IPiece otherPiece)
     {
-        otherPiece.Hp -= this.Attack - otherPiece.Armor;
+        otherPiece.Hp -= Attack - otherPiece.Armor;
     }
 
     public override string ToString() => Name;

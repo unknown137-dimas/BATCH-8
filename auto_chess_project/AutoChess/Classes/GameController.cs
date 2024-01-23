@@ -92,7 +92,7 @@ class GameController
 		IPiece? result = null;
 		foreach(var player in GetPlayers())
 		{
-			result = GetPlayerData(player).GetHeroById(heroId);
+			result = GetPlayerData(player).GetPieceById(heroId);
 			if(result != null)
 			{
 				return result;
@@ -217,7 +217,7 @@ class GameController
 	// Manage player's piece
 	public IEnumerable<IPiece> GetPlayerPieces(IPlayer player) => GetPlayerData(player).PlayerPieces;
 
-	public IPiece? GetPlayerPiece(IPlayer player, string heroId) => GetPlayerData(player).GetHeroById(heroId);
+	public IPiece? GetPlayerPiece(IPlayer player, string heroId) => GetPlayerData(player).GetPieceById(heroId);
 
 	public IEnumerable<string> GetPlayerPiecesName(IPlayer player) => ((List<IPiece>)GetPlayerPieces(player)).ConvertAll(piece => piece.Name);
 	

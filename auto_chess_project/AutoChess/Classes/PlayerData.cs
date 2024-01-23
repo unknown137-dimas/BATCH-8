@@ -13,7 +13,7 @@ class PlayerData
         PlayerSide = playerSide;
     }
 
-    public IPiece? GetHeroById(string heroId)
+    public IPiece? GetPieceById(string heroId)
     {
         foreach(var piece in PlayerPieces)
         {
