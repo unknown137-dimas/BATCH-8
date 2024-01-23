@@ -468,7 +468,7 @@ Width = 5,
 				while(autoChess.GetRoundWinner() == null)
 				{
 					FigletTitle("Battle");
-					AnsiConsole.Write(new Rule($"[red]Round {round}[/]"));
+					AnsiConsole.Write(new Rule($"[yellow1]Round {round}[/]"));
 					AnsiConsole.Write(DisplayBoard());
 					
 					// Display each player's hero health
