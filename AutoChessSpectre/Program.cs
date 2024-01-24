@@ -51,21 +51,23 @@ internal class Program
 		List<IRenderable> heroStat = new();
 		foreach(var hero in heroList)
 		{
-			var heroDetail = autoChess.GetHeroDetails(hero);
-			var heroPanel = new Panel(
-				new BarChart()
-				.Width(barWidth)
-				.Label(hero)
-				.CenterLabel()
-				.AddItem("HP", ScaleHeroStat((int)Math.Round(heroDetail.Hp), 1200, barWidth), Color.Green1)
-				.AddItem("ATK", ScaleHeroStat((int)Math.Round(heroDetail.Attack), 400, barWidth), Color.Red1)
-				.AddItem("ATK Range", ScaleHeroStat(heroDetail.AttackRange, 30, barWidth), Color.DarkOrange)
-				.AddItem("Armor", ScaleHeroStat((int)Math.Round(heroDetail.Armor), 30, barWidth), Color.Blue1)
-				.HideValues()
-				.WithMaxValue(barWidth)
-			).Header(new PanelHeader($"[[{heroIcons[heroDetail.HeroType]}]] {heroDetail.HeroType}").Centered());
-			heroPanel.Padding = new Padding(0, 0, 0, 0);
-			heroStat.Add(heroPanel);
+			if(autoChess.TryGetHeroDetails(hero, out HeroDetails? heroDetail))
+			{
+				var heroPanel = new Panel(
+					new BarChart()
+					.Width(barWidth)
+					.Label(hero)
+					.CenterLabel()
+					.AddItem("HP", ScaleHeroStat((int)Math.Round(heroDetail!.Hp), 1200, barWidth), Color.Green1)
+					.AddItem("ATK", ScaleHeroStat((int)Math.Round(heroDetail!.Attack), 400, barWidth), Color.Red1)
+					.AddItem("ATK Range", ScaleHeroStat(heroDetail!.AttackRange, 30, barWidth), Color.DarkOrange)
+					.AddItem("Armor", ScaleHeroStat((int)Math.Round(heroDetail!.Armor), 30, barWidth), Color.Blue1)
+					.HideValues()
+					.WithMaxValue(barWidth)
+				).Header(new PanelHeader($"[[{heroIcons[heroDetail!.HeroType]}]] {heroDetail!.HeroType}").Centered());
+				heroPanel.Padding = new Padding(0, 0, 0, 0);
+				heroStat.Add(heroPanel);
+			}
 		}
 		return new Columns(heroStat);
 	}
@@ -75,16 +77,14 @@ internal class Program
 		List<IRenderable> allHeroPosition = new();
 		foreach(var piece in playerPieces)
 		{
-			var player = autoChess.GetPlayerByPieceId(piece.PieceId);
 			var heroX = "?";
 			var heroY = "?";
-			if(player != null)
+			if(autoChess.TryGetPlayerByPieceId(piece.PieceId, out IPlayer? player))
 			{
-				var heroPosition = autoChess.GetHeroPosition(player, piece.PieceId);
-				if(heroPosition != null)
+				if(autoChess.TryGetHeroPosition(player!, piece.PieceId, out IPosition? heroPosition))
 				{
-					heroX = (heroPosition.X + 1).ToString();
-					heroY = (heroPosition.Y + 1).ToString();
+					heroX = (heroPosition!.X + 1).ToString();
+					heroY = (heroPosition!.Y + 1).ToString();
 				}
 			}
 			allHeroPosition.Add(
@@ -113,9 +113,14 @@ internal class Program
 				{
 					if(autoChess.TryGetPieceById(heroId, out IPiece? piece))
 					{
-						var hero = (Hero)piece!;
-						playerSide = autoChess.GetPlayerSide(autoChess.GetPlayerByPieceId(heroId)!).ToString();
-						heroIcons.TryGetValue(hero!.PieceType, out icons);
+						heroIcons.TryGetValue(((Hero)piece!).PieceType, out icons);
+					}
+					if(autoChess.TryGetPlayerByPieceId(heroId, out IPlayer? playerResult))
+					{
+						if(autoChess.TryGetPlayerSide(playerResult!, out Sides? sideResult))
+						{
+							playerSide = sideResult.ToString();
+						}
 					}
 				}
 				var label = "";
@@ -128,7 +133,7 @@ internal class Program
 						new Markup(label)
 					)
 					{
-Width = 5,
+						Width = 5,
 						Height = 3,
 						Padding = new Padding(0, 0, 0, 0)
 					}
@@ -150,31 +155,34 @@ Width = 5,
 		while(!autoChess.IsFinishedPickAllPieces(player) && roll >= 0)
 		{
 			FigletTitle("Pick Your Heroes");
-			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
-			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
-			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]Hero Options | Roll Chance [[{roll}]][/]"));
-			var optionsList = (List<string>)autoChess.GenerateRandomHeroList();
-			if(optionsList != Enumerable.Empty<string>())
+			if(autoChess.TryGetPlayerData(player, out PlayerData? playerDataResult))
 			{
-				AnsiConsole.Write(DisplayHeroStats(optionsList));
-				var options = AnsiConsole.Prompt(
-					new MultiSelectionPrompt<string>()
-					.NotRequired()
-					.PageSize(5)
-					.AddChoices(optionsList)
-					.InstructionsText(
-						$"[grey](Press [yellow1]<space>[/] to select hero, [green1]<enter>[/] to accept and re-Roll)[/]"
-						)
-					.HighlightStyle(autoChess.GetPlayerData(player).PlayerSide.ToString())
-				);
-				
-				// Set player pieces
-				autoChess.AddPlayerPiece(player, options);
-				roll--;
-			}
-			else
-			{
-				Environment.Exit(0);
+				AnsiConsole.Write(new Rule($"[{playerDataResult!.PlayerSide}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
+				AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
+				AnsiConsole.Write(new Rule($"[{playerDataResult!.PlayerSide}]Hero Options | Roll Chance [[{roll}]][/]"));
+				var optionsList = (List<string>)autoChess.GenerateRandomHeroList();
+				if(optionsList != Enumerable.Empty<string>())
+				{
+					AnsiConsole.Write(DisplayHeroStats(optionsList));
+					var options = AnsiConsole.Prompt(
+						new MultiSelectionPrompt<string>()
+						.NotRequired()
+						.PageSize(5)
+						.AddChoices(optionsList)
+						.InstructionsText(
+							$"[grey](Press [yellow1]<space>[/] to select hero, [green1]<enter>[/] to accept and re-Roll)[/]"
+							)
+						.HighlightStyle(playerDataResult!.PlayerSide.ToString())
+					);
+					
+					// Set player pieces
+					autoChess.AddPlayerPiece(player, options);
+					roll--;
+				}
+				else
+				{
+					Environment.Exit(0);
+				}
 			}
 		}
 	}
@@ -190,75 +198,78 @@ Width = 5,
 		while(!autoChess.IsFinishedPutAllPieces(player) || !confirm)
 		{
 			FigletTitle("Place Your Heroes");
-			bool isSecondPlayer = ((List<IPlayer>)autoChess.GetPlayers()).IndexOf(player) == 1;
-			int yMinCoor = isSecondPlayer ? (boardSize[1] % 2 == 0 ? boardSize[1] / 2 : (boardSize[1] / 2) + 1) + 1 : 1;
-			int yMaxCoor = isSecondPlayer ? boardSize[1] : boardSize[1] / 2;
-			
-			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name} Hero's Position[/]"));
-			AnsiConsole.Write(DisplayBoard(player));
-			AnsiConsole.MarkupLine($"The valid [green1]X coordinate[/] is between [green1]1[/] and [green1]{boardSize[0]}[/]");
-			AnsiConsole.MarkupLine($"The valid [green1]Y coordinate[/] is between [green1]{yMinCoor}[/] and [green1]{yMaxCoor}[/]");
-			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
-			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
-			AnsiConsole.Write(DisplayHeroPosition(autoChess.GetPlayerPieces(player)));
-			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]Set Hero's Position[/]"));
-			var playerPieces = (List<IPiece>)autoChess.GetPlayerPieces(player);
-			var playerPiece = AnsiConsole.Prompt(
-				new SelectionPrompt<Hero>()
-				.PageSize(5)
-				.AddChoices(
-					playerPieces.ConvertAll(piece => (Hero)piece)
-				)
-				.HighlightStyle(autoChess.GetPlayerData(player).PlayerSide.ToString())
-			);
-			
-			// Loop until piece placement success
-			bool success = false;
-			while(!success)
+			if(autoChess.TryGetPlayerData(player, out PlayerData? playerDataResult))
 			{
-				var pieceX = AnsiConsole.Prompt(
-					new TextPrompt<int>($"{playerPiece}'s [green1]X[/] position?")
-					.PromptStyle("green1")
-					.ValidationErrorMessage("[red]That's not a valid coordinate[/]")
-					.Validate(coordinate =>
-						{
-							return coordinate switch
-							{
-								< 1 => ValidationResult.Error($"[red]The coordinate range from 1 to {boardSize[0]}[/]"),
-								var value when value >= boardSize[0] + 1 => ValidationResult.Error($"[red]The coordinate can't exceed the player's area ({boardSize[0]})[/]"),
-								_ => ValidationResult.Success(),
-							};
-						}
-					)
-				);
-
-				var pieceY = AnsiConsole.Prompt(
-					new TextPrompt<int>($"{playerPiece}'s [green1]Y[/] position?")
-					.PromptStyle("green1")
-					.ValidationErrorMessage("[red]That's not a valid coordinate[/]")
-					.Validate(coordinate =>
-						{
-							return coordinate switch
-							{
-								var value when value < yMinCoor => ValidationResult.Error($"[red]The coordinate range from {yMinCoor} to {yMaxCoor}[/]"),
-								var value when value > yMaxCoor => ValidationResult.Error($"[red]The coordinate can't exceed the player's area ({yMaxCoor})[/]"),
-								_ => ValidationResult.Success(),
-							};
-						}
-					)
-				);
-				success = autoChess.PutPlayerPiece(player, playerPiece, new Position(pieceX - 1, pieceY - 1));
-				if(!success)
-				{
-					AnsiConsole.Markup("[red]You can't put another hero in the same coordinate[/]\n");
-				}
-			}
-			if(autoChess.IsFinishedPutAllPieces(player))
-			{
-				FigletTitle($"{player}'s Preview");
-				AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name} Hero's Position[/]"));
+				bool isSecondPlayer = ((List<IPlayer>)autoChess.GetPlayers()).IndexOf(player) == 1;
+				int yMinCoor = isSecondPlayer ? (boardSize[1] % 2 == 0 ? boardSize[1] / 2 : (boardSize[1] / 2) + 1) + 1 : 1;
+				int yMaxCoor = isSecondPlayer ? boardSize[1] : boardSize[1] / 2;
+				
+				AnsiConsole.Write(new Rule($"[{playerDataResult!.PlayerSide}]{player.Name} Hero's Position[/]"));
 				AnsiConsole.Write(DisplayBoard(player));
-				confirm = AnsiConsole.Confirm("Are you sure about your heroes placement?");
+				AnsiConsole.MarkupLine($"The valid [green1]X coordinate[/] is between [green1]1[/] and [green1]{boardSize[0]}[/]");
+				AnsiConsole.MarkupLine($"The valid [green1]Y coordinate[/] is between [green1]{yMinCoor}[/] and [green1]{yMaxCoor}[/]");
+				AnsiConsole.Write(new Rule($"[{playerDataResult!.PlayerSide}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
+				AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
+				AnsiConsole.Write(DisplayHeroPosition(autoChess.GetPlayerPieces(player)));
+				AnsiConsole.Write(new Rule($"[{playerDataResult!.PlayerSide}]Set Hero's Position[/]"));
+				var playerPieces = (List<IPiece>)autoChess.GetPlayerPieces(player);
+				var playerPiece = AnsiConsole.Prompt(
+					new SelectionPrompt<Hero>()
+					.PageSize(5)
+					.AddChoices(
+						playerPieces.ConvertAll(piece => (Hero)piece)
+					)
+					.HighlightStyle(playerDataResult!.PlayerSide.ToString())
+				);
+				
+				// Loop until piece placement success
+				bool success = false;
+				while(!success)
+				{
+					var pieceX = AnsiConsole.Prompt(
+						new TextPrompt<int>($"{playerPiece}'s [green1]X[/] position?")
+						.PromptStyle("green1")
+						.ValidationErrorMessage("[red]That's not a valid coordinate[/]")
+						.Validate(coordinate =>
+							{
+								return coordinate switch
+								{
+									< 1 => ValidationResult.Error($"[red]The coordinate range from 1 to {boardSize[0]}[/]"),
+									var value when value >= boardSize[0] + 1 => ValidationResult.Error($"[red]The coordinate can't exceed the player's area ({boardSize[0]})[/]"),
+									_ => ValidationResult.Success(),
+								};
+							}
+						)
+					);
+
+					var pieceY = AnsiConsole.Prompt(
+						new TextPrompt<int>($"{playerPiece}'s [green1]Y[/] position?")
+						.PromptStyle("green1")
+						.ValidationErrorMessage("[red]That's not a valid coordinate[/]")
+						.Validate(coordinate =>
+							{
+								return coordinate switch
+								{
+									var value when value < yMinCoor => ValidationResult.Error($"[red]The coordinate range from {yMinCoor} to {yMaxCoor}[/]"),
+									var value when value > yMaxCoor => ValidationResult.Error($"[red]The coordinate can't exceed the player's area ({yMaxCoor})[/]"),
+									_ => ValidationResult.Success(),
+								};
+							}
+						)
+					);
+					success = autoChess.PutPlayerPiece(player, playerPiece, new Position(pieceX - 1, pieceY - 1));
+					if(!success)
+					{
+						AnsiConsole.Markup("[red]You can't put another hero in the same coordinate[/]\n");
+					}
+				}
+				if(autoChess.IsFinishedPutAllPieces(player))
+				{
+					FigletTitle($"{player}'s Preview");
+					AnsiConsole.Write(new Rule($"[{playerDataResult!.PlayerSide}]{player.Name} Hero's Position[/]"));
+					AnsiConsole.Write(DisplayBoard(player));
+					confirm = AnsiConsole.Confirm("Are you sure about your heroes placement?");
+				}
 			}
 		}
 	}
@@ -267,20 +278,22 @@ Width = 5,
 	{
 		foreach(var player in autoChess.GetPlayers())
 		{
-			var playerData = autoChess.GetPlayerData(player);
-			StringBuilder battleResult = new();
-			foreach(var result in playerData.Win)
+			if(autoChess.TryGetPlayerData(player, out PlayerData? playerDataResult))
 			{
-				battleResult.Append(result ? "🏆" : "💀");
+				StringBuilder battleResult = new();
+				foreach(var result in playerDataResult!.Win)
+				{
+					battleResult.Append(result ? "🏆" : "💀");
+				}
+				StringBuilder healthPoint = new();
+				for(int i = 0; i < playerDataResult!.Hp; i++)
+				{
+					healthPoint.Append("❤️");
+				}
+				AnsiConsole.Write(new Rule($"[{playerDataResult!.PlayerSide}][[{(playerDataResult!.Winner ? "🏆" : "💀")}]] {player.Name}[/]\n"));
+				AnsiConsole.Write(new Markup($"[[❤️]] Health Point : {healthPoint}\n"));
+				AnsiConsole.Write(new Markup($"[[⚔️]] Battle Result : {battleResult}\n"));
 			}
-			StringBuilder healthPoint = new();
-			for(int i = 0; i < playerData.Hp; i++)
-			{
-				healthPoint.Append("❤️");
-			}
-			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}][[{(playerData.Winner ? "🏆" : "💀")}]] {player.Name}[/]\n"));
-			AnsiConsole.Write(new Markup($"[[❤️]] Health Point : {healthPoint}\n"));
-			AnsiConsole.Write(new Markup($"[[⚔️]] Battle Result : {battleResult}\n"));
 		}
 	}
 
@@ -426,14 +439,17 @@ Width = 5,
 					
 					// BOT
 					// Bot put piece
-					foreach(var piece in autoChess.GetPlayerData(playerTwo).PlayerPieces)
+					if(autoChess.TryGetPlayerData(playerTwo, out PlayerData? playerDataResult))
 					{
-						bool success = false;
-						while(!success)
+						foreach(var piece in playerDataResult!.PlayerPieces)
 						{
-							int x = new Random().Next(0, boardSize[0]);
-							int y = new Random().Next(boardSize[1] % 2 == 0 ? boardSize[1] / 2 : (boardSize[1] / 2) + 1, boardSize[1]);
-							success = autoChess.PutPlayerPiece(playerTwo, piece, new Position(x, y));
+							bool success = false;
+							while(!success)
+							{
+								int x = new Random().Next(0, boardSize[0]);
+								int y = new Random().Next(boardSize[1] % 2 == 0 ? boardSize[1] / 2 : (boardSize[1] / 2) + 1, boardSize[1]);
+								success = autoChess.PutPlayerPiece(playerTwo, piece, new Position(x, y));
+							}
 						}
 					}
 				}
@@ -443,7 +459,7 @@ Width = 5,
 				#region BATTLE_VIEW
 				autoChess.SetGameStatus(Status.OnGoing);
 				autoChess.SetGamePhase(Phases.BattleBegin);
-				while(autoChess.GetRoundWinner() == null)
+				while(!autoChess.TryGetRoundWinner(out _))
 				{
 					FigletTitle("Battle");
 					AnsiConsole.Write(new Rule($"[yellow1]Round {round}[/]"));
@@ -457,13 +473,15 @@ Width = 5,
 						var heroHealthBar = new BarChart().Width(barWidth).WithMaxValue(barWidth).HideValues();
 						foreach(var playerPiece in autoChess.GetPlayerPieces(player))
 						{
-							var piece = autoChess.GetPieceById(playerPiece.PieceId);
-							if(piece != null)
+							if(autoChess.TryGetPieceById(playerPiece.PieceId, out IPiece? piece))
 							{
-							heroHealthBar.AddItem((piece.Hp > 0 ? piece.Name : $"[[💀]] {piece.Name}"), ScaleHeroStat(((int)Math.Round(piece.Hp)), 1200, barWidth), Color.Green1);
+								heroHealthBar.AddItem(piece!.Hp > 0 ? piece!.Name : $"[[💀]] {piece!.Name}", ScaleHeroStat((int)Math.Round(piece.Hp), 1200, barWidth), Color.Green1);
 							}
 						};
-						playerColumn.Add(new Panel(heroHealthBar).Header(new PanelHeader($"[{autoChess.GetPlayerData(player).PlayerSide} bold]{player.Name}[/]").Centered()));
+						if(autoChess.TryGetPlayerData(player, out PlayerData? playerDataResult))
+						{
+							playerColumn.Add(new Panel(heroHealthBar).Header(new PanelHeader($"[{playerDataResult!.PlayerSide} bold]{player.Name}[/]").Centered()));
+						}
 					};
 					AnsiConsole.Write(new Columns(playerColumn));
 					
@@ -475,7 +493,7 @@ Width = 5,
 							Task.Run(() => autoChess.Attack(player, piece));
 						};
 					};
-					Thread.Sleep(1000);
+					Thread.Sleep(700);
 				}
 				#endregion
 
