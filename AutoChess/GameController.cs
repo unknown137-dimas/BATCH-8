@@ -122,7 +122,7 @@ public class GameController
 	/// The <see cref="Piece"/> instance corresponding to the specified piece ID, 
 	/// or <c>null</c> if no piece with the given ID is found.
 	/// </returns>
-	public IPiece? GetPieceById(string heroId)
+	public IPiece? GetPieceById(Guid heroId)
 	{
 		IPiece? result = null;
 		foreach(var player in GetPlayers())
@@ -153,7 +153,7 @@ public class GameController
 	/// The <see cref="Player"/> instance representing the player who owns the hero with the specified identifier,
 	/// or <c>null</c> if no player owns the hero with the given identifier.
 	/// </returns>
-	public IPlayer? GetPlayerByPieceId(string heroId)
+	public IPlayer? GetPlayerByPieceId(Guid heroId)
 	{
 		foreach(var playerPieces in _board.PiecesPositions)
 		{
@@ -387,7 +387,7 @@ public class GameController
 	/// The <see cref="Hero"/> instance representing the specified piece,
 	/// or <c>null</c> if the piece is not found for the specified player and hero identifier.
 	/// </returns>
-	public IPiece? GetPlayerPiece(IPlayer player, string heroId) => GetPlayerData(player).GetPieceById(heroId);
+	public IPiece? GetPlayerPiece(IPlayer player, Guid heroId) => GetPlayerData(player).GetPieceById(heroId);
 
 	/// <summary>
 	/// Gets a list of names of pieces owned by the specified player.
@@ -462,7 +462,7 @@ public class GameController
 	/// A <see cref="Dictionary{TKey, TValue}"/> where keys represent positions on the board,
 	/// and values represent the piece IDs currently placed on those positions.
 	/// </returns>
-	public IDictionary<IPosition, string> GetPlayerBoard(IPlayer player) => _board.GetPlayerBoard(player);
+	public IDictionary<IPosition, Guid> GetPlayerBoard(IPlayer player) => _board.GetPlayerBoard(player);
 
 	/// <summary>
 	/// Gets the position of a specific piece on the player's board.
@@ -473,7 +473,7 @@ public class GameController
 	/// The <see cref="Position"/> where the specified piece is currently placed on the player's board,
 	/// or <c>null</c> if the piece is not found on the board.
 	/// </returns>
-	public IPosition? GetHeroPosition(IPlayer player, string heroId) => _board.GetHeroPosition(player, heroId);
+	public IPosition? GetHeroPosition(IPlayer player, Guid heroId) => _board.GetHeroPosition(player, heroId);
 
 	/// <summary>
 	/// Gets the positions of all heroes from all players on the boards.
@@ -482,9 +482,9 @@ public class GameController
 	/// A <see cref="Dictionary{TKey, TValue}"/> where keys represent positions on the boards,
 	/// and values represent the piece IDs of the heroes placed on those positions.
 	/// </returns>
-	public Dictionary<IPosition, string> GetAllHeroPosition()
+	public Dictionary<IPosition, Guid> GetAllHeroPosition()
 	{
-		Dictionary<IPosition, string> allHeroPosition = new();
+		Dictionary<IPosition, Guid> allHeroPosition = new();
 		foreach(var piecesPosition in _board.PiecesPositions.Values)
 		{
 			foreach(var piecePosition in piecesPosition)
@@ -504,7 +504,7 @@ public class GameController
 	/// <returns>
 	/// <c>true</c> if the piece's position is successfully updated; otherwise, <c>false</c>.
 	/// </returns>
-	public bool UpdateHeroPosition(IPlayer player, string heroId, IPosition newPosition) => _board.UpdateHeroPosition(player, heroId, newPosition);
+	public bool UpdateHeroPosition(IPlayer player, Guid heroId, IPosition newPosition) => _board.UpdateHeroPosition(player, heroId, newPosition);
 
 	/// <summary>
 	/// Places a specific piece from specific player to the board at the specified position.
@@ -559,7 +559,7 @@ public class GameController
 	/// <returns>
 	/// <c>true</c> if the hero piece is successfully removed from the board; otherwise, <c>false</c>.
 	/// </returns>
-	public bool RemoveHeroFromBoard(IPlayer player, string heroId) => GetPlayerBoard(player).Remove(GetHeroPosition(player, heroId)!);
+	public bool RemoveHeroFromBoard(IPlayer player, Guid heroId) => GetPlayerBoard(player).Remove(GetHeroPosition(player, heroId)!);
 
 	/// <summary>
 	/// Clears the boards of all players, removing all pieces from each board.
@@ -579,7 +579,7 @@ public class GameController
 	/// A <see cref="List{T}"/> of piece IDs representing all enemy pieces within the attack range of the specified hero for the given player,
 	/// or an empty enumerable if there are no enemies in range.
 	/// </returns>
-	public IEnumerable<string> GetAllEnemyId(IPlayer player, IPiece hero) => _board.GetAllEnemyId(player, hero);
+	public IEnumerable<Guid> GetAllEnemyId(IPlayer player, IPiece hero) => _board.GetAllEnemyId(player, hero);
 
 
 	/// <summary>
@@ -660,13 +660,13 @@ public class GameController
 	/// </returns>
 	public IEnumerable<string> GenerateRandomHeroList()
 	{
-		List<string> options = new();
 		var heroNames = (List<string>)GetHeroName();
 		if(heroNames.Count == 0)
 		{
 			return Enumerable.Empty<string>();
 		}
 		int n = 4;
+		List<string> options = new();
 		while(n > 0)
 		{
 			options.Add(heroNames[new Random().Next(0, heroNames.Count)]);

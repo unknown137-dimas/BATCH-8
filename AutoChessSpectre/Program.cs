@@ -109,7 +109,7 @@ internal class Program
 			{
 				string? icons = null;
 				string? playerSide = null;
-				if(board.TryGetValue(new Position(x, y), out string? heroId))
+				if(board.TryGetValue(new Position(x, y), out Guid heroId))
 				{
 					var hero = autoChess.GetPieceById(heroId);
 					if(hero != null)

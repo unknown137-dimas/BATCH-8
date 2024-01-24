@@ -1,6 +1,6 @@
 public interface IPiece
 {
-    string PieceId {get;}
+    Guid PieceId {get;}
     string Name {get;}
     double Hp {get; set;}
     double Attack {get;}
