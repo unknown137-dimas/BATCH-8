@@ -1,5 +1,6 @@
 public enum Sides
 {
-    red,
-    blue,
+    Red,
+    Blue,
+    Unknown,
 }
