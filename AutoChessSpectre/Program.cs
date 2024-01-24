@@ -111,11 +111,11 @@ internal class Program
 				string? playerSide = null;
 				if(board.TryGetValue(new Position(x, y), out Guid heroId))
 				{
-					var hero = autoChess.GetPieceById(heroId);
-					if(hero != null)
+					if(autoChess.TryGetPieceById(heroId, out IPiece? piece))
 					{
+						var hero = (Hero)piece!;
 						playerSide = autoChess.GetPlayerSide(autoChess.GetPlayerByPieceId(heroId)!).ToString();
-						heroIcons.TryGetValue(hero.PieceType, out icons);
+						heroIcons.TryGetValue(hero!.PieceType, out icons);
 					}
 				}
 				var label = "";
@@ -153,8 +153,8 @@ Width = 5,
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
 			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
 			AnsiConsole.Write(new Rule($"[{autoChess.GetPlayerData(player).PlayerSide}]Hero Options | Roll Chance [[{roll}]][/]"));
-			var optionsList = (List<string>?)autoChess.GenerateRandomHeroList();
-			if(optionsList != null)
+			var optionsList = (List<string>)autoChess.GenerateRandomHeroList();
+			if(optionsList != Enumerable.Empty<string>())
 			{
 				AnsiConsole.Write(DisplayHeroStats(optionsList));
 				var options = AnsiConsole.Prompt(
@@ -375,7 +375,6 @@ Width = 5,
 				// PICK HERO MENU
 				// TODO
 				// 1. How to edit/remove item from user (if user want to change item that already picked)
-				// 2. Display hero type when choosing a hero
 				#region PICK_HERO_MENU
 				autoChess.SetGamePhase(Phases.ChoosingPiece);
 				if(!gameModeMenu.Contains("Bot"))
@@ -394,8 +393,8 @@ Width = 5,
 					int roll = maxRoll;
 					while(!autoChess.IsFinishedPickAllPieces(playerTwo) && roll >= 0)
 					{
-						var options = (List<string>?)autoChess.GenerateRandomHeroList();
-						if(options != null)
+						var options = (List<string>)autoChess.GenerateRandomHeroList();
+						if(options != Enumerable.Empty<string>())
 						{
 							autoChess.AddPlayerPiece(playerTwo, options[0..new Random().Next(options.Count + 1)]);
 							roll--;

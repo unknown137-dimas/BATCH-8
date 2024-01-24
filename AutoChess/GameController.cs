@@ -135,6 +135,20 @@ public class GameController
 		}
 		return result;
 	}
+	
+	public bool TryGetPieceById(Guid heroId, out IPiece? result)
+	{
+		result = null;
+		foreach(var player in GetPlayers())
+		{
+			if(TryGetPlayerData(player, out PlayerData? data))
+			{
+				result = data!.GetPieceById(heroId);
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/// <summary>
 	/// Gets the side for the specified player.
@@ -364,6 +378,17 @@ public class GameController
 		_players.TryGetValue(player, out PlayerData? result);
 		return result;
 	}
+	
+	public bool TryGetPlayerData(IPlayer player, out PlayerData? playerResult)
+	{
+		if(_players.TryGetValue(player, out PlayerData? result))
+		{
+			playerResult = result;
+			return true;
+		}
+		playerResult = null;
+		return false;
+	}
 	#endregion
 
 	// Manage player's piece
@@ -376,7 +401,14 @@ public class GameController
 	/// <returns>
 	/// A <see cref="List{T}"/> of pieces owned by the specified player.
 	/// </returns>
-	public IEnumerable<IPiece> GetPlayerPieces(IPlayer player) => GetPlayerData(player).PlayerPieces;
+	public IEnumerable<IPiece> GetPlayerPieces(IPlayer player)
+	{
+		if(TryGetPlayerData(player, out PlayerData? output))
+		{
+			return output!.PlayerPieces;
+		}
+		return Enumerable.Empty<IPiece>();
+	}
 
 	/// <summary>
 	/// Gets a specific piece owned by the specified player based on the hero identifier.
@@ -649,7 +681,13 @@ public class GameController
 	/// </summary>
 	/// <param name="player">The player to set as the overall game winner or loser.</param>
 	/// <param name="isWin">A boolean indicating whether the player is the overall game winner (true) or loser (false).</param>
-	public void SetWinner(IPlayer player, bool isWin = true) => GetPlayerData(player).Winner = isWin;
+	public void SetWinner(IPlayer player, bool isWin = true)
+	{
+		if(TryGetPlayerData(player, out PlayerData? data))
+		{
+			data!.Winner = isWin;
+		}
+	}
 	#endregion
 
 	/// <summary>
