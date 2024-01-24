@@ -1,3 +1,5 @@
+using AutoChess;
+
 public interface IPiece
 {
     Guid PieceId {get;}
@@ -7,6 +9,6 @@ public interface IPiece
     double Armor {get;}
     int AttackRange {get;}
     PieceTypes PieceType {get;}
-    void Skill();
+    void Skill(GameController gameController);
     string ToString();
 }
