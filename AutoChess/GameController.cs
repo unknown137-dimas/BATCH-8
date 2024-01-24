@@ -85,10 +85,9 @@ public class GameController
 				}
 				break;
 			case Phases.TheChampion:
-				var champion = GetChampion();
-				if(champion != null)
+				if(TryGetChampion(out IPlayer? champion))
 				{
-					SetWinner(champion);
+					SetWinner(champion!);
 				}
 				break;
 			default:
@@ -127,7 +126,10 @@ public class GameController
 		{
 			if(TryGetPlayerData(player, out PlayerData? result))
 			{
-				return result!.GetPieceById(heroId);
+				if(result!.TryGetPieceById(heroId, out IPiece? pieceResult))
+				{
+					return pieceResult!;
+				}
 			}
 		}
 		throw new KeyNotFoundException();
@@ -139,8 +141,11 @@ public class GameController
 		{
 			if(TryGetPlayerData(player, out PlayerData? result))
 			{
-				pieceResult = result!.GetPieceById(heroId);
-				return true;
+				if(result!.TryGetPieceById(heroId, out IPiece? piece))
+				{
+					pieceResult = piece;
+					return true;
+				}
 			}
 		}
 		pieceResult = null;
@@ -197,6 +202,23 @@ public class GameController
 		throw new KeyNotFoundException();
 	}
 
+	public bool TryGetPlayerByPieceId(Guid heroId, out IPlayer? playerResult)
+	{
+		foreach(var player in GetPlayers())
+		{
+			if(TryGetPlayerData(player, out PlayerData? result))
+			{
+                if (result!.TryGetPieceById(heroId, out _))
+				{
+					playerResult = player;
+					return true;
+				}
+			}
+		}
+		playerResult = null;
+		return false;
+	}
+
 	/// <summary>
 	/// Gets a list representing the possible sides (enum values) in the game.
 	/// </summary>
@@ -240,41 +262,45 @@ public class GameController
 	/// </returns>
 	public IPlayer GetRoundWinner()
 	{
-		var player1 = ((List<IPlayer>)GetPlayers())[0];
-		var player2 = ((List<IPlayer>)GetPlayers())[1];
-		if(GetPlayerBoard(player1).Count == 0 && GetPlayerBoard(player2).Count > 0)
+		var playerOne = ((List<IPlayer>)GetPlayers())[0];
+		var playerTwo = ((List<IPlayer>)GetPlayers())[1];
+		if(TryGetPlayerBoard(playerOne, out var playerOneBoard) && TryGetPlayerBoard(playerTwo, out var playerTwoBoard))
 		{
-			return player2;
+			if(playerOneBoard!.Count == 0 && playerTwoBoard!.Count > 0)
+			{
+				return playerTwo;
+			}
+			else if(playerOneBoard!.Count > 0 && playerTwoBoard!.Count == 0)
+			{
+				return playerOne;
+			}
+			else
+			{
+				throw new Exception("No Round Winner");
+			}
 		}
-		else if(GetPlayerBoard(player1).Count > 0 && GetPlayerBoard(player2).Count == 0)
-		{
-			return player1;
-		}
-		else
-		{
-			throw new Exception("No Round Winner");
-		}
+		throw new KeyNotFoundException();
 	}
 
 	public bool TryGetRoundWinner(out IPlayer? winnerResult)
 	{
-		var player1 = ((List<IPlayer>)GetPlayers())[0];
-		var player2 = ((List<IPlayer>)GetPlayers())[1];
-		if(GetPlayerBoard(player1).Count == 0 && GetPlayerBoard(player2).Count > 0)
+		var playerOne = ((List<IPlayer>)GetPlayers())[0];
+		var playerTwo = ((List<IPlayer>)GetPlayers())[1];
+		if(TryGetPlayerBoard(playerOne, out var playerOneBoard) && TryGetPlayerBoard(playerTwo, out var playerTwoBoard))
 		{
-			winnerResult = player2;
-			return true;
+			if(playerOneBoard!.Count == 0 && playerTwoBoard!.Count > 0)
+			{
+				winnerResult = playerTwo;
+				return true;
+			}
+			else if(playerOneBoard!.Count > 0 && playerTwoBoard!.Count == 0)
+			{
+				winnerResult = playerOne;
+				return true;
+			}
 		}
-		else if(GetPlayerBoard(player1).Count > 0 && GetPlayerBoard(player2).Count == 0)
-		{
-			winnerResult = player1;
-			return true;
-		}
-		else
-		{
-			winnerResult = null;
-			return false;
-		}
+		winnerResult = null;
+		return false;
 	}
 	
 	/// <summary>
@@ -286,17 +312,17 @@ public class GameController
 	/// </returns>
 	public IPlayer GetChampion()
 	{
-		var player1 = ((List<IPlayer>)GetPlayers())[0];
-		var player2 = ((List<IPlayer>)GetPlayers())[1];
-		var player1WinPoint = GetPlayerWinPoint(player1);
-		var player2WinPoint = GetPlayerWinPoint(player2);
-		if(player1WinPoint > player2WinPoint)
+		var playerOne = ((List<IPlayer>)GetPlayers())[0];
+		var playerTwo = ((List<IPlayer>)GetPlayers())[1];
+		var playerOneWinPoint = GetPlayerWinPoint(playerOne);
+		var playerTwoWinPoint = GetPlayerWinPoint(playerTwo);
+		if(playerOneWinPoint > playerTwoWinPoint)
 		{
-			return player1;
+			return playerOne;
 		}
-		else if(player1WinPoint < player2WinPoint)
+		else if(playerOneWinPoint < playerTwoWinPoint)
 		{
-			return player2;
+			return playerTwo;
 		}
 		else
 		{
@@ -306,18 +332,18 @@ public class GameController
 
 	public bool TryGetChampion(out IPlayer? championResult)
 	{
-		var player1 = ((List<IPlayer>)GetPlayers())[0];
-		var player2 = ((List<IPlayer>)GetPlayers())[1];
-		var player1WinPoint = GetPlayerWinPoint(player1);
-		var player2WinPoint = GetPlayerWinPoint(player2);
-		if(player1WinPoint > player2WinPoint)
+		var playerOne = ((List<IPlayer>)GetPlayers())[0];
+		var playerTwo = ((List<IPlayer>)GetPlayers())[1];
+		var playerOneWinPoint = GetPlayerWinPoint(playerOne);
+		var playerTwoWinPoint = GetPlayerWinPoint(playerTwo);
+		if(playerOneWinPoint > playerTwoWinPoint)
 		{
-			championResult = player1;
+			championResult = playerOne;
 			return true;
 		}
-		else if(player1WinPoint < player2WinPoint)
+		else if(playerOneWinPoint < playerTwoWinPoint)
 		{
-			championResult = player2;
+			championResult = playerTwo;
 			return true;
 		}
 		else
@@ -503,7 +529,10 @@ public class GameController
 	{
 		if(TryGetPlayerData(player, out PlayerData? result))
 		{
-			return result!.GetPieceById(heroId);
+			if(result!.TryGetPieceById(heroId, out IPiece? pieceResult))
+			{
+				return pieceResult!;
+			}
 		}
 		throw new KeyNotFoundException();
 	}
@@ -512,8 +541,11 @@ public class GameController
 	{
 		if(TryGetPlayerData(player, out PlayerData? result))
 		{
-			pieceResult = result!.GetPieceById(heroId);
-			return true;
+			if(result!.TryGetPieceById(heroId, out IPiece? piece))
+			{
+				pieceResult = piece!;
+				return true;
+			}
 		}
 		pieceResult = null;
 		return false;
@@ -608,7 +640,25 @@ public class GameController
 	/// A <see cref="Dictionary{TKey, TValue}"/> where keys represent positions on the board,
 	/// and values represent the piece IDs currently placed on those positions.
 	/// </returns>
-	public IDictionary<IPosition, Guid> GetPlayerBoard(IPlayer player) => _board.GetPlayerBoard(player);
+	public IDictionary<IPosition, Guid> GetPlayerBoard(IPlayer player)
+	{
+		if(_board.TryGetPlayerBoard(player, out var result))
+		{
+			return result!;
+		}
+		throw new KeyNotFoundException();
+	}
+
+	public bool TryGetPlayerBoard(IPlayer player, out IDictionary<IPosition, Guid>? playerBoardResult)
+	{
+		if(_board.TryGetPlayerBoard(player, out var result))
+		{
+			playerBoardResult = result!;
+			return true;
+		}
+		playerBoardResult = null;
+		return false;
+	}
 
 	/// <summary>
 	/// Gets the position of a specific piece on the player's board.
@@ -626,6 +676,17 @@ public class GameController
 			return result!;
 		}
 		throw new KeyNotFoundException();
+	}
+
+	public bool TryGetHeroPosition(IPlayer player, Guid heroId, out IPosition? positionResult)
+	{
+		if(_board.TryGetHeroPosition(player, heroId, out IPosition? result))
+		{
+			positionResult = result!;
+			return true;
+		}
+		positionResult = null;
+		return false;
 	}
 
 	/// <summary>
@@ -670,11 +731,11 @@ public class GameController
 	/// </returns>
 	public bool PutPlayerPiece(IPlayer player, IPiece piece, IPosition position)
 	{
-		if(_board.GetHeroPosition(player, piece.PieceId) == null)
+		if(_board.TryGetHeroPosition(player, piece.PieceId, out _))
 		{
-			return _board.AddHeroPosition(player, piece.PieceId, position);
+			return _board.UpdateHeroPosition(player, piece.PieceId, position);
 		}
-		return _board.UpdateHeroPosition(player, piece.PieceId, position);
+		return _board.AddHeroPosition(player, piece.PieceId, position);
 	}
 
 	/// <summary>
@@ -693,7 +754,14 @@ public class GameController
 	/// <returns>
 	/// <c>true</c> if the player has finished putting all pieces on the board; otherwise, <c>false</c>.
 	/// </returns>
-	public bool IsFinishedPutAllPieces(IPlayer player) => _board.GetPlayerBoard(player).Count == GetPlayerPieces(player).Count();
+	public bool IsFinishedPutAllPieces(IPlayer player)
+	{
+		if(_board.TryGetPlayerBoard(player, out Dictionary<IPosition, Guid>? result))
+		{
+			return result!.Count == GetPlayerPieces(player).Count();
+		}
+		return false;
+	}
 
 	/// <summary>
 	/// Checks whether the specified position on the board is currently empty.
@@ -712,7 +780,17 @@ public class GameController
 	/// <returns>
 	/// <c>true</c> if the hero piece is successfully removed from the board; otherwise, <c>false</c>.
 	/// </returns>
-	public bool RemoveHeroFromBoard(IPlayer player, Guid heroId) => GetPlayerBoard(player).Remove(GetHeroPosition(player, heroId)!);
+	public bool RemoveHeroFromBoard(IPlayer player, Guid heroId)
+	{
+		if(TryGetHeroPosition(player, heroId, out IPosition? result))
+		{
+			if(TryGetPlayerBoard(player, out var playerBoardResult))
+			{
+				return playerBoardResult!.Remove(result!);
+			}
+		}
+		return false;
+	}
 
 	/// <summary>
 	/// Clears the boards of all players, removing all pieces from each board.
@@ -766,10 +844,12 @@ public class GameController
 		{
 			foreach(var enemyId in GetAllEnemyId(player, piece))
 			{
-				var enemy = GetPieceById(enemyId);
-				if(enemy != null && enemy.Hp > 0)
+				if(TryGetPieceById(enemyId, out IPiece? enemy))
 				{
-					((Hero)piece).AttackEnemy(enemy);
+					if(enemy!.Hp > 0)
+					{
+						((Hero)piece).AttackEnemy(enemy!);
+					}
 				}
 			}
 		}

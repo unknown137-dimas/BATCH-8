@@ -20,14 +20,39 @@ public class Board : IBoard
 	
 	public bool RemovePlayerFromBoard(IPlayer player) => PiecesPositions.Remove(player);
 	
-	public Dictionary<IPosition, Guid> GetPlayerBoard(IPlayer player) => PiecesPositions[player];
+	public Dictionary<IPosition, Guid> GetPlayerBoard(IPlayer player)
+	{
+		if(PiecesPositions.TryGetValue(player, out Dictionary<IPosition, Guid>? playerBoardResult))
+		{
+			return playerBoardResult;
+		}
+		throw new KeyNotFoundException();
+	}
 
-	public bool AddHeroPosition(IPlayer player, Guid heroId, IPosition position) => GetPlayerBoard(player).TryAdd(position, heroId);
+	public bool TryGetPlayerBoard(IPlayer player, out Dictionary<IPosition, Guid>? playerBoardResult)
+	{
+		if(PiecesPositions.TryGetValue(player, out Dictionary<IPosition, Guid>? result))
+		{
+			playerBoardResult = result;
+			return true;
+		}
+		playerBoardResult = null;
+		return false;
+	}
+
+	public bool AddHeroPosition(IPlayer player, Guid heroId, IPosition position)
+	{
+		if(TryGetPlayerBoard(player, out Dictionary<IPosition, Guid>? result))
+		{
+			return result!.TryAdd(position, heroId);
+		}
+		return false;
+	}
 
 	public bool UpdateHeroPosition(IPlayer player, Guid heroId, IPosition newPosition)
 	{
 		bool result = false;
-		if(GetHeroPosition(player, heroId) != null)
+		if(TryGetHeroPosition(player, heroId, out _))
 		{
 			if(RemoveHeroPosition(player, heroId))
 			{
@@ -39,11 +64,14 @@ public class Board : IBoard
 	
 	public IPosition GetHeroPosition(IPlayer player, Guid heroId)
 	{
-		foreach(var playerPiece in GetPlayerBoard(player))
+		if(TryGetPlayerBoard(player, out Dictionary<IPosition, Guid>? result))
 		{
-			if(playerPiece.Value == heroId)
+			foreach(var playerPiece in result!)
 			{
-				return playerPiece.Key;
+				if(playerPiece.Value == heroId)
+				{
+					return playerPiece.Key;
+				}
 			}
 		}
 		throw new KeyNotFoundException();
@@ -51,12 +79,15 @@ public class Board : IBoard
 
 	public bool TryGetHeroPosition(IPlayer player, Guid heroId, out IPosition? positionResult)
 	{
-		foreach(var playerPiece in GetPlayerBoard(player))
+		if(TryGetPlayerBoard(player, out Dictionary<IPosition, Guid>? result))
 		{
-			if(playerPiece.Value == heroId)
+			foreach(var playerPiece in result!)
 			{
-				positionResult = playerPiece.Key;
-				return true;
+				if(playerPiece.Value == heroId)
+				{
+					positionResult = playerPiece.Key;
+					return true;
+				}
 			}
 		}
 		positionResult = null;
@@ -65,15 +96,17 @@ public class Board : IBoard
 
 	public bool RemoveHeroPosition(IPlayer player, Guid heroId)
 	{
-		bool result = false;
-		foreach(var playerPiece in GetPlayerBoard(player))
+		if(TryGetPlayerBoard(player, out Dictionary<IPosition, Guid>? boardResult))
 		{
-			if(playerPiece.Value == heroId)
+			foreach(var playerPiece in boardResult!)
 			{
-				result = GetPlayerBoard(player).Remove(playerPiece.Key);
+				if(playerPiece.Value == heroId)
+				{
+					return boardResult.Remove(playerPiece.Key);
+				}
 			}
 		}
-		return result;
+		return false;
 	}
 
 	public IEnumerable<Guid> GetAllEnemyId(IPlayer player, IPiece hero)
