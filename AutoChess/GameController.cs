@@ -4,7 +4,6 @@ public class GameController
 {
 	private readonly Board _board;
 	public Dictionary<string, HeroDetails> HeroesDatabase {get; private set;} = new();
-	private readonly Dictionary<PieceTypes, int> _heroSlot = new() {{PieceTypes.Warrior, 3}, {PieceTypes.Hunter, 3}, {PieceTypes.Knight, 3}};
 	private Dictionary<IPlayer, PlayerData> _players = new();
 	public int PlayerHp {get;} = 3;
 	public int PlayerPiecesCount {get;} = 5;
@@ -29,7 +28,6 @@ public class GameController
 	{
 		SetGameStatus(Status.Initialized);
 		_board = board;
-		_heroSlot = heroSlot;
 	}
 
 	public GameController(Board board, Dictionary<IPlayer, Sides> players)
@@ -43,7 +41,6 @@ public class GameController
 	{
 		SetGameStatus(Status.Initialized);
 		_board = board;
-		_heroSlot = heroSlot;
 		AddPlayer(players);
 	}
 
@@ -844,12 +841,9 @@ public class GameController
 		{
 			foreach(var enemyId in GetAllEnemyId(player, piece))
 			{
-				if(TryGetPieceById(enemyId, out IPiece? enemy))
+				if(TryGetPieceById(enemyId, out IPiece? enemy) && enemy!.Hp > 0)
 				{
-					if(enemy!.Hp > 0)
-					{
-						((Hero)piece).AttackEnemy(enemy!);
-					}
+					((Hero)piece).AttackEnemy(enemy!);
 				}
 			}
 		}
