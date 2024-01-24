@@ -13,7 +13,7 @@ public class PlayerData
         PlayerSide = playerSide;
     }
 
-    public IPiece? GetPieceById(Guid heroId)
+    public IPiece GetPieceById(Guid heroId)
     {
         foreach(var piece in PlayerPieces)
         {
@@ -22,8 +22,23 @@ public class PlayerData
                 return piece;
             }
         }
-        return null;
+        throw new KeyNotFoundException();
     }
+
+    public bool TryGetPieceById(Guid heroId, out IPiece? pieceResult)
+    {
+        foreach(var piece in PlayerPieces)
+        {
+            if(piece.PieceId == heroId)
+            {
+                pieceResult = piece;
+                return true;
+            }
+        }
+        pieceResult = null;
+        return false;
+    }
+
 
     public int GetWinPoint()
     {

@@ -37,7 +37,7 @@ public class Board : IBoard
 		return result;
 	}
 	
-	public IPosition? GetHeroPosition(IPlayer player, Guid heroId)
+	public IPosition GetHeroPosition(IPlayer player, Guid heroId)
 	{
 		foreach(var playerPiece in GetPlayerBoard(player))
 		{
@@ -46,7 +46,21 @@ public class Board : IBoard
 				return playerPiece.Key;
 			}
 		}
-		return null;
+		throw new KeyNotFoundException();
+	}
+
+	public bool TryGetHeroPosition(IPlayer player, Guid heroId, out IPosition? positionResult)
+	{
+		foreach(var playerPiece in GetPlayerBoard(player))
+		{
+			if(playerPiece.Value == heroId)
+			{
+				positionResult = playerPiece.Key;
+				return true;
+			}
+		}
+		positionResult = null;
+		return false;
 	}
 
 	public bool RemoveHeroPosition(IPlayer player, Guid heroId)
@@ -64,24 +78,23 @@ public class Board : IBoard
 
 	public IEnumerable<Guid> GetAllEnemyId(IPlayer player, IPiece hero)
 	{
-		IPosition? heroCurrentPosition = GetHeroPosition(player, hero.PieceId);
-		if(heroCurrentPosition is not null)
+		if(TryGetHeroPosition(player, hero.PieceId, out IPosition? result))
 		{
-			List<Guid> result = new();
+			List<Guid> allEnemyId = new();
 			foreach(var playerBoard in PiecesPositions)
 			{
 				if(playerBoard.Key != player)
 				{
 					foreach(var enemyHero in playerBoard.Value)
 					{
-						if(heroCurrentPosition.IsInRange(enemyHero.Key, hero.AttackRange))
+						if(result!.IsInRange(enemyHero.Key, hero.AttackRange))
 						{
-							result.Add(enemyHero.Value);
+							allEnemyId.Add(enemyHero.Value);
 						}
 					}
 				}
 			}
-			return result;
+			return allEnemyId;
 		}
 		return Enumerable.Empty<Guid>();
 	}

@@ -78,11 +78,10 @@ public class GameController
 				((List<IPlayer>)GetPlayers()).ForEach(player => SetWinner(player, false));
 				break;
 			case Phases.BattleEnd:
-				var roundWinner = GetRoundWinner();
-				if(roundWinner != null)
+				if(TryGetRoundWinner(out IPlayer? roundWinner))
 				{
-					SetRoundWinner(roundWinner);
-					SetWinner(roundWinner);
+					SetRoundWinner(roundWinner!);
+					SetWinner(roundWinner!);
 				}
 				break;
 			case Phases.TheChampion:
@@ -122,31 +121,29 @@ public class GameController
 	/// The <see cref="Piece"/> instance corresponding to the specified piece ID, 
 	/// or <c>null</c> if no piece with the given ID is found.
 	/// </returns>
-	public IPiece? GetPieceById(Guid heroId)
+	public IPiece GetPieceById(Guid heroId)
 	{
-		IPiece? result = null;
 		foreach(var player in GetPlayers())
 		{
-			result = GetPlayerData(player).GetPieceById(heroId);
-			if(result != null)
+			if(TryGetPlayerData(player, out PlayerData? result))
 			{
-				return result;
+				return result!.GetPieceById(heroId);
 			}
 		}
-		return result;
+		throw new KeyNotFoundException();
 	}
 	
-	public bool TryGetPieceById(Guid heroId, out IPiece? result)
+	public bool TryGetPieceById(Guid heroId, out IPiece? pieceResult)
 	{
-		result = null;
 		foreach(var player in GetPlayers())
 		{
-			if(TryGetPlayerData(player, out PlayerData? data))
+			if(TryGetPlayerData(player, out PlayerData? result))
 			{
-				result = data!.GetPieceById(heroId);
+				pieceResult = result!.GetPieceById(heroId);
 				return true;
 			}
 		}
+		pieceResult = null;
 		return false;
 	}
 
@@ -157,7 +154,25 @@ public class GameController
 	/// <returns>
 	/// The <see cref="Sides"/> enum representing the side for the specified player.
 	/// </returns>
-	public Sides? GetPlayerSide(IPlayer player) => GetPlayerData(player).PlayerSide;
+	public Sides GetPlayerSide(IPlayer player)
+	{
+		if(TryGetPlayerData(player, out PlayerData? data))
+		{
+			return data!.PlayerSide;
+		}
+		throw new KeyNotFoundException();
+	}
+
+	public bool TryGetPlayerSide(IPlayer player, out Sides? playerSideResult)
+	{
+		if(TryGetPlayerData(player, out PlayerData? result))
+		{
+			playerSideResult = result!.PlayerSide;
+			return true;
+		}
+		playerSideResult = null;
+		return false;
+	}
 
 	/// <summary>
 	/// Gets the player who owns the hero with the specified identifier.
@@ -167,19 +182,19 @@ public class GameController
 	/// The <see cref="Player"/> instance representing the player who owns the hero with the specified identifier,
 	/// or <c>null</c> if no player owns the hero with the given identifier.
 	/// </returns>
-	public IPlayer? GetPlayerByPieceId(Guid heroId)
+	public IPlayer GetPlayerByPieceId(Guid heroId)
 	{
-		foreach(var playerPieces in _board.PiecesPositions)
+		foreach(var player in GetPlayers())
 		{
-			foreach(var hero in playerPieces.Value)
+			if(TryGetPlayerData(player, out PlayerData? result))
 			{
-				if(hero.Value == heroId)
+                if (result!.TryGetPieceById(heroId, out _))
 				{
-					return playerPieces.Key;
+					return player;
 				}
 			}
 		}
-		return null;
+		throw new KeyNotFoundException();
 	}
 
 	/// <summary>
@@ -200,16 +215,20 @@ public class GameController
 	/// </returns>
 	public int GetPlayerWinPoint(IPlayer player)
 	{
-		int winPoint = 0;
-		foreach(var winStatus in GetPlayerData(player).Win)
+		if(TryGetPlayerData(player, out PlayerData? result))
 		{
-			if(winStatus)
+			int winPoint = 0;
+			foreach(var winStatus in result!.Win)
 			{
-				winPoint++;
+				if(winStatus)
+				{
+					winPoint++;
+				}
+				
 			}
-			
+			return winPoint;
 		}
-		return winPoint;
+		return 0;
 	}
 
 	/// <summary>
@@ -219,7 +238,7 @@ public class GameController
 	/// The <see cref="Player"/> instance representing the winner of the current round,
 	/// or <c>null</c> if there is no winner yet.
 	/// </returns>
-	public IPlayer? GetRoundWinner()
+	public IPlayer GetRoundWinner()
 	{
 		var player1 = ((List<IPlayer>)GetPlayers())[0];
 		var player2 = ((List<IPlayer>)GetPlayers())[1];
@@ -233,7 +252,28 @@ public class GameController
 		}
 		else
 		{
-			return null;
+			throw new Exception("No Round Winner");
+		}
+	}
+
+	public bool TryGetRoundWinner(out IPlayer? winnerResult)
+	{
+		var player1 = ((List<IPlayer>)GetPlayers())[0];
+		var player2 = ((List<IPlayer>)GetPlayers())[1];
+		if(GetPlayerBoard(player1).Count == 0 && GetPlayerBoard(player2).Count > 0)
+		{
+			winnerResult = player2;
+			return true;
+		}
+		else if(GetPlayerBoard(player1).Count > 0 && GetPlayerBoard(player2).Count == 0)
+		{
+			winnerResult = player1;
+			return true;
+		}
+		else
+		{
+			winnerResult = null;
+			return false;
 		}
 	}
 	
@@ -244,7 +284,7 @@ public class GameController
 	/// The <see cref="Player"/> instance representing the champion of the game,
 	/// or <c>null</c> if the champion has not been decided yet.
 	/// </returns>
-	public IPlayer? GetChampion()
+	public IPlayer GetChampion()
 	{
 		var player1 = ((List<IPlayer>)GetPlayers())[0];
 		var player2 = ((List<IPlayer>)GetPlayers())[1];
@@ -260,7 +300,30 @@ public class GameController
 		}
 		else
 		{
-			return null;
+			throw new Exception("No Champion");
+		}
+	}
+
+	public bool TryGetChampion(out IPlayer? championResult)
+	{
+		var player1 = ((List<IPlayer>)GetPlayers())[0];
+		var player2 = ((List<IPlayer>)GetPlayers())[1];
+		var player1WinPoint = GetPlayerWinPoint(player1);
+		var player2WinPoint = GetPlayerWinPoint(player2);
+		if(player1WinPoint > player2WinPoint)
+		{
+			championResult = player1;
+			return true;
+		}
+		else if(player1WinPoint < player2WinPoint)
+		{
+			championResult = player2;
+			return true;
+		}
+		else
+		{
+			championResult = null;
+			return false;
 		}
 	}
 	#endregion
@@ -314,10 +377,24 @@ public class GameController
 	/// <returns>
 	/// The <see cref="HeroDetails"/> struct representing the details of the specified hero.
 	/// </returns>
-	public HeroDetails? GetHeroDetails(string heroName)
+	public HeroDetails GetHeroDetails(string heroName)
 	{
-		HeroesDatabase.TryGetValue(heroName, out HeroDetails? result);
-		return result;
+		if(HeroesDatabase.TryGetValue(heroName, out HeroDetails? result))
+		{
+			return result;
+		}
+		throw new KeyNotFoundException();
+	}
+
+	public bool TryGetHeroDetails(string heroName, out HeroDetails? heroDetailResult)
+	{
+		if(HeroesDatabase.TryGetValue(heroName, out HeroDetails? result))
+		{
+			heroDetailResult = result;
+			return true;
+		}
+		heroDetailResult = null;
+		return false;
 	}
 	#endregion
 
@@ -373,20 +450,23 @@ public class GameController
 	/// The <see cref="PlayerData"/> instance associated with the specified player,
 	/// or <c>null</c> if the player's data is not found.
 	/// </returns>
-	public PlayerData? GetPlayerData(IPlayer player)
-	{
-		_players.TryGetValue(player, out PlayerData? result);
-		return result;
-	}
-	
-	public bool TryGetPlayerData(IPlayer player, out PlayerData? playerResult)
+	public PlayerData GetPlayerData(IPlayer player)
 	{
 		if(_players.TryGetValue(player, out PlayerData? result))
 		{
-			playerResult = result;
+			return result;
+		}
+		throw new KeyNotFoundException();
+	}
+	
+	public bool TryGetPlayerData(IPlayer player, out PlayerData? playerDataResult)
+	{
+		if(_players.TryGetValue(player, out PlayerData? result))
+		{
+			playerDataResult = result;
 			return true;
 		}
-		playerResult = null;
+		playerDataResult = null;
 		return false;
 	}
 	#endregion
@@ -419,7 +499,25 @@ public class GameController
 	/// The <see cref="Hero"/> instance representing the specified piece,
 	/// or <c>null</c> if the piece is not found for the specified player and hero identifier.
 	/// </returns>
-	public IPiece? GetPlayerPiece(IPlayer player, Guid heroId) => GetPlayerData(player).GetPieceById(heroId);
+	public IPiece GetPlayerPiece(IPlayer player, Guid heroId)
+	{
+		if(TryGetPlayerData(player, out PlayerData? result))
+		{
+			return result!.GetPieceById(heroId);
+		}
+		throw new KeyNotFoundException();
+	}
+
+	public bool TryGetPlayerPiece(IPlayer player, Guid heroId, out IPiece? pieceResult)
+	{
+		if(TryGetPlayerData(player, out PlayerData? result))
+		{
+			pieceResult = result!.GetPieceById(heroId);
+			return true;
+		}
+		pieceResult = null;
+		return false;
+	}
 
 	/// <summary>
 	/// Gets a list of names of pieces owned by the specified player.
@@ -442,8 +540,11 @@ public class GameController
 	{
 		if(GetPlayerPieces(player).Count() < PlayerPiecesCount)
 		{
-			GetPlayerData(player).PlayerPieces.Add(new Hero(heroName, HeroesDatabase[heroName]));
-			return true;
+			if(TryGetPlayerData(player, out PlayerData? result))
+			{
+				result!.PlayerPieces.Add(new Hero(heroName, HeroesDatabase[heroName]));
+				return true;
+			}
 		}
 		return false;
 	}
@@ -469,13 +570,26 @@ public class GameController
 	/// <returns>
 	/// <c>true</c> if the piece is successfully removed from the player data; otherwise, <c>false</c>.
 	/// </returns>
-	public bool RemovePlayerPiece(IPlayer player, IPiece piece) => GetPlayerData(player).PlayerPieces.Remove(piece);
+	public bool RemovePlayerPiece(IPlayer player, IPiece piece)
+	{
+		if(TryGetPlayerData(player, out PlayerData? result))
+		{
+			return result!.PlayerPieces.Remove(piece);
+		}
+		return false;
+	}
 
 	/// <summary>
 	/// Clears the collection of pieces owned by the specified player.
 	/// </summary>
 	/// <param name="player">The player whose pieces will be cleared.</param>
-	public void ClearPlayerPieces(IPlayer player) => GetPlayerData(player).PlayerPieces.Clear();
+	public void ClearPlayerPieces(IPlayer player)
+	{
+		if(TryGetPlayerData(player, out PlayerData? result))
+		{
+			result!.PlayerPieces.Clear();
+		}
+	}
 
 	/// <summary>
 	/// Clears the collection of pieces owned by all players in the game.
@@ -505,7 +619,14 @@ public class GameController
 	/// The <see cref="Position"/> where the specified piece is currently placed on the player's board,
 	/// or <c>null</c> if the piece is not found on the board.
 	/// </returns>
-	public IPosition? GetHeroPosition(IPlayer player, Guid heroId) => _board.GetHeroPosition(player, heroId);
+	public IPosition GetHeroPosition(IPlayer player, Guid heroId)
+	{
+		if(_board.TryGetHeroPosition(player, heroId, out IPosition? result))
+		{
+			return result!;
+		}
+		throw new KeyNotFoundException();
+	}
 
 	/// <summary>
 	/// Gets the positions of all heroes from all players on the boards.
@@ -664,14 +785,17 @@ public class GameController
 	{
 		foreach(var player in GetPlayers())
 		{
-			if(player.PlayerId == winner.PlayerId)
+			if(TryGetPlayerData(player, out PlayerData? result))
 			{
-				GetPlayerData(player).Win.Add(true);
-			}
-			else
-			{
-				GetPlayerData(player).Win.Add(false);
-				GetPlayerData(player).Hp--;
+				if(player.PlayerId == winner.PlayerId)
+				{
+					result!.Win.Add(true);
+				}
+				else
+				{
+					result!.Win.Add(false);
+					result!.Hp--;
+				}
 			}
 		}
 	}
