@@ -368,12 +368,44 @@ public class GameController
 
 	// Manage player's piece
 	#region MANAGE_PLAYER_PIECE
+	
+	/// <summary>
+	/// Gets a list of pieces owned by the specified player.
+	/// </summary>
+	/// <param name="player">The player for whom to retrieve the pieces.</param>
+	/// <returns>
+	/// A <see cref="List{T}"/> of pieces owned by the specified player.
+	/// </returns>
 	public IEnumerable<IPiece> GetPlayerPieces(IPlayer player) => GetPlayerData(player).PlayerPieces;
 
+	/// <summary>
+	/// Gets a specific piece owned by the specified player based on the hero identifier.
+	/// </summary>
+	/// <param name="player">The player for whom to retrieve the piece.</param>
+	/// <param name="heroId">The identifier of the hero associated with the piece.</param>
+	/// <returns>
+	/// The <see cref="Hero"/> instance representing the specified piece,
+	/// or <c>null</c> if the piece is not found for the specified player and hero identifier.
+	/// </returns>
 	public IPiece? GetPlayerPiece(IPlayer player, string heroId) => GetPlayerData(player).GetPieceById(heroId);
 
+	/// <summary>
+	/// Gets a list of names of pieces owned by the specified player.
+	/// </summary>
+	/// <param name="player">The player for whom to retrieve the piece names.</param>
+	/// <returns>
+	/// A <see cref="List{T}"/> of strings representing the names of pieces owned by the specified player.
+	/// </returns>
 	public IEnumerable<string> GetPlayerPiecesName(IPlayer player) => ((List<IPiece>)GetPlayerPieces(player)).ConvertAll(piece => piece.Name);
 	
+	/// <summary>
+	/// Adds a new piece to the specified player based on the given hero name.
+	/// </summary>
+	/// <param name="player">The player to whom the new piece will be added.</param>
+	/// <param name="heroName">The name of the hero associated with the new piece.</param>
+	/// <returns>
+	/// <c>true</c> if the piece is successfully added to the player; otherwise, <c>false</c>.
+	/// </returns>
 	public bool AddPlayerPiece(IPlayer player, string heroName)
 	{
 		if(GetPlayerPieces(player).Count() < PlayerPiecesCount)
@@ -384,6 +416,11 @@ public class GameController
 		return false;
 	}
 
+	/// <summary>
+	/// Adds multiple pieces to the specified player based on the given list of hero names.
+	/// </summary>
+	/// <param name="player">The player to whom the new pieces will be added.</param>
+	/// <param name="heroNames">The list of hero names associated with the new pieces.</param>	
 	public void AddPlayerPiece(IPlayer player, IEnumerable<string> heroNames)
 	{
 		foreach(var heroName in heroNames)
@@ -392,19 +429,59 @@ public class GameController
 		}
 	}
 
+	/// <summary>
+	/// Removes a specific piece from the specified player data.
+	/// </summary>
+	/// <param name="player">The player from whom to remove the piece.</param>
+	/// <param name="piece">The piece to be removed from the player data.</param>
+	/// <returns>
+	/// <c>true</c> if the piece is successfully removed from the player data; otherwise, <c>false</c>.
+	/// </returns>
 	public bool RemovePlayerPiece(IPlayer player, IPiece piece) => GetPlayerData(player).PlayerPieces.Remove(piece);
 
+	/// <summary>
+	/// Clears the collection of pieces owned by the specified player.
+	/// </summary>
+	/// <param name="player">The player whose pieces will be cleared.</param>
 	public void ClearPlayerPieces(IPlayer player) => GetPlayerData(player).PlayerPieces.Clear();
 
+	/// <summary>
+	/// Clears the collection of pieces owned by all players in the game.
+	/// </summary>
 	public void ClearPlayerPieces() => ((List<IPlayer>)GetPlayers()).ForEach(player => ClearPlayerPieces(player));
 	#endregion
 
 	// Manage board
 	#region MANAGE_BOARD
-	public Dictionary<IPosition, string> GetPlayerBoard(IPlayer player) => _board.GetPlayerBoard(player);
+	
+	/// <summary>
+	/// Gets the current state of the player's board, mapping positions to piece IDs.
+	/// </summary>
+	/// <param name="player">The player for whom to retrieve the board state.</param>
+	/// <returns>
+	/// A <see cref="Dictionary{TKey, TValue}"/> where keys represent positions on the board,
+	/// and values represent the piece IDs currently placed on those positions.
+	/// </returns>
+	public IDictionary<IPosition, string> GetPlayerBoard(IPlayer player) => _board.GetPlayerBoard(player);
 
+	/// <summary>
+	/// Gets the position of a specific piece on the player's board.
+	/// </summary>
+	/// <param name="player">The player for whom to retrieve the piece's position.</param>
+	/// <param name="heroId">The identifier of the piece for which to retrieve the position.</param>
+	/// <returns>
+	/// The <see cref="Position"/> where the specified piece is currently placed on the player's board,
+	/// or <c>null</c> if the piece is not found on the board.
+	/// </returns>
 	public IPosition? GetHeroPosition(IPlayer player, string heroId) => _board.GetHeroPosition(player, heroId);
 
+	/// <summary>
+	/// Gets the positions of all heroes from all players on the boards.
+	/// </summary>
+	/// <returns>
+	/// A <see cref="Dictionary{TKey, TValue}"/> where keys represent positions on the boards,
+	/// and values represent the piece IDs of the heroes placed on those positions.
+	/// </returns>
 	public Dictionary<IPosition, string> GetAllHeroPosition()
 	{
 		Dictionary<IPosition, string> allHeroPosition = new();
@@ -418,8 +495,26 @@ public class GameController
 		return allHeroPosition;
 	}
 
+	/// <summary>
+	/// Updates the position of a specific piece from a specific player on the board.
+	/// </summary>
+	/// <param name="player">The player for whom to update the piece's position.</param>
+	/// <param name="heroId">The identifier of the piece for which to update the position.</param>
+	/// <param name="newPosition">The new position where the piece will be placed.</param>
+	/// <returns>
+	/// <c>true</c> if the piece's position is successfully updated; otherwise, <c>false</c>.
+	/// </returns>
 	public bool UpdateHeroPosition(IPlayer player, string heroId, IPosition newPosition) => _board.UpdateHeroPosition(player, heroId, newPosition);
 
+	/// <summary>
+	/// Places a specific piece from specific player to the board at the specified position.
+	/// </summary>
+	/// <param name="player">The player on whose board the piece will be placed.</param>
+	/// <param name="piece">The piece to be placed on the player's board.</param>
+	/// <param name="position">The position where the piece will be placed.</param>
+	/// <returns>
+	/// <c>true</c> if the piece is successfully placed on the player's board; otherwise, <c>false</c>.
+	/// </returns>
 	public bool PutPlayerPiece(IPlayer player, IPiece piece, IPosition position)
 	{
 		if(_board.GetHeroPosition(player, piece.PieceId) == null)
@@ -429,21 +524,69 @@ public class GameController
 		return _board.UpdateHeroPosition(player, piece.PieceId, position);
 	}
 
+	/// <summary>
+	/// Checks whether the specified player has finished picking all heroes.
+	/// </summary>
+	/// <param name="player">The player to check for hero picking completion.</param>
+	/// <returns>
+	/// <c>true</c> if the player has finished picking all heroes; otherwise, <c>false</c>.
+	/// </returns>
 	public bool IsFinishedPickAllPieces(IPlayer player) => GetPlayerPieces(player).Count() == PlayerPiecesCount;
 
+	/// <summary>
+	/// Checks whether the specified player has finished putting all pieces on the board.
+	/// </summary>
+	/// <param name="player">The player to check for piece placement completion.</param>
+	/// <returns>
+	/// <c>true</c> if the player has finished putting all pieces on the board; otherwise, <c>false</c>.
+	/// </returns>
 	public bool IsFinishedPutAllPieces(IPlayer player) => _board.GetPlayerBoard(player).Count == GetPlayerPieces(player).Count();
 
+	/// <summary>
+	/// Checks whether the specified position on the board is currently empty.
+	/// </summary>
+	/// <param name="newPosition">The position to check for emptiness.</param>
+	/// <returns>
+	/// <c>true</c> if the specified position is currently empty; otherwise, <c>false</c>.
+	/// </returns>
 	public bool IsValidPosition(IPosition newPosition) => !GetAllHeroPosition().ContainsKey(newPosition);
 
+	/// <summary>
+	/// Removes a hero piece from the specified player's board based on the given hero ID.
+	/// </summary>
+	/// <param name="player">The player from whose board to remove the hero piece.</param>
+	/// <param name="heroId">The identifier of the hero to be removed from the board.</param>
+	/// <returns>
+	/// <c>true</c> if the hero piece is successfully removed from the board; otherwise, <c>false</c>.
+	/// </returns>
 	public bool RemoveHeroFromBoard(IPlayer player, string heroId) => GetPlayerBoard(player).Remove(GetHeroPosition(player, heroId)!);
 
+	/// <summary>
+	/// Clears the boards of all players, removing all pieces from each board.
+	/// </summary>
 	public void ClearBoard() => ((List<IPlayer>)GetPlayers()).ForEach(player => GetPlayerBoard(player).Clear());
 	#endregion
 
 	// Manage Battle
 	#region MANAGE_BATTLE
+	
+	/// <summary>
+	/// Gets a list of piece IDs representing all enemy pieces within the attack range of the specified hero for the given player.
+	/// </summary>
+	/// <param name="player">The player for whom to retrieve enemy pieces.</param>
+	/// <param name="hero">The hero for which to find enemy pieces.</param>
+	/// <returns>
+	/// A <see cref="List{T}"/> of piece IDs representing all enemy pieces within the attack range of the specified hero for the given player,
+	/// or an empty enumerable if there are no enemies in range.
+	/// </returns>
 	public IEnumerable<string> GetAllEnemyId(IPlayer player, IPiece hero) => _board.GetAllEnemyId(player, hero);
 
+
+	/// <summary>
+	/// Performs an attack action for the specified piece belonging to the given player.
+	/// </summary>
+	/// <param name="player">The player who owns the attacking piece.</param>
+	/// <param name="piece">The attacking piece.</param>
 	public async Task Attack(IPlayer player, IPiece piece)
 	{
 		if(piece.Hp <= 0)
@@ -480,6 +623,11 @@ public class GameController
 		await Task.Delay(1000);
 	}
 	
+	/// <summary>
+	/// Sets the winner of the current round and performs corresponding actions, such as
+	/// adding win points to the winner and reducing the other player's HP.
+	/// </summary>
+	/// <param name="winner">The player who won the current round.</param>
 	public void SetRoundWinner(IPlayer winner)
 	{
 		foreach(var player in GetPlayers())
@@ -496,8 +644,12 @@ public class GameController
 		}
 	}
 
-	// Set winner state
-	public void SetWinner(IPlayer player, bool IsWin = true) => GetPlayerData(player).Winner = IsWin;
+	/// <summary>
+	/// Sets the specified player as the overall game winner or loser based on the provided win state.
+	/// </summary>
+	/// <param name="player">The player to set as the overall game winner or loser.</param>
+	/// <param name="isWin">A boolean indicating whether the player is the overall game winner (true) or loser (false).</param>
+	public void SetWinner(IPlayer player, bool isWin = true) => GetPlayerData(player).Winner = isWin;
 	#endregion
 
 	/// <summary>
@@ -506,13 +658,13 @@ public class GameController
 	/// <returns>
 	/// A <see cref="List{T}"/> of strings representing the randomly picked hero names.
 	/// </returns>
-	public IEnumerable<string>? GenerateRandomHeroList()
+	public IEnumerable<string> GenerateRandomHeroList()
 	{
 		List<string> options = new();
 		var heroNames = (List<string>)GetHeroName();
 		if(heroNames.Count == 0)
 		{
-			return null;
+			return Enumerable.Empty<string>();
 		}
 		int n = 4;
 		while(n > 0)
