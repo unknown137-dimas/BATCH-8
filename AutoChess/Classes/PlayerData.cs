@@ -43,8 +43,8 @@ public class PlayerData
     public int GetWinPoint()
     {
         int winPoint = 0;
-        Win.ForEach(x => {
-            if(x)
+        Win.ForEach(win => {
+            if(win)
             {
                 winPoint++;
             }
