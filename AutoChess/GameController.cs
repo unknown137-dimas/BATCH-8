@@ -247,7 +247,7 @@ public class GameController
 	/// A <see cref="List{T}"/> containing all possible sides in the game,
 	/// represented by the <see cref="Sides"/> enum values.
 	/// </returns>
-	public IEnumerable<Sides> GetGameSides() => Enum.GetValues(typeof(Sides)).Cast<Sides>().ToList().Where(side => side != Sides.Unknown);
+	public IEnumerable<Sides> GetSidesOptions() => ((Sides[])Enum.GetValues(typeof(Sides))).Where(side => side != Sides.Unknown);
 
 	/// <summary>
 	/// Gets the win points for the specified player.
