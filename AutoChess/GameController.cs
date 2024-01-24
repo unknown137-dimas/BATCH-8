@@ -75,7 +75,7 @@ public class GameController
 				((List<IPlayer>)GetPlayers()).ForEach(player => SetWinner(player, false));
 				break;
 			case Phases.BattleEnd:
-				if(TryGetRoundWinner(out IPlayer? roundWinner))
+				if(TryGetRoundWinner(out IPlayer? roundWinner, out RoundResult roundResult) && roundResult != RoundResult.Draw)
 				{
 					SetRoundWinner(roundWinner!);
 					SetWinner(roundWinner!);
@@ -310,7 +310,7 @@ public class GameController
     /// <returns>
     /// true if there is a winner for the current round and the associated player was retrieved successfully; otherwise, false.
     /// </returns>
-	public bool TryGetRoundWinner(out IPlayer? winnerResult)
+	public bool TryGetRoundWinner(out IPlayer? winnerResult, out RoundResult roundResult)
 	{
 		var playerOne = ((List<IPlayer>)GetPlayers())[0];
 		var playerTwo = ((List<IPlayer>)GetPlayers())[1];
@@ -319,14 +319,23 @@ public class GameController
 			if(playerOneBoard!.Count == 0 && playerTwoBoard!.Count > 0)
 			{
 				winnerResult = playerTwo;
+				roundResult = RoundResult.PlayerTwoWin;
 				return true;
 			}
 			else if(playerOneBoard!.Count > 0 && playerTwoBoard!.Count == 0)
 			{
 				winnerResult = playerOne;
+				roundResult = RoundResult.PlayerOneWin;
+				return true;
+			}
+			else if(playerOneBoard!.Count == 0 && playerTwoBoard!.Count == 0)
+			{
+				winnerResult = null;
+				roundResult = RoundResult.Draw;
 				return true;
 			}
 		}
+		roundResult = RoundResult.Unknown;
 		winnerResult = null;
 		return false;
 	}
@@ -897,9 +906,16 @@ public class GameController
 	/// <param name="piece">The attacking piece.</param>
 	public async Task Attack(IPlayer player, IPiece piece)
 	{
+		var skillTrigger = piece.Hp * 0.25;
+		var skillStop = piece.Hp * 0.15;
 		if(piece.Hp <= 0)
 		{
 			RemoveHeroFromBoard(player, piece.PieceId);
+		}
+		if(piece.Hp <= skillTrigger && piece.Hp >= skillStop)
+		{
+			piece.Skill(this);
+			await Task.Delay(200);
 		}
 		if(GetAllEnemyId(player, piece).Count() == 0)
 		{

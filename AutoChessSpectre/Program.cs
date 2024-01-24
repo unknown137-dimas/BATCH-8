@@ -479,7 +479,7 @@ internal class Program
                 #region BATTLE_VIEW
                 autoChess.SetGameStatus(Status.OnGoing);
                 autoChess.SetGamePhase(Phases.BattleBegin);
-                while (!autoChess.TryGetRoundWinner(out _))
+                while (!autoChess.TryGetRoundWinner(out _, out _))
                 {
                     FigletTitle("Battle");
                     AnsiConsole.Write(new Rule($"[yellow1]Round {round}[/]"));
