@@ -405,7 +405,14 @@ public class GameController
 	/// <returns>
 	/// <c>true</c> if the hero is successfully added; otherwise, <c>false</c>.
 	/// </returns>
-	public bool AddHero(string heroName, HeroDetails heroDetails) => HeroesDatabase.TryAdd(heroName, heroDetails);
+	public bool AddHero(string heroName, HeroDetails heroDetails)
+	{
+		if(Enum.IsDefined(typeof(PieceTypes), heroDetails.HeroType))
+		{
+			return HeroesDatabase.TryAdd(heroName, heroDetails);
+		}
+		return false;
+	}
 	
 	/// <summary>
 	/// Adds multiple heroes to the game using a dictionary of hero names and their details.
@@ -485,9 +492,13 @@ public class GameController
 	/// </returns>
 	public bool AddPlayer(IPlayer newPlayer, Sides playerSide)
 	{
-		var addPlayer = _players.TryAdd(newPlayer, new PlayerData(PlayerHp, playerSide));
-		var addPlayerBoard = _board.AddPlayerToBoard(newPlayer);
-		return !new List<bool>([addPlayer, addPlayerBoard]).Contains(false);
+		if(Enum.IsDefined(typeof(Sides), playerSide))
+		{
+			var addPlayer = _players.TryAdd(newPlayer, new PlayerData(PlayerHp, playerSide));
+			var addPlayerBoard = _board.AddPlayerToBoard(newPlayer);
+			return !new List<bool>([addPlayer, addPlayerBoard]).Contains(false);
+		}
+		return false;
 	}
 
 	/// <summary>
@@ -637,9 +648,9 @@ public class GameController
 	{
 		if(GetPlayerPieces(player).Count() < PlayerPiecesCount)
 		{
-			if(TryGetPlayerData(player, out PlayerData? result))
+			if(TryGetPlayerData(player, out PlayerData? result) && HeroesDatabase.TryGetValue(heroName, out HeroDetails? heroDetail))
 			{
-				result!.PlayerPieces.Add(new Hero(heroName, HeroesDatabase[heroName]));
+				result!.PlayerPieces.Add(new Hero(heroName, heroDetail));
 				return true;
 			}
 		}
