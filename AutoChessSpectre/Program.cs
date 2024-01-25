@@ -155,35 +155,33 @@ internal class Program
 		while(!autoChess.IsFinishedPickAllPieces(player) && roll >= 0)
 		{
 			FigletTitle("Pick Your Heroes");
-			if(autoChess.TryGetPlayerSide(player, out Sides playerSideResult))
+			if(!autoChess.TryGetPlayerSide(player, out Sides playerSideResult))
 			{
-				AnsiConsole.Write(new Rule($"[{playerSideResult.ToString().ToLower()}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
-				AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
-				AnsiConsole.Write(new Rule($"[{playerSideResult.ToString().ToLower()}]Hero Options | Roll Chance [[{roll}]][/]"));
-				var optionsList = (List<string>)autoChess.GenerateRandomHeroList();
-				if(optionsList != Enumerable.Empty<string>())
-				{
-					AnsiConsole.Write(DisplayHeroStats(optionsList));
-					var options = AnsiConsole.Prompt(
-						new MultiSelectionPrompt<string>()
-						.NotRequired()
-						.PageSize(5)
-						.AddChoices(optionsList)
-						.InstructionsText(
-							$"[grey](Press [yellow1]<space>[/] to select hero, [green1]<enter>[/] to accept and re-Roll)[/]"
-							)
-						.HighlightStyle(playerSideResult.ToString().ToLower())
-					);
-					
-					// Set player pieces
-					autoChess.AddPlayerPiece(player, options);
-					roll--;
-				}
-				else
-				{
-					Environment.Exit(0);
-				}
+				Environment.Exit(0);
 			}
+			AnsiConsole.Write(new Rule($"[{playerSideResult.ToString().ToLower()}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
+			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
+			AnsiConsole.Write(new Rule($"[{playerSideResult.ToString().ToLower()}]Hero Options | Roll Chance [[{roll}]][/]"));
+			var optionsList = (List<string>)autoChess.GenerateRandomHeroList();
+			if(optionsList == Enumerable.Empty<string>())
+			{
+				Environment.Exit(0);
+			}
+			AnsiConsole.Write(DisplayHeroStats(optionsList));
+			var options = AnsiConsole.Prompt(
+				new MultiSelectionPrompt<string>()
+				.NotRequired()
+				.PageSize(5)
+				.AddChoices(optionsList)
+				.InstructionsText(
+					$"[grey](Press [yellow1]<space>[/] to select hero, [green1]<enter>[/] to accept and re-Roll)[/]"
+					)
+				.HighlightStyle(playerSideResult.ToString().ToLower())
+			);
+			
+			// Set player pieces
+			autoChess.AddPlayerPiece(player, options);
+			roll--;
 		}
 	}
 
@@ -300,7 +298,7 @@ internal class Program
 	private static int ScaleHeroStat(int originalValue, int originalMax, int scaleMax) => (originalValue * (scaleMax - 1) / originalMax) + 1;
 
 	private static void CreatePlayer(ref List<Sides> sidesOptions, int playerCount)
-    {
+	{
 		for(int i = 1; i <= playerCount; i++)
 		{
 			var player = new Player(AnsiConsole.Ask<string>($"[[PLAYER {i}]] What's your [green1]name[/]?"));
@@ -315,7 +313,7 @@ internal class Program
 			autoChess.AddPlayer(player, playerSide);
 			sidesOptions.Remove(playerSide);
 		}
-    }
+	}
 	
 	static void Main()
 	{
@@ -327,22 +325,19 @@ internal class Program
 		// Read hero_database.json file
 		string jsonPath = "Assets/hero_database.json";
 		DataContractJsonSerializer jsonSerializer = new(typeof(Dictionary<string, HeroDetails>));
-		if(File.Exists(jsonPath))
-		{
-			using(FileStream fs = new(jsonPath, FileMode.Open))
-			{
-				var heroes = (Dictionary<string, HeroDetails>?)jsonSerializer.ReadObject(fs);
-				if(heroes != null)
-				{
-					autoChess.AddHero(heroes);
-				}
-			}
-		}
-		else
+		if(!File.Exists(jsonPath))
 		{
 			AnsiConsole.Write(new Markup($"[rapidblink red1]Hero database is empty, please add hero first[/]\n").Centered());
 			Console.ReadKey();
 			Environment.Exit(0);
+		}
+		using(FileStream fs = new(jsonPath, FileMode.Open))
+		{
+			var heroes = (Dictionary<string, HeroDetails>?)jsonSerializer.ReadObject(fs);
+			if(heroes != null)
+			{
+				autoChess.AddHero(heroes);
+			}
 		}
 		#endregion
 		
@@ -363,25 +358,25 @@ internal class Program
 		#endregion
 
 		if(mainMenu.Contains("Start"))
-        {
-            // GAME MODE MENU
-            #region GAME_MODE_MENU
-            FigletTitle("Game Mode");
-            var gameModeMenu = AnsiConsole.Prompt(
-                new SelectionPrompt<string>()
-                .AddChoices(
-                    [
-                         "[[😎]] Player vs [[😎]] Player",
-                         "[[😎]] Player vs [[🤖]] Bot"
-                    ]
-                )
-                .HighlightStyle(Color.Yellow1)
-            );
-            #endregion
+		{
+			// GAME MODE MENU
+			#region GAME_MODE_MENU
+			FigletTitle("Game Mode");
+			var gameModeMenu = AnsiConsole.Prompt(
+				new SelectionPrompt<string>()
+				.AddChoices(
+					[
+						 "[[😎]] Player vs [[😎]] Player",
+						 "[[😎]] Player vs [[🤖]] Bot"
+					]
+				)
+				.HighlightStyle(Color.Yellow1)
+			);
+			#endregion
 
-            // INPUT PLAYER NAME MENU
-            #region PLAYER_MENU
-            FigletTitle("Enter Your Name");
+			// INPUT PLAYER NAME MENU
+			#region PLAYER_MENU
+			FigletTitle("Enter Your Name");
 			var sidesOptions = autoChess.GetSidesOptions().ToList();
 			int playerCount = 2;
 			if(gameModeMenu.Contains("Bot"))
@@ -400,141 +395,141 @@ internal class Program
 			}
 			playerOne = (Player)((List<IPlayer>)autoChess.GetPlayers())[0];
 			playerTwo = (Player)((List<IPlayer>)autoChess.GetPlayers())[1];
-            #endregion
+			#endregion
 
-            // LOOP ALL ROUND
-            for (int round = 1; round <= maxRound; round++)
-            {
-                // PICK HERO MENU
-                // TODO
-                // 1. How to edit/remove item from user (if user want to change item that already picked)
-                #region PICK_HERO_MENU
-                autoChess.SetGamePhase(Phases.ChoosingPiece);
-                if (!gameModeMenu.Contains("Bot"))
-                {
-                    foreach (var player in autoChess.GetPlayers())
-                    {
-                        PickHero(player);
-                    }
-                }
-                else
-                {
-                    PickHero(playerOne);
+			// LOOP ALL ROUND
+			for (int round = 1; round <= maxRound; round++)
+			{
+				// PICK HERO MENU
+				// TODO
+				// 1. How to edit/remove item from user (if user want to change item that already picked)
+				#region PICK_HERO_MENU
+				autoChess.SetGamePhase(Phases.ChoosingPiece);
+				if(!gameModeMenu.Contains("Bot"))
+				{
+					foreach (var player in autoChess.GetPlayers())
+					{
+						PickHero(player);
+					}
+				}
+				else
+				{
+					PickHero(playerOne);
 
-                    // BOT 
-                    // Bot pick pieces
-                    int roll = maxRoll;
-                    while (!autoChess.IsFinishedPickAllPieces(playerTwo) && roll >= 0)
-                    {
-                        var options = (List<string>)autoChess.GenerateRandomHeroList();
-                        if (options != Enumerable.Empty<string>())
-                        {
-                            autoChess.AddPlayerPiece(playerTwo, options[0..new Random().Next(options.Count + 1)]);
-                            roll--;
-                        }
-                        else
-                        {
-                            Environment.Exit(0);
-                        }
-                    }
-                }
-                #endregion
+					// BOT 
+					// Bot pick pieces
+					int roll = maxRoll;
+					while (!autoChess.IsFinishedPickAllPieces(playerTwo) && roll >= 0)
+					{
+						var options = (List<string>)autoChess.GenerateRandomHeroList();
+						if(options != Enumerable.Empty<string>())
+						{
+							autoChess.AddPlayerPiece(playerTwo, options[0..new Random().Next(options.Count + 1)]);
+							roll--;
+						}
+						else
+						{
+							Environment.Exit(0);
+						}
+					}
+				}
+				#endregion
 
-                // SET HERO POSITION MENU
-                // TODO
-                // 1. How to cancel setting position for the selected piece
-                // 2. Display coordinate label to the board
-                #region SET_HERO_POSITION_MENU
-                autoChess.SetGamePhase(Phases.PlaceThePiece);
-                if (!gameModeMenu.Contains("Bot"))
-                {
-                    foreach (var player in autoChess.GetPlayers())
-                    {
-                        SetHeroPosition(player);
-                    }
-                }
-                else
-                {
-                    SetHeroPosition(playerOne);
+				// SET HERO POSITION MENU
+				// TODO
+				// 1. How to cancel setting position for the selected piece
+				// 2. Display coordinate label to the board
+				#region SET_HERO_POSITION_MENU
+				autoChess.SetGamePhase(Phases.PlaceThePiece);
+				if(!gameModeMenu.Contains("Bot"))
+				{
+					foreach (var player in autoChess.GetPlayers())
+					{
+						SetHeroPosition(player);
+					}
+				}
+				else
+				{
+					SetHeroPosition(playerOne);
 
-                    // BOT
-                    // Bot put piece
-                    if (autoChess.TryGetPlayerData(playerTwo, out PlayerData? playerDataResult))
-                    {
-                        foreach (var piece in playerDataResult!.PlayerPieces)
-                        {
-                            bool success = false;
-                            while (!success)
-                            {
-                                int x = new Random().Next(0, boardSize[0]);
-                                int y = new Random().Next(boardSize[1] % 2 == 0 ? boardSize[1] / 2 : (boardSize[1] / 2) + 1, boardSize[1]);
-                                success = autoChess.PutPlayerPiece(playerTwo, piece, new Position(x, y));
-                            }
-                        }
-                    }
-                }
-                #endregion
+					// BOT
+					// Bot put piece
+					if(autoChess.TryGetPlayerData(playerTwo, out PlayerData? playerDataResult))
+					{
+						foreach (var piece in playerDataResult!.PlayerPieces)
+						{
+							bool success = false;
+							while (!success)
+							{
+								int x = new Random().Next(0, boardSize[0]);
+								int y = new Random().Next(boardSize[1] % 2 == 0 ? boardSize[1] / 2 : (boardSize[1] / 2) + 1, boardSize[1]);
+								success = autoChess.PutPlayerPiece(playerTwo, piece, new Position(x, y));
+							}
+						}
+					}
+				}
+				#endregion
 
-                // BATTLE VIEW
-                #region BATTLE_VIEW
-                autoChess.SetGameStatus(Status.OnGoing);
-                autoChess.SetGamePhase(Phases.BattleBegin);
-                while (!autoChess.TryGetRoundWinner(out _, out _))
-                {
-                    FigletTitle("Battle");
-                    AnsiConsole.Write(new Rule($"[yellow1]Round {round}[/]"));
-                    AnsiConsole.Write(DisplayBoard());
+				// BATTLE VIEW
+				#region BATTLE_VIEW
+				autoChess.SetGameStatus(Status.OnGoing);
+				autoChess.SetGamePhase(Phases.BattleBegin);
+				while (!autoChess.TryGetRoundWinner(out _, out _))
+				{
+					FigletTitle("Battle");
+					AnsiConsole.Write(new Rule($"[yellow1]Round {round}[/]"));
+					AnsiConsole.Write(DisplayBoard());
 
-                    // Display each player's hero health
-                    List<IRenderable> playerColumn = new();
-                    foreach (var player in autoChess.GetPlayers())
-                    {
-                        int barWidth = 45;
-                        var heroHealthBar = new BarChart().Width(barWidth).WithMaxValue(barWidth).HideValues();
-                        foreach (var playerPiece in autoChess.GetPlayerPieces(player))
-                        {
-                            if (autoChess.TryGetPieceById(playerPiece.PieceId, out IPiece? piece))
-                            {
-                                heroHealthBar.AddItem(piece!.Hp > 0 ? piece!.Name : $"[[💀]] {piece!.Name}", ScaleHeroStat((int)Math.Round(piece.Hp), 1200, barWidth), Color.Green1);
-                            }
-                        };
-                        if (autoChess.TryGetPlayerSide(player, out Sides playerSideResult))
-                        {
-                            playerColumn.Add(new Panel(heroHealthBar).Header(new PanelHeader($"[{playerSideResult.ToString().ToLower()} bold]{player.Name}[/]").Centered()));
-                        }
-                    };
+					// Display each player's hero health
+					List<IRenderable> playerColumn = new();
+					foreach (var player in autoChess.GetPlayers())
+					{
+						int barWidth = 45;
+						var heroHealthBar = new BarChart().Width(barWidth).WithMaxValue(barWidth).HideValues();
+						foreach (var playerPiece in autoChess.GetPlayerPieces(player))
+						{
+							if(autoChess.TryGetPieceById(playerPiece.PieceId, out IPiece? piece))
+							{
+								heroHealthBar.AddItem(piece!.Hp > 0 ? piece!.Name : $"[[💀]] {piece!.Name}", ScaleHeroStat((int)Math.Round(piece.Hp), 1200, barWidth), Color.Green1);
+							}
+						};
+						if(autoChess.TryGetPlayerSide(player, out Sides playerSideResult))
+						{
+							playerColumn.Add(new Panel(heroHealthBar).Header(new PanelHeader($"[{playerSideResult.ToString().ToLower()} bold]{player.Name}[/]").Centered()));
+						}
+					};
 					AnsiConsole.Write(new Rule("[[❤️]] Hero Health Statistic"));
-                    AnsiConsole.Write(new Columns(playerColumn));
+					AnsiConsole.Write(new Columns(playerColumn));
 
-                    // Create a task for each player's piece
-                    foreach (var player in autoChess.GetPlayers())
-                    {
-                        foreach (var piece in autoChess.GetPlayerPieces(player))
-                        {
-                            Task.Run(() => autoChess.Attack(player, piece));
-                        };
-                    };
-                    Thread.Sleep(700);
-                }
-                #endregion
+					// Create a task for each player's piece
+					foreach (var player in autoChess.GetPlayers())
+					{
+						foreach (var piece in autoChess.GetPlayerPieces(player))
+						{
+							Task.Run(() => autoChess.Attack(player, piece));
+						};
+					};
+					Thread.Sleep(700);
+				}
+				#endregion
 
-                // ROUND RESULT
-                #region ROUND_RESULT
-                autoChess.SetGamePhase(Phases.BattleEnd);
-                FigletTitle($"Round {round} Result");
-                DisplayResult();
-                AnsiConsole.Write(new Markup($"[rapidblink yellow1]Press any key to move to the next round...[/]\n").Centered());
-                Console.ReadLine();
-                #endregion
-            }
+				// ROUND RESULT
+				#region ROUND_RESULT
+				autoChess.SetGamePhase(Phases.BattleEnd);
+				FigletTitle($"Round {round} Result");
+				DisplayResult();
+				AnsiConsole.Write(new Markup($"[rapidblink yellow1]Press any key to move to the next round...[/]\n").Centered());
+				Console.ReadLine();
+				#endregion
+			}
 
-            // FINAL RESULT
-            #region FINAL_RESULT
-            autoChess.SetGameStatus(Status.End);
-            autoChess.SetGamePhase(Phases.TheChampion);
-            FigletTitle($"Final Result");
-            DisplayResult();
-            #endregion
-        }
-    }
+			// FINAL RESULT
+			#region FINAL_RESULT
+			autoChess.SetGameStatus(Status.End);
+			autoChess.SetGamePhase(Phases.TheChampion);
+			FigletTitle($"Final Result");
+			DisplayResult();
+			#endregion
+		}
+	}
 }

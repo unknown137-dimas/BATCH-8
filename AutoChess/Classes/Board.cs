@@ -51,27 +51,28 @@ public class Board : IBoard
 
 	public bool UpdateHeroPosition(IPlayer player, Guid heroId, IPosition newPosition)
 	{
-		bool result = false;
-		if(TryGetHeroPosition(player, heroId, out _))
+		if(!TryGetHeroPosition(player, heroId, out _))
 		{
-			if(RemoveHeroPosition(player, heroId))
-			{
-				result = AddHeroPosition(player, heroId, newPosition);
-			}
+			return false;
 		}
-		return result;
+		if(RemoveHeroPosition(player, heroId))
+		{
+			return AddHeroPosition(player, heroId, newPosition);
+		}
+		return false;
 	}
 	
 	public IPosition GetHeroPosition(IPlayer player, Guid heroId)
 	{
-		if(TryGetPlayerBoard(player, out Dictionary<IPosition, Guid>? result))
+		if(!TryGetPlayerBoard(player, out Dictionary<IPosition, Guid>? result))
 		{
-			foreach(var playerPiece in result!)
+			throw new KeyNotFoundException();
+		}
+		foreach(var playerPiece in result!)
+		{
+			if(playerPiece.Value == heroId)
 			{
-				if(playerPiece.Value == heroId)
-				{
-					return playerPiece.Key;
-				}
+				return playerPiece.Key;
 			}
 		}
 		throw new KeyNotFoundException();
@@ -79,15 +80,17 @@ public class Board : IBoard
 
 	public bool TryGetHeroPosition(IPlayer player, Guid heroId, out IPosition? positionResult)
 	{
-		if(TryGetPlayerBoard(player, out Dictionary<IPosition, Guid>? result))
+		if(!TryGetPlayerBoard(player, out Dictionary<IPosition, Guid>? result))
 		{
-			foreach(var playerPiece in result!)
+			positionResult = null;
+			return false;
+		}
+		foreach(var playerPiece in result!)
+		{
+			if(playerPiece.Value == heroId)
 			{
-				if(playerPiece.Value == heroId)
-				{
-					positionResult = playerPiece.Key;
-					return true;
-				}
+				positionResult = playerPiece.Key;
+				return true;
 			}
 		}
 		positionResult = null;
@@ -96,14 +99,15 @@ public class Board : IBoard
 
 	public bool RemoveHeroPosition(IPlayer player, Guid heroId)
 	{
-		if(TryGetPlayerBoard(player, out Dictionary<IPosition, Guid>? boardResult))
+		if(!TryGetPlayerBoard(player, out Dictionary<IPosition, Guid>? boardResult))
 		{
-			foreach(var playerPiece in boardResult!)
+			return false;
+		}
+		foreach(var playerPiece in boardResult!)
+		{
+			if(playerPiece.Value == heroId)
 			{
-				if(playerPiece.Value == heroId)
-				{
-					return boardResult.Remove(playerPiece.Key);
-				}
+				return boardResult.Remove(playerPiece.Key);
 			}
 		}
 		return false;
@@ -111,24 +115,26 @@ public class Board : IBoard
 
 	public IEnumerable<Guid> GetAllEnemyId(IPlayer player, IPiece hero)
 	{
-		if(TryGetHeroPosition(player, hero.PieceId, out IPosition? result))
+		if(!TryGetHeroPosition(player, hero.PieceId, out IPosition? result))
 		{
-			List<Guid> allEnemyId = new();
-			foreach(var playerBoard in PiecesPositions)
-			{
-				if(playerBoard.Key != player)
-				{
-					foreach(var enemyHero in playerBoard.Value)
-					{
-						if(result!.IsInRange(enemyHero.Key, hero.AttackRange))
-						{
-							allEnemyId.Add(enemyHero.Value);
-						}
-					}
-				}
-			}
-			return allEnemyId;
+			return Enumerable.Empty<Guid>();
 		}
-		return Enumerable.Empty<Guid>();
+		List<Guid> allEnemyId = new();
+		foreach(var playerBoard in PiecesPositions)
+		{
+			if(playerBoard.Key == player)
+			{
+				continue;
+			}
+			foreach(var enemyHero in playerBoard.Value)
+			{
+				if(!result!.IsInRange(enemyHero.Key, hero.AttackRange))
+				{
+					continue;
+				}
+				allEnemyId.Add(enemyHero.Value);
+			}
+		}
+		return allEnemyId;
 	}
 }

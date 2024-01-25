@@ -13,15 +13,15 @@ public class Position : IPosition
 
     public override bool Equals(object? obj)
     {
-        if (obj == null || GetType() != obj.GetType())
+        if(obj == null || GetType() != obj.GetType())
         {
             return false;
         }
         
         var other = obj as Position;
-        if (ReferenceEquals(other, null))
+        if(ReferenceEquals(other, null))
             return false;
-        if (ReferenceEquals(this, other))
+        if(ReferenceEquals(this, other))
             return true;
         return X == other.X && Y == other.Y;
     }
