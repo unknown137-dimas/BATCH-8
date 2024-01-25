@@ -106,13 +106,11 @@ public class GameController
 	public int[] GetBoardSize() => [_board.Width, _board.Height];
 
 	/// <summary>
-	/// Return a piece instance from the player data based on the specified piece ID.
+	/// Gets the piece with the specified ID.
 	/// </summary>
 	/// <param name="heroId">The unique identifier of the piece to retrieve.</param>
-	/// <returns>
-	/// The <see cref="Piece"/> instance corresponding to the specified piece ID, 
-	/// or <c>null</c> if no piece with the given ID is found.
-	/// </returns>
+	/// <returns>The piece with the specified ID.</returns>
+	/// <exception cref="KeyNotFoundException">Thrown if the piece with the specified ID is not found.</exception>
 	public IPiece GetPieceById(Guid heroId)
 	{
 		foreach(var player in GetPlayers())
@@ -156,12 +154,10 @@ public class GameController
 	}
 
 	/// <summary>
-	/// Gets the side for the specified player.
+	/// Gets the side of the specified player.
 	/// </summary>
-	/// <param name="player">The player for whom to determine the side.</param>
-	/// <returns>
-	/// The <see cref="Sides"/> enum representing the side for the specified player.
-	/// </returns>
+	/// <param name="player">The player for which to retrieve the side.</param>
+	/// <returns>The side of the specified player, or Sides.Unknown if the player is not found.</returns>
 	public Sides GetPlayerSide(IPlayer player)
 	{
 		if(TryGetPlayerData(player, out PlayerData? data))
@@ -191,13 +187,11 @@ public class GameController
 	}
 
 	/// <summary>
-	/// Gets the player who owns the hero with the specified identifier.
+	/// Gets the player with the specified piece ID.
 	/// </summary>
-	/// <param name="heroId">The identifier of the hero.</param>
-	/// <returns>
-	/// The <see cref="Player"/> instance representing the player who owns the hero with the specified identifier,
-	/// or <c>null</c> if no player owns the hero with the given identifier.
-	/// </returns>
+	/// <param name="heroId">The unique identifier of the piece associated with the player to retrieve.</param>
+	/// <returns>The player with the specified piece ID.</returns>
+	/// <exception cref="KeyNotFoundException">Thrown if the player with the specified piece ID is not found.</exception>
 	public IPlayer GetPlayerByPieceId(Guid heroId)
 	{
 		foreach(var player in GetPlayers())
@@ -277,67 +271,60 @@ public class GameController
 	/// <summary>
 	/// Gets the winner of the current round.
 	/// </summary>
-	/// <returns>
-	/// The <see cref="Player"/> instance representing the winner of the current round,
-	/// or <c>null</c> if there is no winner yet.
-	/// </returns>
+	/// <returns>The winner of the current round.</returns>
+	/// <exception cref="Exception">Thrown if there is no round winner (due to a draw or no winner yet).</exception>
 	public IPlayer GetRoundWinner()
 	{
 		var playerOne = ((List<IPlayer>)GetPlayers())[0];
 		var playerTwo = ((List<IPlayer>)GetPlayers())[1];
-		if(!TryGetPlayerBoard(playerOne, out var playerOneBoard) || !TryGetPlayerBoard(playerTwo, out var playerTwoBoard))
+		if(TryGetPlayerBoard(playerOne, out var playerOneBoard) && TryGetPlayerBoard(playerTwo, out var playerTwoBoard))
 		{
-			throw new KeyNotFoundException();
+			if(playerOneBoard!.Count == 0 && playerTwoBoard!.Count > 0)
+			{
+				return playerTwo;
+			}
+			else if(playerOneBoard!.Count > 0 && playerTwoBoard!.Count == 0)
+			{
+				return playerOne;
+			}
+			else if(playerOneBoard!.Count == 0 && playerTwoBoard!.Count == 0)
+			{
+				throw new Exception("No Round Winner");
+			}
 		}
-		if(playerOneBoard!.Count == 0 && playerTwoBoard!.Count > 0)
-		{
-			return playerTwo;
-		}
-		else if(playerOneBoard!.Count > 0 && playerTwoBoard!.Count == 0)
-		{
-			return playerOne;
-		}
-		else
-		{
-			throw new Exception("No Round Winner");
-		}
-		throw new KeyNotFoundException();
+		throw new Exception("No Round Winner");
 	}
 
 	/// <summary>
-	/// Tries to retrieve the winner of the current round.
+	/// Tries to get the winner of the current round and the round result.
 	/// </summary>
-	/// <param name="winnerResult">When this method returns, contains the player who won the current round, if available; otherwise, null.</param>
-	/// <returns>
-	/// true if there is a winner for the current round and the associated player was retrieved successfully; otherwise, false.
-	/// </returns>
+	/// <param name="winnerResult">The winner of the current round (null for draw).</param>
+	/// <param name="roundResult">The result of the current round (Unknown, Draw, PlayerOneWin, or PlayerTwoWin).</param>
+	/// <returns>True if there is a winner or draw, false otherwise.</returns>
 	public bool TryGetRoundWinner(out IPlayer? winnerResult, out RoundResult roundResult)
 	{
 		var playerOne = GetPlayers().ToArray()[0];
 		var playerTwo = GetPlayers().ToArray()[1];
-		if(!TryGetPlayerBoard(playerOne, out var playerOneBoard) || !TryGetPlayerBoard(playerTwo, out var playerTwoBoard))
+		if(TryGetPlayerBoard(playerOne, out var playerOneBoard) && TryGetPlayerBoard(playerTwo, out var playerTwoBoard))
 		{
-			roundResult = RoundResult.Unknown;
-			winnerResult = null;
-			return false;
-		}
-		if(playerOneBoard!.Count == 0 && playerTwoBoard!.Count > 0)
-		{
-			winnerResult = playerTwo;
-			roundResult = RoundResult.PlayerTwoWin;
-			return true;
-		}
-		else if(playerOneBoard!.Count > 0 && playerTwoBoard!.Count == 0)
-		{
-			winnerResult = playerOne;
-			roundResult = RoundResult.PlayerOneWin;
-			return true;
-		}
-		else if(playerOneBoard!.Count == 0 && playerTwoBoard!.Count == 0)
-		{
-			winnerResult = null;
-			roundResult = RoundResult.Draw;
-			return true;
+			if(playerOneBoard!.Count == 0 && playerTwoBoard!.Count > 0)
+			{
+				winnerResult = playerTwo;
+				roundResult = RoundResult.PlayerTwoWin;
+				return true;
+			}
+			else if(playerOneBoard!.Count > 0 && playerTwoBoard!.Count == 0)
+			{
+				winnerResult = playerOne;
+				roundResult = RoundResult.PlayerOneWin;
+				return true;
+			}
+			else if(playerOneBoard!.Count == 0 && playerTwoBoard!.Count == 0)
+			{
+				winnerResult = null;
+				roundResult = RoundResult.Draw;
+				return true;
+			}
 		}
 		roundResult = RoundResult.Unknown;
 		winnerResult = null;
@@ -347,10 +334,8 @@ public class GameController
 	/// <summary>
 	/// Gets the champion of the game.
 	/// </summary>
-	/// <returns>
-	/// The <see cref="Player"/> instance representing the champion of the game,
-	/// or <c>null</c> if the champion has not been decided yet.
-	/// </returns>
+	/// <returns>The champion player.</returns>
+	/// <exception cref="Exception">Thrown if there is no champion.</exception>
 	public IPlayer GetChampion()
 	{
 		var playerOne = ((List<IPlayer>)GetPlayers())[0];
@@ -452,12 +437,11 @@ public class GameController
 	public IEnumerable<string> GetHeroName() => HeroesDatabase.Keys.ToList().ConvertAll(hero => hero.ToString());
 	
 	/// <summary>
-	/// Gets the details of a hero based on the specified hero name.
+	/// Gets the details of the hero with the specified name.
 	/// </summary>
-	/// <param name="heroName">The name of the hero for which to retrieve details.</param>
-	/// <returns>
-	/// The <see cref="HeroDetails"/> struct representing the details of the specified hero.
-	/// </returns>
+	/// <param name="heroName">The name of the hero.</param>
+	/// <returns>The details of the hero.</returns>
+	/// <exception cref="KeyNotFoundException">Thrown if the hero with the specified name is not found.</exception>
 	public HeroDetails GetHeroDetails(string heroName)
 	{
 		if(HeroesDatabase.TryGetValue(heroName, out HeroDetails? result))
@@ -536,13 +520,11 @@ public class GameController
 	}
 
 	/// <summary>
-	/// Gets the <see cref="PlayerData"/> instance associated with the specified player.
+	/// Gets the data of the specified player.
 	/// </summary>
-	/// <param name="player">The player for whom to retrieve the data instance.</param>
-	/// <returns>
-	/// The <see cref="PlayerData"/> instance associated with the specified player,
-	/// or <c>null</c> if the player's data is not found.
-	/// </returns>
+	/// <param name="player">The player for which to retrieve the data.</param>
+	/// <returns>The data of the specified player.</returns>
+	/// <exception cref="KeyNotFoundException">Thrown if the player is not found in the dictionary.</exception>
 	public PlayerData GetPlayerData(IPlayer player)
 	{
 		if(_players.TryGetValue(player, out PlayerData? result))
@@ -592,14 +574,12 @@ public class GameController
 	}
 
 	/// <summary>
-	/// Gets a specific piece owned by the specified player based on the hero identifier.
+	/// Gets the piece of the specified hero associated with the player.
 	/// </summary>
-	/// <param name="player">The player for whom to retrieve the piece.</param>
-	/// <param name="heroId">The identifier of the hero associated with the piece.</param>
-	/// <returns>
-	/// The <see cref="Hero"/> instance representing the specified piece,
-	/// or <c>null</c> if the piece is not found for the specified player and hero identifier.
-	/// </returns>
+	/// <param name="player">The player for which to retrieve the piece.</param>
+	/// <param name="heroId">The unique identifier of the hero piece to retrieve.</param>
+	/// <returns>The piece of the specified hero associated with the player.</returns>
+	/// <exception cref="KeyNotFoundException">Thrown if the player or hero piece is not found in the dictionary.</exception>
 	public IPiece GetPlayerPiece(IPlayer player, Guid heroId)
 	{
 		if(!TryGetPlayerData(player, out PlayerData? result))
@@ -721,13 +701,11 @@ public class GameController
 	#region MANAGE_BOARD
 	
 	/// <summary>
-	/// Gets the current state of the player's board, mapping positions to piece IDs.
+	/// Gets the board of the specified player.
 	/// </summary>
-	/// <param name="player">The player for whom to retrieve the board state.</param>
-	/// <returns>
-	/// A <see cref="Dictionary{TKey, TValue}"/> where keys represent positions on the board,
-	/// and values represent the piece IDs currently placed on those positions.
-	/// </returns>
+	/// <param name="player">The player for which to retrieve the board.</param>
+	/// <returns>The board of the specified player.</returns>
+	/// <exception cref="KeyNotFoundException">Thrown if the player is not found in the dictionary.</exception>
 	public IDictionary<IPosition, Guid> GetPlayerBoard(IPlayer player)
 	{
 		if(_board.TryGetPlayerBoard(player, out var result))
@@ -757,16 +735,18 @@ public class GameController
 	}
 
 	/// <summary>
-	/// Gets the position of a specific piece on the player's board.
+	/// Gets the position of the specified hero associated with the player.
 	/// </summary>
-	/// <param name="player">The player for whom to retrieve the piece's position.</param>
-	/// <param name="heroId">The identifier of the piece for which to retrieve the position.</param>
-	/// <returns>
-	/// The <see cref="Position"/> where the specified piece is currently placed on the player's board,
-	/// or <c>null</c> if the piece is not found on the board.
-	/// </returns>
+	/// <param name="player">The player for which to retrieve the hero position.</param>
+	/// <param name="heroId">The unique identifier of the hero for which to retrieve the position.</param>
+	/// <returns>The position of the specified hero associated with the player.</returns>
+	/// <exception cref="KeyNotFoundException">Thrown if the player or hero position is not found in the dictionary.</exception>
 	public IPosition GetHeroPosition(IPlayer player, Guid heroId)
 	{
+		if(!_players.ContainsKey(player))
+		{
+			throw new KeyNotFoundException();
+		}
 		if(_board.TryGetHeroPosition(player, heroId, out IPosition? result))
 		{
 			return result!;
@@ -785,6 +765,11 @@ public class GameController
 	/// </returns>
 	public bool TryGetHeroPosition(IPlayer player, Guid heroId, out IPosition? positionResult)
 	{
+		if(!_players.ContainsKey(player))
+		{
+			positionResult = null;
+			return false;
+		}
 		if(_board.TryGetHeroPosition(player, heroId, out IPosition? result))
 		{
 			positionResult = result!;
