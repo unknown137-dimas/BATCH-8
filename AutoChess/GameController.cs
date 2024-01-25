@@ -2,7 +2,7 @@ namespace AutoChess;
 
 public class GameController
 {
-	private readonly Board _board;
+	private readonly IBoard _board;
 	public Dictionary<string, HeroDetails> HeroesDatabase {get; private set;} = new();
 	private Dictionary<IPlayer, PlayerData> _players = new();
 	public int PlayerHp {get;} = 3;
@@ -10,13 +10,13 @@ public class GameController
 	public Status CurrentGameStatus {get; private set;} = Status.NotInitialized;
 	public Phases CurrentGamePhase {get; private set;} = Phases.NotInitialized;
 
-	public GameController(Board board)
+	public GameController(IBoard board)
 	{
 		SetGameStatus(Status.Initialized);
 		_board = board;
 	}
 
-	public GameController(Board board, int playerPiecesCount, int playerHp)
+	public GameController(IBoard board, int playerPiecesCount, int playerHp)
 	{
 		SetGameStatus(Status.Initialized);
 		_board = board;
@@ -24,14 +24,14 @@ public class GameController
 		PlayerHp = playerHp;
 	}
 	
-	public GameController(Board board, Dictionary<IPlayer, Sides> players)
+	public GameController(IBoard board, Dictionary<IPlayer, Sides> players)
 	{
 		SetGameStatus(Status.Initialized);
 		_board = board;
 		AddPlayer(players);
 	}
 
-	public GameController(Board board, int playerPiecesCount, int playerHp, Dictionary<IPlayer, Sides> players)
+	public GameController(IBoard board, int playerPiecesCount, int playerHp, Dictionary<IPlayer, Sides> players)
 	{
 		SetGameStatus(Status.Initialized);
 		_board = board;
@@ -308,8 +308,8 @@ public class GameController
 	/// </returns>
 	public bool TryGetRoundWinner(out IPlayer? winnerResult, out RoundResult roundResult)
 	{
-		var playerOne = ((List<IPlayer>)GetPlayers())[0];
-		var playerTwo = ((List<IPlayer>)GetPlayers())[1];
+		var playerOne = GetPlayers().ToArray()[0];
+		var playerTwo = GetPlayers().ToArray()[1];
 		if(TryGetPlayerBoard(playerOne, out var playerOneBoard) && TryGetPlayerBoard(playerTwo, out var playerTwoBoard))
 		{
 			if(playerOneBoard!.Count == 0 && playerTwoBoard!.Count > 0)
