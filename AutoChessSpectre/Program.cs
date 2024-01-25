@@ -7,7 +7,7 @@ using AutoChess;
 internal class Program
 {
 	// GAME CONFIGURATION
-	private const int Size = 6;
+	private const int size = 6;
 	private const int maxPlayerPieces = 4;
 	private const int initPlayerHp = 1;
 	private static int maxRoll {get;} = 3;
@@ -31,7 +31,7 @@ internal class Program
 	};
 
 	// GAME CONTROLLER INIT
-	private static GameController autoChess = new GameController(new Board(Size), maxPlayerPieces, initPlayerHp);
+	private static GameController autoChess = new GameController(new Board(size), maxPlayerPieces, initPlayerHp);
 	private static int[] boardSize = autoChess.GetBoardSize();
 	private static Player? playerOne = null;
 	private static Player? playerTwo = null;
