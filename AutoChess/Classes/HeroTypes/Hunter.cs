@@ -6,8 +6,8 @@ public class Hunter : Hero
 	{
 	}
 
-    public override void Skill(GameController gameController)
+    public override void Skill()
     {
-        base.Skill(gameController);
+        Attack *= 1.05;
     }
 }

@@ -8,6 +8,10 @@ public class Druid : Hero
 
     public override void Skill(GameController gameController)
     {
-        base.Skill(gameController);
+        if(!gameController.TryGetPlayerByPieceId(PieceId, out IPlayer? player))
+        {
+            return;
+        }
+        gameController.GetPlayerPieces(player!).Select(allies => allies.Hp += 250);
     }
 }

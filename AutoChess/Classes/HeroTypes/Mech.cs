@@ -6,8 +6,9 @@ public class Mech : Hero
 	{
 	}
 
-    public override void Skill(GameController gameController)
+    public override void Skill()
     {
-        base.Skill(gameController);
+        Armor *= 1.02;
+        Attack *= 1.02;
     }
 }

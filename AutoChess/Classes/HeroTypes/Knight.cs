@@ -6,8 +6,8 @@ public class Knight : Hero
 	{
 	}
 	
-	public override void Skill(GameController gameController)
+	public override void Skill()
 	{
-		base.Skill(gameController);
+		Armor *= 1.05;
 	}
 }

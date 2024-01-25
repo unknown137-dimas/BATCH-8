@@ -8,6 +8,6 @@ public class Assassin : Hero
 
     public override void Skill(GameController gameController)
     {
-        base.Skill(gameController);
+        base.Attack *= 1.1;
     }
 }

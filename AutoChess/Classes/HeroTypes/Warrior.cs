@@ -5,8 +5,8 @@ public class Warrior : Hero
 	public Warrior(string name, PieceTypes heroType, double hp, double attack, double armor, int attackRange) : base(name, heroType, hp, attack, armor, attackRange)
 	{
 	}
-    public override void Skill(GameController gameController)
+    public override void Skill()
     {
-        base.Skill(gameController);
+        Armor *= 1.1;
     }
 }
