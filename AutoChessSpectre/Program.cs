@@ -495,7 +495,7 @@ internal class Program
 							playerColumn.Add(new Panel(heroHealthBar).Header(new PanelHeader($"[{playerSideResult.ToString().ToLower()} bold]{player.Name}[/]").Centered()));
 						}
 					};
-					AnsiConsole.Write(new Rule("[[❤️]] Hero Health Statistic"));
+					AnsiConsole.Write(new Rule("Hero Health Statistic"));
 					AnsiConsole.Write(new Columns(playerColumn));
 
 					// Create a task for each player's piece
