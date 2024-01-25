@@ -162,7 +162,7 @@ internal class Program
 			AnsiConsole.Write(new Rule($"[{playerSideResult.ToString().ToLower()}]{player.Name}'s Heroes [[{autoChess.GetPlayerPieces(player).Count()}/{autoChess.PlayerPiecesCount}]][/]"));
 			AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
 			AnsiConsole.Write(new Rule($"[{playerSideResult.ToString().ToLower()}]Hero Options | Roll Chance [[{roll}]][/]"));
-			var optionsList = (List<string>)autoChess.GenerateRandomHeroList();
+			var optionsList = autoChess.GenerateRandomHeroList().ToList();
 			if(optionsList == Enumerable.Empty<string>())
 			{
 				Environment.Exit(0);
@@ -198,7 +198,7 @@ internal class Program
 			FigletTitle("Place Your Heroes");
 			if(autoChess.TryGetPlayerSide(player, out Sides playerSideResult))
 			{
-				bool isSecondPlayer = ((List<IPlayer>)autoChess.GetPlayers()).IndexOf(player) == 1;
+				bool isSecondPlayer = autoChess.GetPlayers().ToList().IndexOf(player) == 1;
 				int yMinCoor = isSecondPlayer ? (boardSize[1] % 2 == 0 ? boardSize[1] / 2 : (boardSize[1] / 2) + 1) + 1 : 1;
 				int yMaxCoor = isSecondPlayer ? boardSize[1] : boardSize[1] / 2;
 				
@@ -210,7 +210,7 @@ internal class Program
 				AnsiConsole.Write(DisplayHeroStats(autoChess.GetPlayerPiecesName(player)));
 				AnsiConsole.Write(DisplayHeroPosition(autoChess.GetPlayerPieces(player)));
 				AnsiConsole.Write(new Rule($"[{playerSideResult.ToString().ToLower()}]Set Hero's Position[/]"));
-				var playerPieces = (List<IPiece>)autoChess.GetPlayerPieces(player);
+				var playerPieces = autoChess.GetPlayerPieces(player).ToList();
 				var playerPiece = AnsiConsole.Prompt(
 					new SelectionPrompt<Hero>()
 					.PageSize(5)
@@ -393,8 +393,8 @@ internal class Program
 			{
 				CreatePlayer(ref sidesOptions, playerCount);
 			}
-			playerOne = (Player)((List<IPlayer>)autoChess.GetPlayers())[0];
-			playerTwo = (Player)((List<IPlayer>)autoChess.GetPlayers())[1];
+			playerOne = (Player)autoChess.GetPlayers().ToArray()[0];
+			playerTwo = (Player)autoChess.GetPlayers().ToArray()[1];
 			#endregion
 
 			// LOOP ALL ROUND
@@ -421,16 +421,13 @@ internal class Program
 					int roll = maxRoll;
 					while (!autoChess.IsFinishedPickAllPieces(playerTwo) && roll >= 0)
 					{
-						var options = (List<string>)autoChess.GenerateRandomHeroList();
-						if(options != Enumerable.Empty<string>())
-						{
-							autoChess.AddPlayerPiece(playerTwo, options[0..new Random().Next(options.Count + 1)]);
-							roll--;
-						}
-						else
+						var options = autoChess.GenerateRandomHeroList().ToList();
+						if(options == Enumerable.Empty<string>())
 						{
 							Environment.Exit(0);
 						}
+						autoChess.AddPlayerPiece(playerTwo, options[0..new Random().Next(options.Count + 1)]);
+						roll--;
 					}
 				}
 				#endregion

@@ -68,7 +68,7 @@ public class GameController
 				ClearBoard();
 				break;
 			case Phases.BattleBegin:
-				((List<IPlayer>)GetPlayers()).ForEach(player => SetWinner(player, false));
+				GetPlayers().ToList().ForEach(player => SetWinner(player, false));
 				break;
 			case Phases.BattleEnd:
 				if(TryGetRoundWinner(out IPlayer? roundWinner, out RoundResult roundResult) && roundResult != RoundResult.Draw)
@@ -275,8 +275,8 @@ public class GameController
 	/// <exception cref="Exception">Thrown if there is no round winner (due to a draw or no winner yet).</exception>
 	public IPlayer GetRoundWinner()
 	{
-		var playerOne = ((List<IPlayer>)GetPlayers())[0];
-		var playerTwo = ((List<IPlayer>)GetPlayers())[1];
+		var playerOne = GetPlayers().ToArray()[0];
+		var playerTwo = GetPlayers().ToArray()[1];
 		if(TryGetPlayerBoard(playerOne, out var playerOneBoard) && TryGetPlayerBoard(playerTwo, out var playerTwoBoard))
 		{
 			if(playerOneBoard!.Count == 0 && playerTwoBoard!.Count > 0)
@@ -338,8 +338,8 @@ public class GameController
 	/// <exception cref="Exception">Thrown if there is no champion.</exception>
 	public IPlayer GetChampion()
 	{
-		var playerOne = ((List<IPlayer>)GetPlayers())[0];
-		var playerTwo = ((List<IPlayer>)GetPlayers())[1];
+		var playerOne = GetPlayers().ToArray()[0];
+		var playerTwo = GetPlayers().ToArray()[1];
 		var playerOneWinPoint = GetPlayerWinPoint(playerOne);
 		var playerTwoWinPoint = GetPlayerWinPoint(playerTwo);
 		if(playerOneWinPoint > playerTwoWinPoint)
@@ -365,8 +365,8 @@ public class GameController
 	/// </returns>
 	public bool TryGetChampion(out IPlayer? championResult)
 	{
-		var playerOne = ((List<IPlayer>)GetPlayers())[0];
-		var playerTwo = ((List<IPlayer>)GetPlayers())[1];
+		var playerOne = GetPlayers().ToArray()[0];
+		var playerTwo = GetPlayers().ToArray()[1];
 		var playerOneWinPoint = GetPlayerWinPoint(playerOne);
 		var playerTwoWinPoint = GetPlayerWinPoint(playerTwo);
 		if(playerOneWinPoint > playerTwoWinPoint)
@@ -625,7 +625,7 @@ public class GameController
 	/// <returns>
 	/// A <see cref="List{T}"/> of strings representing the names of pieces owned by the specified player.
 	/// </returns>
-	public IEnumerable<string> GetPlayerPiecesName(IPlayer player) => ((List<IPiece>)GetPlayerPieces(player)).ConvertAll(piece => piece.Name);
+	public IEnumerable<string> GetPlayerPiecesName(IPlayer player) => GetPlayerPieces(player).ToList().ConvertAll(piece => piece.Name);
 	
 	/// <summary>
 	/// Adds a new piece to the specified player based on the given hero name.
@@ -694,7 +694,7 @@ public class GameController
 	/// <summary>
 	/// Clears the collection of pieces owned by all players in the game.
 	/// </summary>
-	public void ClearPlayerPieces() => ((List<IPlayer>)GetPlayers()).ForEach(player => ClearPlayerPieces(player));
+	public void ClearPlayerPieces() => GetPlayers().ToList().ForEach(player => ClearPlayerPieces(player));
 	#endregion
 
 	// Manage board
@@ -886,7 +886,7 @@ public class GameController
 	/// <summary>
 	/// Clears the boards of all players, removing all pieces from each board.
 	/// </summary>
-	public void ClearBoard() => ((List<IPlayer>)GetPlayers()).ForEach(player => GetPlayerBoard(player).Clear());
+	public void ClearBoard() => GetPlayers().ToList().ForEach(player => GetPlayerBoard(player).Clear());
 	#endregion
 
 	// Manage Battle
@@ -998,7 +998,7 @@ public class GameController
 	/// </returns>
 	public IEnumerable<string> GenerateRandomHeroList()
 	{
-		var heroNames = (List<string>)GetHeroName();
+		var heroNames = GetHeroName().ToList();
 		if(heroNames.Count == 0)
 		{
 			return Enumerable.Empty<string>();
