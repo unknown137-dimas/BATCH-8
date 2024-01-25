@@ -2,7 +2,7 @@ public enum Sides
 {
     Red,
     Blue,
-    Yellow,
+    Yellow1,
     Fuchsia,
     Aqua,
     Lime,
