@@ -301,9 +301,9 @@ internal class Program
 
 	private static void CreatePlayer(ref List<Sides> sidesOptions, int playerCount)
     {
-		for(int _ = 1; _ <= playerCount; _++)
+		for(int i = 1; i <= playerCount; i++)
 		{
-			var player = new Player(AnsiConsole.Ask<string>("What's your [green1]name[/]?"));
+			var player = new Player(AnsiConsole.Ask<string>($"[[PLAYER {i}]] What's your [green1]name[/]?"));
 			var playerSide = AnsiConsole.Prompt(
 				new SelectionPrompt<Sides>()
 				.Title("Choose your [green1]side[/]?")
