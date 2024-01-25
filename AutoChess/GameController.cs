@@ -23,13 +23,7 @@ public class GameController
 		PlayerPiecesCount = playerPiecesCount;
 		PlayerHp = playerHp;
 	}
-
-	public GameController(Board board, Dictionary<PieceTypes, int> heroSlot)
-	{
-		SetGameStatus(Status.Initialized);
-		_board = board;
-	}
-
+	
 	public GameController(Board board, Dictionary<IPlayer, Sides> players)
 	{
 		SetGameStatus(Status.Initialized);
@@ -37,10 +31,12 @@ public class GameController
 		AddPlayer(players);
 	}
 
-	public GameController(Board board, Dictionary<IPlayer, Sides> players, Dictionary<PieceTypes, int> heroSlot)
+	public GameController(Board board, int playerPiecesCount, int playerHp, Dictionary<IPlayer, Sides> players)
 	{
 		SetGameStatus(Status.Initialized);
 		_board = board;
+		PlayerPiecesCount = playerPiecesCount;
+		PlayerHp = playerHp;
 		AddPlayer(players);
 	}
 
@@ -133,13 +129,13 @@ public class GameController
 	}
 
 	/// <summary>
-    /// Tries to retrieve a piece by its unique identifier.
-    /// </summary>
-    /// <param name="heroId">The unique identifier of the hero associated with the piece.</param>
-    /// <param name="pieceResult">When this method returns, contains the piece associated with the specified heroId, if the heroId is found; otherwise, null.</param>
-    /// <returns>
-    /// true if the heroId was found and the associated piece was retrieved successfully; otherwise, false.
-    /// </returns>	
+	/// Tries to retrieve a piece by its unique identifier.
+	/// </summary>
+	/// <param name="heroId">The unique identifier of the hero associated with the piece.</param>
+	/// <param name="pieceResult">When this method returns, contains the piece associated with the specified heroId, if the heroId is found; otherwise, null.</param>
+	/// <returns>
+	/// true if the heroId was found and the associated piece was retrieved successfully; otherwise, false.
+	/// </returns>	
 	public bool TryGetPieceById(Guid heroId, out IPiece? pieceResult)
 	{
 		foreach(var player in GetPlayers())
@@ -174,13 +170,13 @@ public class GameController
 	}
 
 	/// <summary>
-    /// Tries to retrieve the side enum associated with the specified player.
-    /// </summary>
-    /// <param name="player">The player for whom to retrieve the side.</param>
-    /// <param name="playerSideResult">When this method returns, contains the side enum associated with the specified player, if the player is found; otherwise, Side.Unknown.</param>
-    /// <returns>
-    /// true if the player was found and the associated side was retrieved successfully; otherwise, false.
-    /// </returns>
+	/// Tries to retrieve the side enum associated with the specified player.
+	/// </summary>
+	/// <param name="player">The player for whom to retrieve the side.</param>
+	/// <param name="playerSideResult">When this method returns, contains the side enum associated with the specified player, if the player is found; otherwise, Side.Unknown.</param>
+	/// <returns>
+	/// true if the player was found and the associated side was retrieved successfully; otherwise, false.
+	/// </returns>
 	public bool TryGetPlayerSide(IPlayer player, out Sides playerSideResult)
 	{
 		if(TryGetPlayerData(player, out PlayerData? result))
@@ -206,7 +202,7 @@ public class GameController
 		{
 			if(TryGetPlayerData(player, out PlayerData? result))
 			{
-                if (result!.TryGetPieceById(heroId, out _))
+				if (result!.TryGetPieceById(heroId, out _))
 				{
 					return player;
 				}
@@ -216,20 +212,20 @@ public class GameController
 	}
 
 	/// <summary>
-    /// Tries to retrieve the player associated with the specified hero ID.
-    /// </summary>
-    /// <param name="heroid">The unique identifier of the hero associated with the player.</param>
-    /// <param name="playerResult">When this method returns, contains the player associated with the specified hero ID, if found; otherwise, null.</param>
-    /// <returns>
-    /// true if the hero ID was found and the associated player was retrieved successfully; otherwise, false.
-    /// </returns>
+	/// Tries to retrieve the player associated with the specified hero ID.
+	/// </summary>
+	/// <param name="heroid">The unique identifier of the hero associated with the player.</param>
+	/// <param name="playerResult">When this method returns, contains the player associated with the specified hero ID, if found; otherwise, null.</param>
+	/// <returns>
+	/// true if the hero ID was found and the associated player was retrieved successfully; otherwise, false.
+	/// </returns>
 	public bool TryGetPlayerByPieceId(Guid heroId, out IPlayer? playerResult)
 	{
 		foreach(var player in GetPlayers())
 		{
 			if(TryGetPlayerData(player, out PlayerData? result))
 			{
-                if (result!.TryGetPieceById(heroId, out _))
+				if (result!.TryGetPieceById(heroId, out _))
 				{
 					playerResult = player;
 					return true;
@@ -304,12 +300,12 @@ public class GameController
 	}
 
 	/// <summary>
-    /// Tries to retrieve the winner of the current round.
-    /// </summary>
-    /// <param name="winnerResult">When this method returns, contains the player who won the current round, if available; otherwise, null.</param>
-    /// <returns>
-    /// true if there is a winner for the current round and the associated player was retrieved successfully; otherwise, false.
-    /// </returns>
+	/// Tries to retrieve the winner of the current round.
+	/// </summary>
+	/// <param name="winnerResult">When this method returns, contains the player who won the current round, if available; otherwise, null.</param>
+	/// <returns>
+	/// true if there is a winner for the current round and the associated player was retrieved successfully; otherwise, false.
+	/// </returns>
 	public bool TryGetRoundWinner(out IPlayer? winnerResult, out RoundResult roundResult)
 	{
 		var playerOne = ((List<IPlayer>)GetPlayers())[0];
@@ -368,12 +364,12 @@ public class GameController
 	}
 
 	/// <summary>
-    /// Tries to retrieve the overall game champion.
-    /// </summary>
-    /// <param name="championResult">When this method returns, contains the player who is the overall game champion, if available; otherwise, null.</param>
-    /// <returns>
-    /// true if there is an overall game champion and the associated player was retrieved successfully; otherwise, false.
-    /// </returns>
+	/// Tries to retrieve the overall game champion.
+	/// </summary>
+	/// <param name="championResult">When this method returns, contains the player who is the overall game champion, if available; otherwise, null.</param>
+	/// <returns>
+	/// true if there is an overall game champion and the associated player was retrieved successfully; otherwise, false.
+	/// </returns>
 	public bool TryGetChampion(out IPlayer? championResult)
 	{
 		var playerOne = ((List<IPlayer>)GetPlayers())[0];
@@ -457,13 +453,13 @@ public class GameController
 	}
 
 	/// <summary>
-    /// Tries to retrieve the details of a hero based on the provided hero name.
-    /// </summary>
-    /// <param name="heroName">The name of the hero for which to retrieve details.</param>
-    /// <param name="heroDetailResult">When this method returns, contains the details of the hero, if available; otherwise, null.</param>
-    /// <returns>
-    /// true if the details of the hero with the provided name were found and retrieved successfully; otherwise, false.
-    /// </returns>
+	/// Tries to retrieve the details of a hero based on the provided hero name.
+	/// </summary>
+	/// <param name="heroName">The name of the hero for which to retrieve details.</param>
+	/// <param name="heroDetailResult">When this method returns, contains the details of the hero, if available; otherwise, null.</param>
+	/// <returns>
+	/// true if the details of the hero with the provided name were found and retrieved successfully; otherwise, false.
+	/// </returns>
 	public bool TryGetHeroDetails(string heroName, out HeroDetails? heroDetailResult)
 	{
 		if(HeroesDatabase.TryGetValue(heroName, out HeroDetails? result))
@@ -538,13 +534,13 @@ public class GameController
 	}
 	
 	/// <summary>
-    /// Tries to retrieve the data associated with the specified player.
-    /// </summary>
-    /// <param name="player">The player for which to retrieve data.</param>
-    /// <param name="playerDataResult">When this method returns, contains the data associated with the specified player, if available; otherwise, null.</param>
-    /// <returns>
-    /// true if the data associated with the player was found and retrieved successfully; otherwise, false.
-    /// </returns>
+	/// Tries to retrieve the data associated with the specified player.
+	/// </summary>
+	/// <param name="player">The player for which to retrieve data.</param>
+	/// <param name="playerDataResult">When this method returns, contains the data associated with the specified player, if available; otherwise, null.</param>
+	/// <returns>
+	/// true if the data associated with the player was found and retrieved successfully; otherwise, false.
+	/// </returns>
 	public bool TryGetPlayerData(IPlayer player, out PlayerData? playerDataResult)
 	{
 		if(_players.TryGetValue(player, out PlayerData? result))
@@ -598,14 +594,14 @@ public class GameController
 	}
 
 	/// <summary>
-    /// Tries to retrieve the piece associated with the specified player and hero ID.
-    /// </summary>
-    /// <param name="player">The player for which to retrieve the piece.</param>
-    /// <param name="heroId">The unique identifier of the hero associated with the piece.</param>
-    /// <param name="pieceResult">When this method returns, contains the piece associated with the specified player and hero ID, if available; otherwise, null.</param>
-    /// <returns>
-    /// true if the piece associated with the player and hero ID was found and retrieved successfully; otherwise, false.
-    /// </returns>
+	/// Tries to retrieve the piece associated with the specified player and hero ID.
+	/// </summary>
+	/// <param name="player">The player for which to retrieve the piece.</param>
+	/// <param name="heroId">The unique identifier of the hero associated with the piece.</param>
+	/// <param name="pieceResult">When this method returns, contains the piece associated with the specified player and hero ID, if available; otherwise, null.</param>
+	/// <returns>
+	/// true if the piece associated with the player and hero ID was found and retrieved successfully; otherwise, false.
+	/// </returns>
 	public bool TryGetPlayerPiece(IPlayer player, Guid heroId, out IPiece? pieceResult)
 	{
 		if(TryGetPlayerData(player, out PlayerData? result))
@@ -719,13 +715,13 @@ public class GameController
 	}
 
 	/// <summary>
-    /// Tries to retrieve the board data associated with the specified player.
-    /// </summary>
-    /// <param name="player">The player for which to retrieve the board data.</param>
-    /// <param name="playerBoardResult">When this method returns, contains the board data associated with the specified player, if available; otherwise, an empty dictionary.</param>
-    /// <returns>
-    /// true if the board data associated with the player was found and retrieved successfully; otherwise, false.
-    /// </returns>	
+	/// Tries to retrieve the board data associated with the specified player.
+	/// </summary>
+	/// <param name="player">The player for which to retrieve the board data.</param>
+	/// <param name="playerBoardResult">When this method returns, contains the board data associated with the specified player, if available; otherwise, an empty dictionary.</param>
+	/// <returns>
+	/// true if the board data associated with the player was found and retrieved successfully; otherwise, false.
+	/// </returns>	
 	public bool TryGetPlayerBoard(IPlayer player, out IDictionary<IPosition, Guid> playerBoardResult)
 	{
 		if(_board.TryGetPlayerBoard(player, out var result))
@@ -906,7 +902,7 @@ public class GameController
 	/// <param name="piece">The attacking piece.</param>
 	public async Task Attack(IPlayer player, IPiece piece)
 	{
-		var skillTrigger = piece.Hp * 0.25;
+		var skillTrigger = piece.Hp * 0.30;
 		var skillStop = piece.Hp * 0.15;
 		if(piece.Hp <= 0)
 		{
