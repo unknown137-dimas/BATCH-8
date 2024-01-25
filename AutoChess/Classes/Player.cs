@@ -1,11 +1,11 @@
 public class Player : IPlayer
 {
-    public string PlayerId  {get;}
+    public Guid PlayerId  {get;}
     public string Name {get;}
 
     public Player(string name)
     {
-        PlayerId = Guid.NewGuid().ToString();
+        PlayerId = Guid.NewGuid();
         Name = name;
     }
 }

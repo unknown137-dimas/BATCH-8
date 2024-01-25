@@ -1,5 +1,5 @@
 public interface IPlayer
 {
-    string PlayerId {get;}
+    Guid PlayerId {get;}
     string Name {get;}
 }
