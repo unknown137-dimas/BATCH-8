@@ -256,16 +256,7 @@ public class GameController
 		{
 			return 0;
 		}
-		int winPoint = 0;
-		foreach(var winStatus in result!.Win)
-		{
-			if(winStatus)
-			{
-				winPoint++;
-			}
-			
-		}
-		return winPoint;
+		return result!.Win.Where(winStatus => winStatus == true).Count();
 	}
 
 	/// <summary>
@@ -694,7 +685,7 @@ public class GameController
 	/// <summary>
 	/// Clears the collection of pieces owned by all players in the game.
 	/// </summary>
-	public void ClearPlayerPieces() => GetPlayers().ToList().ForEach(player => ClearPlayerPieces(player));
+	public void ClearPlayerPieces() => GetPlayers().ToList().ForEach(ClearPlayerPieces);
 	#endregion
 
 	// Manage board

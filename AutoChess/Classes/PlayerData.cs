@@ -15,28 +15,14 @@ public class PlayerData
 
     public IPiece GetPieceById(Guid heroId)
     {
-        foreach(var piece in PlayerPieces)
-        {
-            if(piece.PieceId == heroId)
-            {
-                return piece;
-            }
-        }
-        throw new KeyNotFoundException();
+        var result = PlayerPieces.FirstOrDefault(piece => piece.PieceId == heroId);
+        return result != null ? result : throw new KeyNotFoundException();
     }
 
     public bool TryGetPieceById(Guid heroId, out IPiece? pieceResult)
     {
-        foreach(var piece in PlayerPieces)
-        {
-            if(piece.PieceId == heroId)
-            {
-                pieceResult = piece;
-                return true;
-            }
-        }
-        pieceResult = null;
-        return false;
+        pieceResult = PlayerPieces.FirstOrDefault(piece => piece.PieceId == heroId);
+        return pieceResult != null;
     }
 
 

@@ -68,14 +68,8 @@ public class Board : IBoard
 		{
 			throw new KeyNotFoundException();
 		}
-		foreach(var playerPiece in result!)
-		{
-			if(playerPiece.Value == heroId)
-			{
-				return playerPiece.Key;
-			}
-		}
-		throw new KeyNotFoundException();
+		var positionResult = result!.FirstOrDefault(piece => piece.Value == heroId).Key;
+		return positionResult != null ? positionResult : throw new KeyNotFoundException();
 	}
 
 	public bool TryGetHeroPosition(IPlayer player, Guid heroId, out IPosition? positionResult)
@@ -85,16 +79,8 @@ public class Board : IBoard
 			positionResult = null;
 			return false;
 		}
-		foreach(var playerPiece in result!)
-		{
-			if(playerPiece.Value == heroId)
-			{
-				positionResult = playerPiece.Key;
-				return true;
-			}
-		}
-		positionResult = null;
-		return false;
+		positionResult = result!.FirstOrDefault(piece => piece.Value == heroId).Key;
+		return positionResult != null;
 	}
 
 	public bool RemoveHeroPosition(IPlayer player, Guid heroId)
@@ -103,14 +89,8 @@ public class Board : IBoard
 		{
 			return false;
 		}
-		foreach(var playerPiece in boardResult!)
-		{
-			if(playerPiece.Value == heroId)
-			{
-				return boardResult.Remove(playerPiece.Key);
-			}
-		}
-		return false;
+		var removedHero = boardResult!.FirstOrDefault(playerPiece => playerPiece.Value == heroId).Key;
+		return boardResult!.Remove(removedHero);
 	}
 
 	public IEnumerable<Guid> GetAllEnemyId(IPlayer player, IPiece hero)
@@ -119,22 +99,14 @@ public class Board : IBoard
 		{
 			return Enumerable.Empty<Guid>();
 		}
-		List<Guid> allEnemyId = new();
-		foreach(var playerBoard in PiecesPositions)
-		{
-			if(playerBoard.Key == player)
-			{
-				continue;
-			}
-			foreach(var enemyHero in playerBoard.Value)
-			{
-				if(!result!.IsInRange(enemyHero.Key, hero.AttackRange))
-				{
-					continue;
-				}
-				allEnemyId.Add(enemyHero.Value);
-			}
-		}
-		return allEnemyId;
+		IEnumerable<Guid>? allEnemyId = PiecesPositions
+		.Where(playerBoard => playerBoard.Key != player)
+		.Select(result => result.Value)
+		.Select(enemyDict => enemyDict
+			.Where(enemyHero => result!.IsInRange(enemyHero.Key, hero.AttackRange))
+			.Select(result => result.Value)
+		)
+		.FirstOrDefault();
+		return allEnemyId != null ? allEnemyId.ToList() : Enumerable.Empty<Guid>();
 	}
 }
