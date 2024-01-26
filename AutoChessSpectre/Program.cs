@@ -180,7 +180,13 @@ internal class Program
 			);
 			
 			// Set player pieces
-			autoChess.AddPlayerPiece(player, options);
+			foreach(var option in options)
+			{
+				if(autoChess.HeroesDatabase.TryGetValue(option, out HeroDetails? heroDetail))
+				{
+					autoChess.AddPlayerPiece(player, new Hero(option, heroDetail));
+				}
+			}
 			roll--;
 		}
 	}
@@ -426,7 +432,13 @@ internal class Program
 						{
 							Environment.Exit(0);
 						}
-						autoChess.AddPlayerPiece(playerTwo, options[0..new Random().Next(options.Count + 1)]);
+						foreach(var option in options[0..new Random().Next(options.Count + 1)])
+						{
+							if(autoChess.HeroesDatabase.TryGetValue(option, out HeroDetails? heroDetail))
+							{
+								autoChess.AddPlayerPiece(playerTwo, new Hero(option, heroDetail));
+							}
+						}
 						roll--;
 					}
 				}

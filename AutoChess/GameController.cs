@@ -626,15 +626,15 @@ public class GameController
 	/// <returns>
 	/// <c>true</c> if the piece is successfully added to the player; otherwise, <c>false</c>.
 	/// </returns>
-	public bool AddPlayerPiece(IPlayer player, string heroName)
+	public bool AddPlayerPiece(IPlayer player, IPiece newHero)
 	{
 		if(!(GetPlayerPieces(player).Count() < PlayerPiecesCount))
 		{
 			return false;
 		}
-		if(TryGetPlayerData(player, out PlayerData? result) && HeroesDatabase.TryGetValue(heroName, out HeroDetails? heroDetail))
+		if(TryGetPlayerData(player, out PlayerData? result))
 		{
-			result!.PlayerPieces.Add(new Hero(heroName, heroDetail));
+			result!.PlayerPieces.Add(newHero);
 			return true;
 		}
 		return false;
@@ -645,11 +645,11 @@ public class GameController
 	/// </summary>
 	/// <param name="player">The player to whom the new pieces will be added.</param>
 	/// <param name="heroNames">The list of hero names associated with the new pieces.</param>	
-	public void AddPlayerPiece(IPlayer player, IEnumerable<string> heroNames)
+	public void AddPlayerPiece(IPlayer player, IEnumerable<IPiece> heroes)
 	{
-		foreach(var heroName in heroNames)
+		foreach(var hero in heroes)
 		{
-			AddPlayerPiece(player, heroName);
+			AddPlayerPiece(player, hero);
 		}
 	}
 
