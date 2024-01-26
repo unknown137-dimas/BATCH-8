@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoChess", "AutoChess\Auto
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoChessSpectre", "AutoChessSpectre\AutoChessSpectre.csproj", "{BD8707B3-ECC8-471A-A9D4-728BDF28D114}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoChess.Test", "AutoChess.Test\AutoChess.Test.csproj", "{81C94005-C1DF-458F-880A-80CBBC15B41B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,10 @@ Global
 		{BD8707B3-ECC8-471A-A9D4-728BDF28D114}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD8707B3-ECC8-471A-A9D4-728BDF28D114}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD8707B3-ECC8-471A-A9D4-728BDF28D114}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81C94005-C1DF-458F-880A-80CBBC15B41B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81C94005-C1DF-458F-880A-80CBBC15B41B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81C94005-C1DF-458F-880A-80CBBC15B41B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81C94005-C1DF-458F-880A-80CBBC15B41B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
