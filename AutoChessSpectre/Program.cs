@@ -525,6 +525,11 @@ internal class Program
 				#region BATTLE_VIEW
 				autoChess.SetGameStatus(Status.OnGoing);
 				autoChess.SetGamePhase(Phases.BattleBegin);
+				Queue<IRenderable> heroSkillQueue = new();
+				autoChess.OnHeroSkill += (IPiece hero) => {
+						var playerSide = autoChess.GetPlayerSide(autoChess.GetPlayerByPieceId(hero.PieceId));
+						heroSkillQueue.Enqueue(new Markup($"[{playerSide}]{hero.Name} use their skill!!![/]\n"));
+					};
 				while (!autoChess.TryGetRoundWinner(out _, out _))
 				{
 					FigletTitle("Battle");
@@ -551,6 +556,17 @@ internal class Program
 					};
 					AnsiConsole.Write(new Rule("Hero Health Statistic"));
 					AnsiConsole.Write(new Columns(playerColumn));
+					
+					// Display activated hero skill
+					AnsiConsole.Write(new Rule("Activated Hero's Skill"));
+					if(heroSkillQueue.Count() > 0)
+					{
+						foreach(var heroSkill in heroSkillQueue)
+						{
+							AnsiConsole.Write(heroSkill);
+						}
+						heroSkillQueue.Clear();
+					}
 
 					// Create a task for each player's piece
 					foreach (var player in autoChess.GetPlayers())

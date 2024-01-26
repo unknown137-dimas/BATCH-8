@@ -9,6 +9,7 @@ public class GameController
 	public int PlayerPiecesCount {get;} = 5;
 	public Status CurrentGameStatus {get; private set;} = Status.NotInitialized;
 	public Phases CurrentGamePhase {get; private set;} = Phases.NotInitialized;
+	public Action<IPiece>? OnHeroSkill;
 
 	public GameController(IBoard board)
 	{
@@ -902,15 +903,15 @@ public class GameController
 	/// <param name="piece">The attacking piece.</param>
 	public async Task Attack(IPlayer player, IPiece piece)
 	{
-		var skillTrigger = piece.Hp * 0.30;
-		var skillStop = piece.Hp * 0.15;
+		var skillTrigger = piece.Hp * 0.15;
 		if(piece.Hp <= 0)
 		{
 			RemoveHeroFromBoard(player, piece.PieceId);
 		}
-		if(piece.Hp <= skillTrigger && piece.Hp >= skillStop)
+		if(piece.Hp <= skillTrigger)
 		{
 			piece.Skill(this);
+			OnHeroSkill?.Invoke(piece);
 			await Task.Delay(200);
 		}
 		if(GetAllEnemyId(player, piece).Count() == 0)
