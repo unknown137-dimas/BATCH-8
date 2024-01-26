@@ -10,17 +10,6 @@ public class Hero : IPiece
     public double Armor {get; set;}
     public int AttackRange {get; set;}
 
-    public Hero(string name, PieceTypes heroType, double hp, double attack, double armor, int attackRange)
-    {
-        PieceId = Guid.NewGuid();
-        Name = name;
-        PieceType = heroType;
-        Hp = hp;
-        Attack = attack;
-        Armor = armor;
-        AttackRange = attackRange;
-    }
-
     public Hero(string name, HeroDetails heroDetails)
     {
         PieceId = Guid.NewGuid();
@@ -30,6 +19,17 @@ public class Hero : IPiece
         Attack = heroDetails.Attack;
         Armor = heroDetails.Armor;
         AttackRange = heroDetails.AttackRange;
+    }
+
+    public Hero(string name, PieceTypes heroType, double hp, double attack, double armor, int attackRange)
+    {
+        PieceId = Guid.NewGuid();
+        Name = name;
+        PieceType = heroType;
+        Hp = hp;
+        Attack = attack;
+        Armor = armor;
+        AttackRange = attackRange;
     }
 
     public virtual void Skill()

@@ -321,7 +321,50 @@ internal class Program
 		{
 			if(autoChess.HeroesDatabase.TryGetValue(piece, out HeroDetails? heroDetail))
 			{
-				autoChess.AddPlayerPiece(player, new Hero(piece, heroDetail));
+				Hero newHero;
+				switch(heroDetail.HeroType)
+				{
+					case PieceTypes.Knight:
+						newHero = new Knight(piece, heroDetail);
+						break;
+					case PieceTypes.Warlock:
+						newHero = new Warlock(piece, heroDetail);
+						break;
+					case PieceTypes.Mage:
+						newHero = new Mage(piece, heroDetail);
+						break;
+					case PieceTypes.Warrior:
+						newHero = new Warrior(piece, heroDetail);
+						break;
+					case PieceTypes.Hunter:
+						newHero = new Hunter(piece, heroDetail);
+						break;
+					case PieceTypes.Assassin:
+						newHero = new Assassin(piece, heroDetail);
+						break;
+					case PieceTypes.Shaman:
+						newHero = new Shaman(piece, heroDetail);
+						break;
+					case PieceTypes.Druid:
+						newHero = new Druid(piece, heroDetail);
+						break;
+					case PieceTypes.Witcher:
+						newHero = new Witcher(piece, heroDetail);
+						break;
+					case PieceTypes.Mech:
+						newHero = new Mech(piece, heroDetail);
+						break;
+					case PieceTypes.Priest:
+						newHero = new Priest(piece, heroDetail);
+						break;
+					case PieceTypes.Wizard:
+						newHero = new Wizard(piece, heroDetail);
+						break;	
+					default:
+						newHero = new Hero(piece, heroDetail);
+						break;
+				}
+				autoChess.AddPlayerPiece(player, newHero!);
 			}
 		}
 	}

@@ -2,7 +2,11 @@ using AutoChess;
 
 public class Mage : Hero
 {
-	public Mage(string name, PieceTypes heroType, double hp, double attack, double armor, int attackRange) : base(name, heroType, hp, attack, armor, attackRange)
+    public Mage(string name, HeroDetails heroDetails) : base(name, heroDetails)
+    {
+    }
+
+    public Mage(string name, PieceTypes heroType, double hp, double attack, double armor, int attackRange) : base(name, heroType, hp, attack, armor, attackRange)
     {
     }
 
