@@ -180,13 +180,7 @@ internal class Program
 			);
 			
 			// Set player pieces
-			foreach(var option in options)
-			{
-				if(autoChess.HeroesDatabase.TryGetValue(option, out HeroDetails? heroDetail))
-				{
-					autoChess.AddPlayerPiece(player, new Hero(option, heroDetail));
-				}
-			}
+			AddPieceToPlayer(player, options);
 			roll--;
 		}
 	}
@@ -321,6 +315,17 @@ internal class Program
 		}
 	}
 	
+	private static void AddPieceToPlayer(IPlayer player, List<string> pieceChoices)
+	{
+		foreach(var piece in pieceChoices)
+		{
+			if(autoChess.HeroesDatabase.TryGetValue(piece, out HeroDetails? heroDetail))
+			{
+				autoChess.AddPlayerPiece(player, new Hero(piece, heroDetail));
+			}
+		}
+	}
+	
 	static void Main()
 	{
 		// Enable emoji support
@@ -432,13 +437,7 @@ internal class Program
 						{
 							Environment.Exit(0);
 						}
-						foreach(var option in options[0..new Random().Next(options.Count + 1)])
-						{
-							if(autoChess.HeroesDatabase.TryGetValue(option, out HeroDetails? heroDetail))
-							{
-								autoChess.AddPlayerPiece(playerTwo, new Hero(option, heroDetail));
-							}
-						}
+						AddPieceToPlayer(playerTwo, options[0..new Random().Next(options.Count + 1)]);
 						roll--;
 					}
 				}
