@@ -24,14 +24,14 @@ public class GameController
 		PlayerHp = playerHp;
 	}
 	
-	public GameController(IBoard board, Dictionary<IPlayer, Sides> players)
+	public GameController(IBoard board, IDictionary<IPlayer, Sides> players)
 	{
 		SetGameStatus(Status.Initialized);
 		_board = board;
 		AddPlayer(players);
 	}
 
-	public GameController(IBoard board, int playerPiecesCount, int playerHp, Dictionary<IPlayer, Sides> players)
+	public GameController(IBoard board, int playerPiecesCount, int playerHp, IDictionary<IPlayer, Sides> players)
 	{
 		SetGameStatus(Status.Initialized);
 		_board = board;
@@ -488,7 +488,7 @@ public class GameController
 	/// Adds multiple players to the game with their specified sides using a dictionary.
 	/// </summary>
 	/// <param name="newPlayers">A dictionary containing players and their corresponding sides.</param>
-	public void AddPlayer(Dictionary<IPlayer, Sides> newPlayers)
+	public void AddPlayer(IDictionary<IPlayer, Sides> newPlayers)
 	{
 		foreach(var player in newPlayers)
 		{
@@ -777,7 +777,7 @@ public class GameController
 	/// A <see cref="Dictionary{TKey, TValue}"/> where keys represent positions on the boards,
 	/// and values represent the piece IDs of the heroes placed on those positions.
 	/// </returns>
-	public Dictionary<IPosition, Guid> GetAllHeroPosition()
+	public IDictionary<IPosition, Guid> GetAllHeroPosition()
 	{
 		Dictionary<IPosition, Guid> allHeroPosition = new();
 		foreach(var piecesPosition in _board.PiecesPositions.Values)
@@ -837,7 +837,7 @@ public class GameController
 	/// </returns>
 	public bool IsFinishedPutAllPieces(IPlayer player)
 	{
-		if(_board.TryGetPlayerBoard(player, out Dictionary<IPosition, Guid>? result))
+		if(_board.TryGetPlayerBoard(player, out IDictionary<IPosition, Guid>? result))
 		{
 			return result!.Count == GetPlayerPieces(player).Count();
 		}

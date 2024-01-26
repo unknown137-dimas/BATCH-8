@@ -2,12 +2,12 @@ public interface IBoard
 {
 	int Width {get;}
 	int Height {get;}
-	Dictionary<IPlayer, Dictionary<IPosition, Guid>> PiecesPositions {get;}
+	Dictionary<IPlayer, IDictionary<IPosition, Guid>> PiecesPositions {get;}
 
 	bool AddPlayerToBoard(IPlayer player);
 	bool RemovePlayerFromBoard(IPlayer player);
-	Dictionary<IPosition, Guid> GetPlayerBoard(IPlayer player);
-	bool TryGetPlayerBoard(IPlayer player, out Dictionary<IPosition, Guid>? playerBoardResult);
+	IDictionary<IPosition, Guid> GetPlayerBoard(IPlayer player);
+	bool TryGetPlayerBoard(IPlayer player, out IDictionary<IPosition, Guid>? playerBoardResult);
 	bool AddHeroPosition(IPlayer player, Guid heroId, IPosition position);
 	bool UpdateHeroPosition(IPlayer player, Guid heroId, IPosition newPosition);
 	IPosition GetHeroPosition(IPlayer player, Guid heroId);

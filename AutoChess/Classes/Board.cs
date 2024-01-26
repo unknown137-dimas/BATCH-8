@@ -2,7 +2,7 @@ public class Board : IBoard
 {
 	public int Width {get;}
 	public int Height {get;}
-	public Dictionary<IPlayer, Dictionary<IPosition, Guid>> PiecesPositions {get; private set;} = new();
+	public Dictionary<IPlayer, IDictionary<IPosition, Guid>> PiecesPositions {get; private set;} = new();
 
 	public Board(int size)
 	{
@@ -20,18 +20,18 @@ public class Board : IBoard
 	
 	public bool RemovePlayerFromBoard(IPlayer player) => PiecesPositions.Remove(player);
 	
-	public Dictionary<IPosition, Guid> GetPlayerBoard(IPlayer player)
+	public IDictionary<IPosition, Guid> GetPlayerBoard(IPlayer player)
 	{
-		if(PiecesPositions.TryGetValue(player, out Dictionary<IPosition, Guid>? playerBoardResult))
+		if(PiecesPositions.TryGetValue(player, out IDictionary<IPosition, Guid>? playerBoardResult))
 		{
 			return playerBoardResult;
 		}
 		throw new KeyNotFoundException();
 	}
 
-	public bool TryGetPlayerBoard(IPlayer player, out Dictionary<IPosition, Guid>? playerBoardResult)
+	public bool TryGetPlayerBoard(IPlayer player, out IDictionary<IPosition, Guid>? playerBoardResult)
 	{
-		if(PiecesPositions.TryGetValue(player, out Dictionary<IPosition, Guid>? result))
+		if(PiecesPositions.TryGetValue(player, out IDictionary<IPosition, Guid>? result))
 		{
 			playerBoardResult = result;
 			return true;
@@ -42,7 +42,7 @@ public class Board : IBoard
 
 	public bool AddHeroPosition(IPlayer player, Guid heroId, IPosition position)
 	{
-		if(TryGetPlayerBoard(player, out Dictionary<IPosition, Guid>? result))
+		if(TryGetPlayerBoard(player, out IDictionary<IPosition, Guid>? result))
 		{
 			return result!.TryAdd(position, heroId);
 		}
@@ -64,7 +64,7 @@ public class Board : IBoard
 	
 	public IPosition GetHeroPosition(IPlayer player, Guid heroId)
 	{
-		if(!TryGetPlayerBoard(player, out Dictionary<IPosition, Guid>? result))
+		if(!TryGetPlayerBoard(player, out IDictionary<IPosition, Guid>? result))
 		{
 			throw new KeyNotFoundException();
 		}
@@ -74,7 +74,7 @@ public class Board : IBoard
 
 	public bool TryGetHeroPosition(IPlayer player, Guid heroId, out IPosition? positionResult)
 	{
-		if(!TryGetPlayerBoard(player, out Dictionary<IPosition, Guid>? result))
+		if(!TryGetPlayerBoard(player, out IDictionary<IPosition, Guid>? result))
 		{
 			positionResult = null;
 			return false;
@@ -85,7 +85,7 @@ public class Board : IBoard
 
 	public bool RemoveHeroPosition(IPlayer player, Guid heroId)
 	{
-		if(!TryGetPlayerBoard(player, out Dictionary<IPosition, Guid>? boardResult))
+		if(!TryGetPlayerBoard(player, out IDictionary<IPosition, Guid>? boardResult))
 		{
 			return false;
 		}
