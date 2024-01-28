@@ -8,17 +8,16 @@ public class AutoChessTests
 	private static Mock<IPlayer> _playerTest;
 	private static Mock<IBoard> _boardTest;
 	private static Mock<IPiece> _heroTest;
-	private static Guid _fakeHeroId;
 	
 	
 	[SetUp]
 	public void Setup()
 	{
-		_fakeHeroId = Guid.NewGuid();
 		_playerTest = new Mock<IPlayer>();
 		_boardTest = new Mock<IBoard>();
+		_boardTest.SetupGet(board => board.Width).Returns(6);
+		_boardTest.SetupGet(board => board.Height).Returns(6);
 		_heroTest = new Mock<IPiece>();
-		_heroTest.SetupGet(hero => hero.PieceId).Returns(_fakeHeroId);
 		_game = new(_boardTest.Object, 4, 1);
 	}
 
@@ -26,6 +25,7 @@ public class AutoChessTests
 	public void SetGameStatus_GameStatusChanged()
 	{
 		_game.SetGameStatus(Status.OnGoing);
+		
 		Assert.That(_game.CurrentGameStatus, Is.EqualTo(Status.OnGoing));
 	}
 	
@@ -73,6 +73,7 @@ public class AutoChessTests
 		_positionTest.SetupGet(pos => pos.X).Returns(() => 3);
 		_positionTest.SetupGet(pos => pos.Y).Returns(() => 3);
 		_game.AddPlayer(_playerTest.Object, Sides.Red);
+		_game.AddPlayerPiece(_playerTest.Object, _heroTest.Object);
 		
 		var actual = _game.PutPlayerPiece(_playerTest.Object, _heroTest.Object, _positionTest.Object);
 
