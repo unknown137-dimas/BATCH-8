@@ -860,7 +860,7 @@ public class GameController
 	/// <returns>
 	/// <c>true</c> if the specified position is currently empty; otherwise, <c>false</c>.
 	/// </returns>
-	public bool IsValidPosition(IPosition newPosition) => !GetAllHeroPosition().ContainsKey(newPosition);
+	public bool IsPositionEmpty(IPosition newPosition) => !GetAllHeroPosition().ContainsKey(newPosition);
 
 	/// <summary>
 	/// Removes a hero piece from the specified player's board based on the given hero ID.
@@ -884,9 +884,26 @@ public class GameController
 	}
 
 	/// <summary>
+	/// Clears the spesific player's board, removing all pieces from specific player's board.
+	/// </summary>
+	/// <param name="player">The player from whose board to clear.</param>
+	/// <returns>
+	/// <c>true</c> if board successfully cleared; otherwise, <c>false</c>.
+	/// </returns>
+	public bool ClearPlayerBoard(IPlayer player)
+	{
+		if(!TryGetPlayerBoard(player, out var playerBoardResult))
+		{
+			return false;
+		}
+		playerBoardResult.Clear();
+		return true;
+	}
+	
+	/// <summary>
 	/// Clears the boards of all players, removing all pieces from each board.
 	/// </summary>
-	public void ClearBoard() => GetPlayers().ToList().ForEach(player => GetPlayerBoard(player).Clear());
+	public bool ClearBoard() => GetPlayers().Where(ClearPlayerBoard).Count() == GetPlayers().Count();
 	#endregion
 
 	// Manage Battle
@@ -931,7 +948,7 @@ public class GameController
 				int x = new Random().Next(0, boardSize[0]);
 				int y = new Random().Next(0, boardSize[1]);
 				var newPosition = new Position(x, y);
-				if(IsValidPosition(newPosition))
+				if(IsPositionEmpty(newPosition))
 				{
 					UpdateHeroPosition(player, piece.PieceId, newPosition);
 					move = false;
