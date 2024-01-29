@@ -93,12 +93,15 @@ public class AutoChessTests
 		Assert.IsFalse(actual);
 	}
 	
-	[Test]
-	public void PutPlayerPiece_Success_PositionValid()
+	[TestCase(0, 0)]
+	[TestCase(0, 3)]
+	[TestCase(3, 1)]
+	[TestCase(5, 5)]
+	public void PutPlayerPiece_Success_PositionValid(int x, int y)
 	{
 		_positionTest = new Mock<IPosition>();
-		_positionTest.SetupGet(pos => pos.X).Returns(3);
-		_positionTest.SetupGet(pos => pos.Y).Returns(3);
+		_positionTest.SetupGet(pos => pos.X).Returns(x);
+		_positionTest.SetupGet(pos => pos.Y).Returns(y);
 		_game.AddPlayer(_playerTest.Object, Sides.Red);
 		_game.AddPlayerPiece(_playerTest.Object, _heroTest.Object);
 		
@@ -108,7 +111,11 @@ public class AutoChessTests
 	}
 
 	[TestCase(-1, -2)]
+	[TestCase(-1, 2)]
+	[TestCase(1, -2)]
 	[TestCase(6, 6)]
+	[TestCase(6, 4)]
+	[TestCase(2, 6)]
 	public void PutPlayerPiece_Failed_PositionNotValid(int x, int y)
 	{
 		_positionTest.SetupGet(pos => pos.X).Returns(x);
@@ -133,11 +140,14 @@ public class AutoChessTests
 		Assert.IsFalse(actual);
 	}
 
-	[Test]
-	public void PutPlayerPiece_Success_NewPositionValid()
+	[TestCase(0, 0)]
+	[TestCase(0, 3)]
+	[TestCase(3, 1)]
+	[TestCase(5, 5)]
+	public void PutPlayerPiece_Success_NewPositionValid(int x, int y)
 	{
-		_positionTest.SetupGet(pos => pos.X).Returns(3);
-		_positionTest.SetupGet(pos => pos.Y).Returns(3);
+		_positionTest.SetupGet(pos => pos.X).Returns(x);
+		_positionTest.SetupGet(pos => pos.Y).Returns(y);
 		_game.AddPlayer(_playerTest.Object, Sides.Red);
 		_game.AddPlayerPiece(_playerTest.Object, _heroTest.Object);
 		_game.PutPlayerPiece(_playerTest.Object, _heroTest.Object, _positionTest.Object);
@@ -152,7 +162,11 @@ public class AutoChessTests
 	}
 
 	[TestCase(-1, -2)]
+	[TestCase(-1, 2)]
+	[TestCase(1, -2)]
 	[TestCase(6, 6)]
+	[TestCase(6, 4)]
+	[TestCase(2, 6)]
 	public void PutPlayerPiece_Failed_NewPositionNotValid(int x, int y)
 	{
 		_positionTest.SetupGet(pos => pos.X).Returns(3);
