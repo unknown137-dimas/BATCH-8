@@ -10,7 +10,6 @@ public class Position : IPosition
         X = x;
         Y = y;
     }
-
     public override bool Equals(object? obj)
     {
         if(obj == null || GetType() != obj.GetType())
@@ -25,7 +24,6 @@ public class Position : IPosition
             return true;
         return X == other.X && Y == other.Y;
     }
-
     public override int GetHashCode() =>  X.GetHashCode() + Y.GetHashCode();
 
     public void UpdatePosition(int newX, int newY)
@@ -35,9 +33,7 @@ public class Position : IPosition
     }
 
     public int[] GetPosition() => [X, Y];
-
     public bool IsInRange(IPosition otherPosition, int range) => (otherPosition.X - X) <= range && (otherPosition.Y - Y) <= range;
-
     public static bool operator ==(Position self, Position other) => self.Equals(other);
     public static bool operator !=(Position self, Position other) => !self.Equals(other);
 }

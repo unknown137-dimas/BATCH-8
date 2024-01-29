@@ -5,7 +5,7 @@ namespace AutoChess;
 public class GameController
 {
 	private readonly IBoard _board;
-	public Dictionary<string, HeroDetails> HeroesDatabase {get; private set;} = new();
+	public Dictionary<string, IHeroDetails> HeroesDatabase {get; private set;} = new();
 	private Dictionary<IPlayer, PlayerData> _players = new();
 	public int PlayerHp {get;} = 3;
 	public int PlayerPiecesCount {get;} = 5;
@@ -398,7 +398,7 @@ public class GameController
 	/// <returns>
 	/// <c>true</c> if the hero is successfully added; otherwise, <c>false</c>.
 	/// </returns>
-	public bool AddHero(string heroName, HeroDetails heroDetails)
+	public bool AddHero(string heroName, IHeroDetails heroDetails)
 	{
 		if(Enum.IsDefined(typeof(PieceTypes), heroDetails.HeroType))
 		{
@@ -411,7 +411,7 @@ public class GameController
 	/// Adds multiple heroes to the game using a dictionary of hero names and their details.
 	/// </summary>
 	/// <param name="heroes">A dictionary containing hero names and their corresponding details.</param>
-	public void AddHero(Dictionary<string, HeroDetails> heroes)
+	public void AddHero(Dictionary<string, IHeroDetails> heroes)
 	{
 		foreach(var hero in heroes)
 		{
@@ -442,9 +442,9 @@ public class GameController
 	/// <param name="heroName">The name of the hero.</param>
 	/// <returns>The details of the hero.</returns>
 	/// <exception cref="KeyNotFoundException">Thrown if the hero with the specified name is not found.</exception>
-	public HeroDetails GetHeroDetails(string heroName)
+	public IHeroDetails GetHeroDetails(string heroName)
 	{
-		if(HeroesDatabase.TryGetValue(heroName, out HeroDetails? result))
+		if(HeroesDatabase.TryGetValue(heroName, out IHeroDetails? result))
 		{
 			return result;
 		}
@@ -459,9 +459,9 @@ public class GameController
 	/// <returns>
 	/// true if the details of the hero with the provided name were found and retrieved successfully; otherwise, false.
 	/// </returns>
-	public bool TryGetHeroDetails(string heroName, out HeroDetails? heroDetailResult)
+	public bool TryGetHeroDetails(string heroName, out IHeroDetails? heroDetailResult)
 	{
-		if(HeroesDatabase.TryGetValue(heroName, out HeroDetails? result))
+		if(HeroesDatabase.TryGetValue(heroName, out IHeroDetails? result))
 		{
 			heroDetailResult = result;
 			return true;
@@ -637,6 +637,21 @@ public class GameController
 	/// </returns>
 	public bool AddPlayerPiece(IPlayer player, IPiece newHero)
 	{
+		if(!HeroesDatabase.TryGetValue(newHero.Name, out IHeroDetails? heroDetails))
+		{
+			return false;
+		}
+		var newHeroDetails = new HeroDetails(
+			newHero.PieceType,
+			newHero.Hp,
+			newHero.Attack,
+			newHero.Armor,
+			newHero.AttackRange
+		);
+		if((heroDetails as HeroDetails)! != newHeroDetails)
+		{
+			return false;
+		}
 		if(!(GetPlayerPieces(player).Count() < PlayerPiecesCount))
 		{
 			return false;
