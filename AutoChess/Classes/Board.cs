@@ -16,6 +16,8 @@ public class Board : IBoard
 		Height = height;
 	}
 
+	public bool IsPositionValid(IPosition position) => position.X > 0 && position.X < Width && position.Y > 0 && position.Y < Height;
+	
 	public bool AddPlayerToBoard(IPlayer player) => PiecesPositions.TryAdd(player, new Dictionary<IPosition, Guid>());
 	
 	public bool RemovePlayerFromBoard(IPlayer player) => PiecesPositions.Remove(player);
@@ -42,6 +44,10 @@ public class Board : IBoard
 
 	public bool AddHeroPosition(IPlayer player, Guid heroId, IPosition position)
 	{
+		if(!IsPositionValid(position))
+		{
+			return false;
+		}
 		if(TryGetPlayerBoard(player, out IDictionary<IPosition, Guid>? result))
 		{
 			return result!.TryAdd(position, heroId);
@@ -51,6 +57,10 @@ public class Board : IBoard
 
 	public bool UpdateHeroPosition(IPlayer player, Guid heroId, IPosition newPosition)
 	{
+		if(!IsPositionValid(newPosition))
+		{
+			return false;
+		}
 		if(!TryGetHeroPosition(player, heroId, out _))
 		{
 			return false;

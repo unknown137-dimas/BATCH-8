@@ -4,6 +4,7 @@ public interface IBoard
 	int Height {get;}
 	Dictionary<IPlayer, IDictionary<IPosition, Guid>> PiecesPositions {get;}
 
+	bool IsPositionValid(IPosition position);
 	bool AddPlayerToBoard(IPlayer player);
 	bool RemovePlayerFromBoard(IPlayer player);
 	IDictionary<IPosition, Guid> GetPlayerBoard(IPlayer player);
