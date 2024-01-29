@@ -40,11 +40,11 @@ public class AutoChessTests
 	[Test]
 	public void AddPlayer_AddFailed_CantAddTheSamePlayerTwice()
 	{
-        _game.AddPlayer(_playerTest.Object, Sides.Fuchsia);
+		_game.AddPlayer(_playerTest.Object, Sides.Fuchsia);
 
-        bool actual = _game.AddPlayer(_playerTest.Object, Sides.Red);
+		bool actual = _game.AddPlayer(_playerTest.Object, Sides.Red);
 
-        Assert.IsFalse(actual);
+		Assert.IsFalse(actual);
 	}
 
 	[Test]

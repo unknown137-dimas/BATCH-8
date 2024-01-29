@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace AutoChess;
 
 public class GameController
@@ -10,35 +12,40 @@ public class GameController
 	public Status CurrentGameStatus {get; private set;} = Status.NotInitialized;
 	public Phases CurrentGamePhase {get; private set;} = Phases.NotInitialized;
 	public Action<IPiece>? OnHeroSkill;
+	private ILogger<GameController>? _logger;
 
-	public GameController(IBoard board)
+	public GameController(IBoard board, ILogger<GameController>? logger = null)
 	{
 		SetGameStatus(Status.Initialized);
 		_board = board;
+		_logger = logger;
 	}
 
-	public GameController(IBoard board, int playerPiecesCount, int playerHp)
+	public GameController(IBoard board, int playerPiecesCount, int playerHp, ILogger<GameController>? logger = null)
 	{
 		SetGameStatus(Status.Initialized);
 		_board = board;
 		PlayerPiecesCount = playerPiecesCount;
 		PlayerHp = playerHp;
+		_logger = logger;
 	}
 	
-	public GameController(IBoard board, IDictionary<IPlayer, Sides> players)
+	public GameController(IBoard board, IDictionary<IPlayer, Sides> players, ILogger<GameController>? logger = null)
 	{
 		SetGameStatus(Status.Initialized);
 		_board = board;
 		AddPlayer(players);
+		_logger = logger;
 	}
 
-	public GameController(IBoard board, int playerPiecesCount, int playerHp, IDictionary<IPlayer, Sides> players)
+	public GameController(IBoard board, int playerPiecesCount, int playerHp, IDictionary<IPlayer, Sides> players, ILogger<GameController>? logger = null)
 	{
 		SetGameStatus(Status.Initialized);
 		_board = board;
 		PlayerPiecesCount = playerPiecesCount;
 		PlayerHp = playerHp;
 		AddPlayer(players);
+		_logger = logger;
 	}
 
 	// Manage current game information
@@ -150,6 +157,7 @@ public class GameController
 				return true;
 			}
 		}
+		_logger?.LogWarning("Attempt to get piece failed : piece ID or player not found");
 		pieceResult = null;
 		return false;
 	}

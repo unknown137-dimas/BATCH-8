@@ -3,8 +3,11 @@ using System.Text;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 using AutoChess;
+using Microsoft.Extensions.DependencyInjection;
+using NLog.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 
-internal class Program
+partial class Program
 {
 	// GAME CONFIGURATION
 	private const int size = 6;
@@ -30,9 +33,9 @@ internal class Program
 		{PieceTypes.Wizard, "🔮"},
 	};
 
-	// GAME CONTROLLER INIT
-	private static GameController autoChess = new GameController(new Board(size), maxPlayerPieces, initPlayerHp);
-	private static int[] boardSize = autoChess.GetBoardSize();
+	// GAME CONTROLLER
+	private static GameController? autoChess;
+	private static int[]? boardSize;
 	private static Player? playerOne = null;
 	private static Player? playerTwo = null;
 
@@ -373,6 +376,22 @@ internal class Program
 	{
 		// Enable emoji support
 		Console.OutputEncoding = Encoding.UTF8;
+		
+		// DEPENDENCY INJECTION
+		IServiceCollection serviceCollection = new ServiceCollection();
+		// Logging
+		serviceCollection.AddLogging(logBuilder =>
+		{
+			logBuilder.ClearProviders(); 
+			logBuilder.SetMinimumLevel(LogLevel.Information);
+			logBuilder.AddNLog("nlog.config");
+		});
+		serviceCollection.AddTransient<IBoard>(provider => new Board(size));
+		IServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
+		
+		// GAME CONTROLLER INIT
+		autoChess = new GameController(serviceProvider.GetRequiredService<IBoard>(), maxPlayerPieces, initPlayerHp);
+		boardSize = autoChess.GetBoardSize();
 
 		// Load hero from json file to hero database
 		#region HERO_INIT
