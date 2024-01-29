@@ -16,7 +16,7 @@ public class Board : IBoard
 		Height = height;
 	}
 
-	public bool IsPositionValid(IPosition position) => position.X > 0 && position.X < Width && position.Y > 0 && position.Y < Height;
+	public bool IsPositionValid(IPosition position) => position.X >= 0 && position.X < Width && position.Y >= 0 && position.Y < Height;
 	
 	public bool AddPlayerToBoard(IPlayer player) => PiecesPositions.TryAdd(player, new Dictionary<IPosition, Guid>());
 	
