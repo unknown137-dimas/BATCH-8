@@ -78,9 +78,9 @@ class Program
 			if(result is not null)
 			{
 				result.Description = "Vehicle Parts, Car, Truck, Motorcycle";
+				await db.SaveChangesAsync();
 			}
 			
-			await db.SaveChangesAsync();
 		}
 	}
 }
