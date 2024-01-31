@@ -43,6 +43,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "day_42_logger", "day_42_log
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlite_tutorial", "sqlite_tutorial\sqlite_tutorial.csproj", "{E35EAA25-0958-4003-AA54-5E68B530EEBE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "code_first_db", "code_first_db\code_first_db.csproj", "{AF8DBAEB-4807-4020-80E6-A6CC9B0E6DA3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -129,6 +131,10 @@ Global
 		{E35EAA25-0958-4003-AA54-5E68B530EEBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E35EAA25-0958-4003-AA54-5E68B530EEBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E35EAA25-0958-4003-AA54-5E68B530EEBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF8DBAEB-4807-4020-80E6-A6CC9B0E6DA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF8DBAEB-4807-4020-80E6-A6CC9B0E6DA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF8DBAEB-4807-4020-80E6-A6CC9B0E6DA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF8DBAEB-4807-4020-80E6-A6CC9B0E6DA3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
