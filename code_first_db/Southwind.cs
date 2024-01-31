@@ -18,6 +18,7 @@ class Southwind : DbContext
 		modelBuilder.Entity<Category>(category => 
 		{
 			category.HasKey(c => c.CategoryId);
+			category.Property(c => c.CategoryId).ValueGeneratedOnAdd();
 			category.Property(c => c.CategoryName).IsRequired(true).HasMaxLength(20);
 			category.Property(c => c.Description).IsRequired(false);
 			category.HasMany(c => c.Products);
@@ -26,6 +27,7 @@ class Southwind : DbContext
 		modelBuilder.Entity<Product>(product => 
 		{
 			product.HasKey(p => p.ProductId);
+			product.Property(p => p.ProductId).ValueGeneratedOnAdd();
 			product.Property(p => p.ProductName).IsRequired(true).HasMaxLength(40);
 			product.Property(p => p.Cost).HasColumnName("UnitPrice").HasColumnType("money");
 			product.Property(p => p.Stock).HasColumnName("UnitsInStock").HasColumnType("smallint");
@@ -36,6 +38,7 @@ class Southwind : DbContext
 		modelBuilder.Entity<Supplier>(supplier => 
 		{
 			supplier.HasKey(s => s.SupplierId);
+			supplier.Property(s => s.SupplierId).ValueGeneratedOnAdd();
 			supplier.Property(s => s.CompanyName).IsRequired(true).HasMaxLength(40);
 			supplier.Property(s => s.ContactName).IsRequired(true).HasMaxLength(30);
 			supplier.Property(s => s.ContactTitle).IsRequired(true).HasMaxLength(30);
