@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace code_first_db.Migrations
 {
     [DbContext(typeof(Southwind))]
-    [Migration("20240131022907_InitCreate")]
-    partial class InitCreate
+    [Migration("20240131045704_InitDB")]
+    partial class InitDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -112,7 +112,7 @@ namespace code_first_db.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("HomePage")
-                        .HasColumnType("ntext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Phone")
                         .IsRequired()

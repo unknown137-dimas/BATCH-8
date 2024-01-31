@@ -5,7 +5,7 @@
 namespace code_first_db.Migrations
 {
     /// <inheritdoc />
-    public partial class InitCreate : Migration
+    public partial class InitDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -40,7 +40,7 @@ namespace code_first_db.Migrations
                     Country = table.Column<string>(type: "TEXT", maxLength: 15, nullable: false),
                     Phone = table.Column<string>(type: "TEXT", maxLength: 24, nullable: false),
                     Fax = table.Column<string>(type: "TEXT", maxLength: 24, nullable: true),
-                    HomePage = table.Column<string>(type: "ntext", nullable: true)
+                    HomePage = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

@@ -109,7 +109,7 @@ namespace code_first_db.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("HomePage")
-                        .HasColumnType("ntext");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Phone")
                         .IsRequired()

@@ -9,7 +9,8 @@ class Southwind : DbContext
 	
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
-		optionsBuilder.UseSqlite("FileName=./Southwind.db");
+		// optionsBuilder.UseSqlite("FileName=./Southwind.db");
+		optionsBuilder.UseNpgsql("Host=localhost;Database=myDB;Username=postgres;Password=postgresB8");
 	}
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -45,7 +46,7 @@ class Southwind : DbContext
 			supplier.Property(s => s.Country).IsRequired(true).HasMaxLength(15);
 			supplier.Property(s => s.Phone).IsRequired(true).HasMaxLength(24);
 			supplier.Property(s => s.Fax).IsRequired(false).HasMaxLength(24);
-			supplier.Property(s => s.HomePage).IsRequired(false).HasColumnType("ntext");
+			supplier.Property(s => s.HomePage).IsRequired(false);
 			supplier.HasMany(s => s.Products);
 		});
 	}
