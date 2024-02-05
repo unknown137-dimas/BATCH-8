@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sqlite_tutorial", "sqlite_t
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "code_first_db", "code_first_db\code_first_db.csproj", "{AF8DBAEB-4807-4020-80E6-A6CC9B0E6DA3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecoratorExample", "DecoratorExample\DecoratorExample.csproj", "{DD1F548A-9C23-4757-91CF-5E2DA2DA2737}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -135,6 +137,10 @@ Global
 		{AF8DBAEB-4807-4020-80E6-A6CC9B0E6DA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF8DBAEB-4807-4020-80E6-A6CC9B0E6DA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AF8DBAEB-4807-4020-80E6-A6CC9B0E6DA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD1F548A-9C23-4757-91CF-5E2DA2DA2737}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD1F548A-9C23-4757-91CF-5E2DA2DA2737}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD1F548A-9C23-4757-91CF-5E2DA2DA2737}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD1F548A-9C23-4757-91CF-5E2DA2DA2737}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
